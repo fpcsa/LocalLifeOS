@@ -56,6 +56,8 @@ navigation row. Primary destinations are:
 - Capacity
 - Scenarios
 - Timeline
+- Imports
+- Automation
 - Settings
 
 The command palette supports `Ctrl/Cmd+K`, route navigation, and backend search across tasks,
@@ -77,6 +79,8 @@ transactions without replacing server state in Zustand.
 | `/capacity` | Daily and weekly raw/focus/committed/remaining capacity plus financial committed-balance summaries and accessible chart alternatives |
 | `/scenarios` | Two- or three-way scenario editing, projection, comparison, exact acceptance plan, staleness handling, and signature demo preparation |
 | `/timeline` | Incrementally loaded, date-grouped cross-domain activity with URL-backed type, commitment, and date filters and privacy-limited summaries |
+| `/imports` | Local ICS/CSV upload, classified and normalized previews, row selection, mapping profiles, apply, export, and history |
+| `/automation` | Structured rule builder, lifecycle, write-free test context, scheduler status, notifications, and execution history |
 | `/settings` | Revision-checked locale, timezone, currency, week-start, and theme preferences plus local-system guarantees |
 
 Route-level `loading.tsx` and `error.tsx` provide safe fallbacks. Feature views also render local
@@ -135,7 +139,8 @@ stale scenario visible and non-acceptable until it is refreshed.
 ## Verification strategy
 
 Vitest and Testing Library cover service status, exact money conversion, timezone/DST boundaries,
-task validation, commitment creation and linking, and reviewed schedule application. The
+task validation, commitment creation and linking, reviewed schedule application, import row
+selection, and write-free automation test preview. The
 Playwright-Core smoke script uses the locally installed Chrome executable—without downloading a
 browser—to exercise every route at 1280, 768, and 375 pixels. Its signature desktop flow prepares
 the Build Week, Berlin conference, and Laptop purchase records through public APIs, compares the
@@ -149,6 +154,6 @@ inspection.
 
 ## Deferred work
 
-The following remain intentionally outside this goal: automation and import UI, service-worker
-caching, encryption, authentication, and any advisory or runtime-AI behavior. Scenario projections
+The following remain intentionally outside this goal: service-worker caching, encryption,
+authentication, and any advisory or runtime-AI behavior. Scenario projections
 are deterministic planning aids based only on local data and user-entered assumptions.

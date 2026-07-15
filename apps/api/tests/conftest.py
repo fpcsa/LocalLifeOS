@@ -20,6 +20,7 @@ def database_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[P
     monkeypatch.setenv("LOCALLIFE_DATA_DIR", str(data_dir))
     monkeypatch.setenv("LOCALLIFE_TELEMETRY_ENABLED", "false")
     monkeypatch.setenv("LOCALLIFE_EXTERNAL_REQUESTS_ENABLED", "false")
+    monkeypatch.setenv("LOCALLIFE_AUTOMATION_SCHEDULER_ENABLED", "false")
     monkeypatch.setenv(
         "LOCALLIFE_DATABASE_URL",
         f"sqlite:///{database_path.as_posix()}",

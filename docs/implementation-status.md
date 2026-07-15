@@ -200,15 +200,47 @@ Last updated: 2026-07-15
 - [x] Backend, migration, OpenAPI, frontend quality, production build, offline, Compose, accessibility,
   and live Chrome verification
 
+## Prompt 10 — Calendar/finance imports and local automation
+
+- [x] Two-phase, fingerprinted, idempotent import batches with revisioned row selection and history
+- [x] Standards-based ICS parsing for timed/all-day events, IANA timezones, common RRULE recurrence,
+  UID/sequence identity, and new/changed/duplicate/invalid classification
+- [x] Atomic calendar apply with concurrent-edit rejection and selected/all standards-compatible export
+- [x] Conservative UTF-8/Windows-1252 and comma/semicolon/tab/pipe CSV detection using Pandas
+- [x] Date, description, signed amount or debit/credit, currency, account, category, and external-ID
+  mapping with normalized integer minor-unit preview
+- [x] Exact/probable duplicate classification, per-row include/exclude, and atomic ledger apply
+- [x] Persisted revision-checked reusable CSV mapping profiles and formula-safe review CSV export
+- [x] Filename, extension, size, row-count, binary-input, and confined storage-path protections
+- [x] Structured AutomationRule CRUD with seven triggers, allow-listed conditions, and six fixed actions
+- [x] Write-free rule preview/test, local notifications, execution history, and deterministic
+  database-enforced idempotency
+- [x] Transaction, subscription-price, calendar, commitment-warning, approaching-event, overdue-task,
+  and recurring-schedule trigger integration
+- [x] APScheduler lifecycle with SQLite-authoritative rules, reconstructed jobs, one-attempt restart
+  catch-up, coalescing, and scheduler status
+- [x] Alembic `20260716_0010` migration for import, profile, execution, notification, event-source, and
+  scheduler metadata
+- [x] Import/mapping/history and automation builder/test/execution frontend routes with generated API
+  contracts and Query-owned server state
+- [x] Sample ICS, comma CSV, semicolon debit/credit CSV, and demo automation-rule files
+- [x] ICS/CSV classification, recurrence/timezone, change, duplicate, idempotency, mapping, invalid row,
+  formula safety, path safety, rule CRUD, trigger, dry-run, revision, scheduler rebuild/catch-up, and
+  frontend selection/test tests
+- [x] Import, automation, security, architecture, frontend, API-convention, status, and development-log
+  documentation
+- [x] Backend tests/Ruff/mypy, Alembic upgrade/current/drift, generated OpenAPI, frontend
+  tests/lint/typecheck/build, offline scan, Compose config, Docker image build, and whitespace checks
+
 ## Future product goals
 
 - [x] Productivity user interfaces for tasks, projects, calendar, notes, and attachments
 - [x] User interfaces for finance and goals
 - [x] Unified timeline user interface
 - [x] Full commitment planning and assessment visualizations
-- [ ] Automation user interface
+- [x] Automation user interface
 - [x] Scenario projections, comparison, and acceptance workflow
-- [ ] `.ics` and CSV imports plus deterministic local automation
+- [x] `.ics` and CSV imports plus deterministic local automation
 - [ ] Service worker, offline workflow verification, backup/restore, and security hardening
 - [x] Build Week, Berlin conference, and Laptop purchase demo data plus signature-flow E2E coverage
 - [ ] Broader repository-level E2E coverage and submission readiness

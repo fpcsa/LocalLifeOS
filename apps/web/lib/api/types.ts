@@ -53,6 +53,18 @@ export type Transaction = Schemas["TransactionResponse"];
 export type TransactionCategory = Schemas["TransactionCategoryResponse"];
 export type TransactionCreate = Schemas["TransactionCreateRequest"];
 export type TransferCreate = Schemas["TransferCreateRequest"];
+export type ImportBatch = Schemas["ImportBatchResponse"];
+export type ImportPreview = Schemas["ImportPreviewResponse"];
+export type ImportRow = Schemas["ImportRowResponse"];
+export type CsvMapping = Schemas["CsvMappingRequest"];
+export type CsvMappingProfile = Schemas["CsvMappingProfileResponse"];
+export type AutomationRule = Schemas["AutomationRuleResponse"];
+export type AutomationRuleCreate = Schemas["AutomationRuleCreateRequest"];
+export type AutomationRuleUpdate = Schemas["AutomationRuleUpdateRequest"];
+export type AutomationPreview = Schemas["AutomationPreviewResponse"];
+export type AutomationExecution = Schemas["AutomationExecutionResponse"];
+export type LocalNotification = Schemas["NotificationResponse"];
+export type SchedulerStatus = Schemas["SchedulerStatusResponse"];
 
 export interface DataEnvelope<T> {
   data: T;

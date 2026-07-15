@@ -64,6 +64,8 @@ The API is mounted under `/api/v1`.
 | `/api/v1/scenarios` | Isolated typed changes, deterministic previews, comparison, and exact acceptance |
 | `GET /api/v1/timeline/unified` | Typed cross-domain timeline with privacy-limited summaries |
 | `/api/v1/scheduling` | Non-mutating CP-SAT previews, atomic apply, capacity, and explanations |
+| `/api/v1/imports` | ICS/CSV preview, mapping, selection, apply, export, profiles, and history |
+| `/api/v1/automation` | Structured rule CRUD, dry-run previews, execution logs, notifications, and scheduler state |
 
 Every response receives an `X-Request-ID`. HTTP, validation, and unexpected errors use one structured `error` envelope. Settings are loaded with Pydantic Settings and reject remote database URLs, non-loopback CORS origins, telemetry, and external-request enablement.
 
@@ -111,6 +113,10 @@ contracts are defined in [api-conventions.md](api-conventions.md); domain rules 
 [productivity-domain.md](productivity-domain.md), [finance-engine.md](finance-engine.md), and
 [commitment-engine.md](commitment-engine.md). Solver constraints, capacity formulas, preview
 consistency, and operational limits are detailed in [scheduling-engine.md](scheduling-engine.md).
+Local file classification, fingerprinting, mapping, and export rules are detailed in
+[imports.md](imports.md). Structured triggers/actions, execution idempotency, and scheduler restart
+behavior are detailed in [automation.md](automation.md); explicit boundaries are collected in
+[security.md](security.md).
 
 ## Frontend
 
@@ -122,6 +128,9 @@ navigation, and an accessible React Flow graph. Capacity views pair charts with 
 Scenario views support typed editing, two- or three-way comparison, staleness detection, and an
 explicit exact-plan review before acceptance. The unified timeline loads incrementally and groups
 privacy-limited summaries by local date.
+Import screens provide file-local preview, row selection, normalized CSV mapping, profile and batch
+history, and calendar export. Automation screens provide a typed builder, enable/disable lifecycle,
+write-free test previews, scheduler state, notifications, and execution history.
 
 The interface uses Tailwind tokens and a system font stack. It includes light and dark color schemes, visible focus states, semantic elements, minimum interaction targets, a reduced-motion fallback, and loading/success/error health states. No asset refers to a remote host.
 

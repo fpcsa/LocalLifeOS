@@ -1,0 +1,4 @@
+Date,Description,Amount,Currency,Account,Category,External ID
+2026-07-10,Neighborhood market,-42.70,EUR,Main checking,Food,demo-bank-001
+2026-07-11,Local consulting invoice,850.00,EUR,Main checking,Salary,demo-bank-002
+2026-07-12,Train ticket,-28.50,EUR,Main checking,Transport,demo-bank-003

@@ -187,8 +187,21 @@ class CalendarEvent(WorkspaceSoftDeleteEntityBase, table=True):
             name="ck_events_recurrence_shape",
         ),
         CheckConstraint("revision >= 1", name="ck_events_revision_positive"),
+        CheckConstraint("source_sequence >= 0", name="ck_events_source_sequence_nonnegative"),
         Index("ix_events_workspace_starts", "workspace_id", "starts_at"),
         Index("ix_events_workspace_all_day", "workspace_id", "all_day_start"),
+        Index(
+            "ux_events_workspace_external_uid_active",
+            "workspace_id",
+            "external_uid",
+            unique=True,
+            sqlite_where=text("external_uid IS NOT NULL AND deleted_at IS NULL"),
+        ),
+        Index(
+            "ix_events_workspace_import_fingerprint",
+            "workspace_id",
+            "import_fingerprint",
+        ),
     )
 
     title: str = Field(max_length=255)
@@ -225,6 +238,9 @@ class CalendarEvent(WorkspaceSoftDeleteEntityBase, table=True):
         ge=0,
         sa_column_kwargs={"server_default": "0"},
     )
+    external_uid: str | None = Field(default=None, max_length=255)
+    source_sequence: int = Field(default=0, ge=0)
+    import_fingerprint: str | None = Field(default=None, max_length=64)
 
 
 class CalendarEventEntityLink(WorkspaceLinkBase, table=True):

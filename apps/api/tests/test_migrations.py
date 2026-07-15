@@ -11,14 +11,19 @@ EXPECTED_TABLES = {
     "attachment_entity_links",
     "attachments",
     "automation_rules",
+    "automation_executions",
     "budget_category_limits",
     "budgets",
     "calendar_events",
     "calendar_event_entity_links",
     "commitment_entity_links",
     "commitments",
+    "csv_mapping_profiles",
     "financial_accounts",
     "goals",
+    "import_batches",
+    "import_rows",
+    "local_notifications",
     "note_links",
     "note_entity_links",
     "notes",
@@ -61,4 +66,4 @@ def test_alembic_upgrades_an_empty_database_to_the_complete_schema(
     assert set(inspector.get_table_names()) == EXPECTED_TABLES
     with get_engine().connect() as connection:
         revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-    assert revision == "20260715_0009"
+    assert revision == "20260716_0010"

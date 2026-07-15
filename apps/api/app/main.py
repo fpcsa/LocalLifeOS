@@ -19,12 +19,20 @@ from app.core.errors import (
 from app.core.exceptions import DomainError
 from app.core.middleware import RequestIdMiddleware
 from app.db.session import initialize_database
+from app.services.automation_scheduler import (
+    start_automation_scheduler,
+    stop_automation_scheduler,
+)
 
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     initialize_database()
-    yield
+    start_automation_scheduler()
+    try:
+        yield
+    finally:
+        stop_automation_scheduler()
 
 
 def create_app() -> FastAPI:

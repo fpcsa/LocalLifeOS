@@ -56,6 +56,131 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/automation/executions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Executions */
+        get: operations["list_executions_api_v1_automation_executions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/automation/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Notifications */
+        get: operations["notifications_api_v1_automation_notifications_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/automation/rules": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Rules */
+        get: operations["list_rules_api_v1_automation_rules_get"];
+        put?: never;
+        /** Create Rule */
+        post: operations["create_rule_api_v1_automation_rules_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/automation/rules/{rule_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Rule */
+        get: operations["get_rule_api_v1_automation_rules__rule_id__get"];
+        put?: never;
+        post?: never;
+        /** Delete Rule */
+        delete: operations["delete_rule_api_v1_automation_rules__rule_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Rule */
+        patch: operations["update_rule_api_v1_automation_rules__rule_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/automation/rules/{rule_id}/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Preview Rule */
+        post: operations["preview_rule_api_v1_automation_rules__rule_id__preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/automation/rules/{rule_id}/test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Test Rule
+         * @description Evaluate a rule without running the configured action or writing data.
+         */
+        post: operations["test_rule_api_v1_automation_rules__rule_id__test_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/automation/scheduler": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Scheduler Status */
+        get: operations["get_scheduler_status_api_v1_automation_scheduler_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/calendar/conflicts": {
         parameters: {
             query?: never;
@@ -924,6 +1049,212 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/imports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Import Batches */
+        get: operations["read_import_batches_api_v1_imports_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/calendar/export.ics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Calendar Export */
+        get: operations["download_calendar_export_api_v1_imports_calendar_export_ics_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/calendar/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Calendar Preview */
+        post: operations["post_calendar_preview_api_v1_imports_calendar_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/calendar/{batch_id}/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Calendar Apply */
+        post: operations["post_calendar_apply_api_v1_imports_calendar__batch_id__apply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/csv/preview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Csv Preview */
+        post: operations["post_csv_preview_api_v1_imports_csv_preview_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/csv/{batch_id}/apply": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Csv Apply */
+        post: operations["post_csv_apply_api_v1_imports_csv__batch_id__apply_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/csv/{batch_id}/map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Csv Mapping */
+        post: operations["post_csv_mapping_api_v1_imports_csv__batch_id__map_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/mapping-profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Mapping Profiles */
+        get: operations["read_mapping_profiles_api_v1_imports_mapping_profiles_get"];
+        put?: never;
+        /** Post Mapping Profile */
+        post: operations["post_mapping_profile_api_v1_imports_mapping_profiles_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/mapping-profiles/{profile_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove Mapping Profile */
+        delete: operations["remove_mapping_profile_api_v1_imports_mapping_profiles__profile_id__delete"];
+        options?: never;
+        head?: never;
+        /** Patch Mapping Profile */
+        patch: operations["patch_mapping_profile_api_v1_imports_mapping_profiles__profile_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/imports/rows/{row_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Patch Import Row */
+        patch: operations["patch_import_row_api_v1_imports_rows__row_id__patch"];
+        trace?: never;
+    };
+    "/api/v1/imports/{batch_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Import Batch */
+        get: operations["read_import_batch_api_v1_imports__batch_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/imports/{batch_id}/rows.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Download Import Rows */
+        get: operations["download_import_rows_api_v1_imports__batch_id__rows_csv_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meta/enums": {
         parameters: {
             query?: never;
@@ -1616,6 +1947,239 @@ export interface components {
              */
             workspace_id: string;
         };
+        /** AutomationAction */
+        AutomationAction: {
+            /** Account Id */
+            account_id?: string | null;
+            /** Amount Minor */
+            amount_minor?: number | null;
+            /** Body */
+            body?: string | null;
+            /** Category Id */
+            category_id?: string | null;
+            /** Currency Code */
+            currency_code?: string | null;
+            /**
+             * Days From Trigger
+             * @default 0
+             */
+            days_from_trigger: number;
+            /** Due In Days */
+            due_in_days?: number | null;
+            /** @default medium */
+            priority: components["schemas"]["TaskPriority"];
+            /** Tag Id */
+            tag_id?: string | null;
+            /** Target Entity Id */
+            target_entity_id?: string | null;
+            target_entity_type?: components["schemas"]["DomainEntityType"] | null;
+            /** Title */
+            title?: string | null;
+            transaction_type?: components["schemas"]["TransactionType"] | null;
+            type: components["schemas"]["AutomationActionType"];
+        };
+        /** AutomationActionPreview */
+        AutomationActionPreview: {
+            /** Description */
+            description: string;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            type: components["schemas"]["AutomationActionType"];
+        };
+        /**
+         * AutomationActionType
+         * @enum {string}
+         */
+        AutomationActionType: "create_task" | "create_note" | "create_planned_transaction" | "add_tag" | "create_notification" | "request_local_backup_reminder";
+        /** AutomationCondition */
+        AutomationCondition: {
+            /** Field */
+            field: string;
+            /** @default equals */
+            operator: components["schemas"]["AutomationOperator"];
+            /** Value */
+            value: string | number | boolean | (string | number | boolean | null)[] | null;
+        };
+        /** AutomationExecutionResponse */
+        AutomationExecutionResponse: {
+            /** Action Result */
+            action_result: {
+                [key: string]: unknown;
+            };
+            action_type: components["schemas"]["AutomationActionType"];
+            /** Completed At */
+            completed_at: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Error */
+            error: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Rule Id
+             * Format: uuid
+             */
+            rule_id: string;
+            /** Source Key */
+            source_key: string;
+            status: components["schemas"]["AutomationExecutionStatus"];
+            /** Trigger Context */
+            trigger_context: {
+                [key: string]: unknown;
+            };
+            trigger_type: components["schemas"]["AutomationTriggerType"];
+        };
+        /**
+         * AutomationExecutionStatus
+         * @enum {string}
+         */
+        AutomationExecutionStatus: "succeeded" | "skipped" | "failed";
+        /**
+         * AutomationOperator
+         * @enum {string}
+         */
+        AutomationOperator: "equals" | "not_equals" | "greater_than" | "greater_than_or_equal" | "less_than" | "less_than_or_equal" | "contains" | "in";
+        /** AutomationPreviewRequest */
+        AutomationPreviewRequest: {
+            /** Context */
+            context?: {
+                [key: string]: string | number | boolean | null;
+            };
+            /**
+             * Source Key
+             * @default manual-preview
+             */
+            source_key: string;
+        };
+        /** AutomationPreviewResponse */
+        AutomationPreviewResponse: {
+            action: components["schemas"]["AutomationActionPreview"] | null;
+            /** Condition Results */
+            condition_results: string[];
+            /** Matched */
+            matched: boolean;
+            /**
+             * Rule Id
+             * Format: uuid
+             */
+            rule_id: string;
+            /**
+             * Writes Performed
+             * @default false
+             */
+            writes_performed: boolean;
+        };
+        /** AutomationRuleCreateRequest */
+        AutomationRuleCreateRequest: {
+            action: components["schemas"]["AutomationAction"];
+            /** Description */
+            description?: string | null;
+            /**
+             * Enabled
+             * @default true
+             */
+            enabled: boolean;
+            /** Name */
+            name: string;
+            trigger: components["schemas"]["AutomationTrigger"];
+        };
+        /** AutomationRuleResponse */
+        AutomationRuleResponse: {
+            action: components["schemas"]["AutomationAction"];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Description */
+            description: string | null;
+            /** Enabled */
+            enabled: boolean;
+            /**
+             * Execution Count
+             * @default 0
+             */
+            execution_count: number;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Last Run At */
+            last_run_at: string | null;
+            /** Name */
+            name: string;
+            /** Next Run At */
+            next_run_at: string | null;
+            /** Revision */
+            revision: number;
+            trigger: components["schemas"]["AutomationTrigger"];
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Workspace Id
+             * Format: uuid
+             */
+            workspace_id: string;
+        };
+        /** AutomationRuleUpdateRequest */
+        AutomationRuleUpdateRequest: {
+            action?: components["schemas"]["AutomationAction"] | null;
+            /** Description */
+            description?: string | null;
+            /** Enabled */
+            enabled?: boolean | null;
+            /** Name */
+            name?: string | null;
+            /** Revision */
+            revision: number;
+            trigger?: components["schemas"]["AutomationTrigger"] | null;
+        };
+        /** AutomationSchedule */
+        AutomationSchedule: {
+            frequency: components["schemas"]["AutomationScheduleFrequency"];
+            /** Interval Minutes */
+            interval_minutes?: number | null;
+            /** Local Time */
+            local_time?: string | null;
+            /**
+             * Timezone
+             * @default UTC
+             */
+            timezone: string;
+            /** Weekdays */
+            weekdays?: number[];
+        };
+        /**
+         * AutomationScheduleFrequency
+         * @enum {string}
+         */
+        AutomationScheduleFrequency: "interval" | "daily" | "weekly";
+        /** AutomationTrigger */
+        AutomationTrigger: {
+            /** Conditions */
+            conditions?: components["schemas"]["AutomationCondition"][];
+            /** Lookahead Minutes */
+            lookahead_minutes?: number | null;
+            schedule?: components["schemas"]["AutomationSchedule"] | null;
+            type: components["schemas"]["AutomationTriggerType"];
+        };
+        /**
+         * AutomationTriggerType
+         * @enum {string}
+         */
+        AutomationTriggerType: "transaction_created" | "subscription_amount_changed" | "event_created" | "event_approaching" | "task_overdue" | "commitment_warning_created" | "recurring_schedule";
         /** AvailabilityWindowInput */
         AvailabilityWindowInput: {
             /**
@@ -1637,6 +2201,16 @@ export interface components {
              */
             entity_id: string;
             entity_type: components["schemas"]["DomainEntityType"];
+            /** File */
+            file: string;
+        };
+        /** Body_post_calendar_preview_api_v1_imports_calendar_preview_post */
+        Body_post_calendar_preview_api_v1_imports_calendar_preview_post: {
+            /** File */
+            file: string;
+        };
+        /** Body_post_csv_preview_api_v1_imports_csv_preview_post */
+        Body_post_csv_preview_api_v1_imports_csv_preview_post: {
             /** File */
             file: string;
         };
@@ -2001,11 +2575,15 @@ export interface components {
             description_markdown: string | null;
             /** Ends At */
             ends_at: string | null;
+            /** External Uid */
+            external_uid: string | null;
             /**
              * Id
              * Format: uuid
              */
             id: string;
+            /** Import Fingerprint */
+            import_fingerprint: string | null;
             /** Linked Entities */
             linked_entities: components["schemas"]["DomainLinkResponse"][];
             /** Location */
@@ -2018,6 +2596,8 @@ export interface components {
             recurrence_rrule: string | null;
             /** Revision */
             revision: number;
+            /** Source Sequence */
+            source_sequence: number;
             /** Starts At */
             starts_at: string | null;
             status: components["schemas"]["CalendarEventStatus"];
@@ -2469,6 +3049,162 @@ export interface components {
             /** Ledger Balance Minor */
             ledger_balance_minor: number;
         };
+        /** CsvColumnMapping */
+        CsvColumnMapping: {
+            /** Account */
+            account?: string | null;
+            /** Amount */
+            amount?: string | null;
+            /** Category */
+            category?: string | null;
+            /** Credit */
+            credit?: string | null;
+            /** Currency */
+            currency?: string | null;
+            /** Date */
+            date: string;
+            /** Debit */
+            debit?: string | null;
+            /** Description */
+            description: string;
+            /** External Id */
+            external_id?: string | null;
+        };
+        /** CsvMappingProfileCreateRequest */
+        CsvMappingProfileCreateRequest: {
+            /**
+             * Amount Positive Is Income
+             * @default true
+             */
+            amount_positive_is_income: boolean;
+            columns: components["schemas"]["CsvColumnMapping"];
+            /** Date Format */
+            date_format?: string | null;
+            /**
+             * Decimal Separator
+             * @default .
+             */
+            decimal_separator: string;
+            /** Default Account Id */
+            default_account_id?: string | null;
+            /** Default Category Id */
+            default_category_id?: string | null;
+            /** Default Currency */
+            default_currency?: string | null;
+            /** Delimiter */
+            delimiter?: string | null;
+            /** Encoding */
+            encoding?: string | null;
+            /** Name */
+            name: string;
+            /** Profile Name */
+            profile_name?: string | null;
+            /**
+             * Save Profile
+             * @default false
+             */
+            save_profile: boolean;
+        };
+        /** CsvMappingProfileResponse */
+        CsvMappingProfileResponse: {
+            /** Amount Positive Is Income */
+            amount_positive_is_income: boolean;
+            /** Columns */
+            columns: {
+                [key: string]: string | null;
+            };
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Date Format */
+            date_format: string | null;
+            /** Decimal Separator */
+            decimal_separator: string;
+            /** Default Account Id */
+            default_account_id: string | null;
+            /** Default Category Id */
+            default_category_id: string | null;
+            /** Default Currency */
+            default_currency: string | null;
+            /** Delimiter */
+            delimiter: string | null;
+            /** Encoding */
+            encoding: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Name */
+            name: string;
+            /** Revision */
+            revision: number;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Workspace Id
+             * Format: uuid
+             */
+            workspace_id: string;
+        };
+        /** CsvMappingProfileUpdateRequest */
+        CsvMappingProfileUpdateRequest: {
+            /** Amount Positive Is Income */
+            amount_positive_is_income?: boolean | null;
+            columns?: components["schemas"]["CsvColumnMapping"] | null;
+            /** Date Format */
+            date_format?: string | null;
+            /** Decimal Separator */
+            decimal_separator?: string | null;
+            /** Default Account Id */
+            default_account_id?: string | null;
+            /** Default Category Id */
+            default_category_id?: string | null;
+            /** Default Currency */
+            default_currency?: string | null;
+            /** Delimiter */
+            delimiter?: string | null;
+            /** Encoding */
+            encoding?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Revision */
+            revision: number;
+        };
+        /** CsvMappingRequest */
+        CsvMappingRequest: {
+            /**
+             * Amount Positive Is Income
+             * @default true
+             */
+            amount_positive_is_income: boolean;
+            columns: components["schemas"]["CsvColumnMapping"];
+            /** Date Format */
+            date_format?: string | null;
+            /**
+             * Decimal Separator
+             * @default .
+             */
+            decimal_separator: string;
+            /** Default Account Id */
+            default_account_id?: string | null;
+            /** Default Category Id */
+            default_category_id?: string | null;
+            /** Default Currency */
+            default_currency?: string | null;
+            /** Profile Name */
+            profile_name?: string | null;
+            /**
+             * Save Profile
+             * @default false
+             */
+            save_profile: boolean;
+        };
         /** CurrencyImpact */
         CurrencyImpact: {
             /** Actual Cost Minor */
@@ -2495,6 +3231,14 @@ export interface components {
         /** DataEnvelope[AttachmentResponse] */
         DataEnvelope_AttachmentResponse_: {
             data: components["schemas"]["AttachmentResponse"];
+        };
+        /** DataEnvelope[AutomationPreviewResponse] */
+        DataEnvelope_AutomationPreviewResponse_: {
+            data: components["schemas"]["AutomationPreviewResponse"];
+        };
+        /** DataEnvelope[AutomationRuleResponse] */
+        DataEnvelope_AutomationRuleResponse_: {
+            data: components["schemas"]["AutomationRuleResponse"];
         };
         /** DataEnvelope[BudgetConsumptionResponse] */
         DataEnvelope_BudgetConsumptionResponse_: {
@@ -2540,6 +3284,10 @@ export interface components {
         DataEnvelope_CommittedBalanceReportResponse_: {
             data: components["schemas"]["CommittedBalanceReportResponse"];
         };
+        /** DataEnvelope[CsvMappingProfileResponse] */
+        DataEnvelope_CsvMappingProfileResponse_: {
+            data: components["schemas"]["CsvMappingProfileResponse"];
+        };
         /** DataEnvelope[DeletedResource] */
         DataEnvelope_DeletedResource_: {
             data: components["schemas"]["DeletedResource"];
@@ -2551,6 +3299,18 @@ export interface components {
         /** DataEnvelope[GoalResponse] */
         DataEnvelope_GoalResponse_: {
             data: components["schemas"]["GoalResponse"];
+        };
+        /** DataEnvelope[ImportBatchResponse] */
+        DataEnvelope_ImportBatchResponse_: {
+            data: components["schemas"]["ImportBatchResponse"];
+        };
+        /** DataEnvelope[ImportPreviewResponse] */
+        DataEnvelope_ImportPreviewResponse_: {
+            data: components["schemas"]["ImportPreviewResponse"];
+        };
+        /** DataEnvelope[ImportRowResponse] */
+        DataEnvelope_ImportRowResponse_: {
+            data: components["schemas"]["ImportRowResponse"];
         };
         /** DataEnvelope[MetaEnumsResponse] */
         DataEnvelope_MetaEnumsResponse_: {
@@ -2608,6 +3368,10 @@ export interface components {
         DataEnvelope_ScenarioResponse_: {
             data: components["schemas"]["ScenarioResponse"];
         };
+        /** DataEnvelope[SchedulerStatusResponse] */
+        DataEnvelope_SchedulerStatusResponse_: {
+            data: components["schemas"]["SchedulerStatusResponse"];
+        };
         /** DataEnvelope[SchedulingApplyResponse] */
         DataEnvelope_SchedulingApplyResponse_: {
             data: components["schemas"]["SchedulingApplyResponse"];
@@ -2652,6 +3416,11 @@ export interface components {
         DataEnvelope_WorkspaceResponse_: {
             data: components["schemas"]["WorkspaceResponse"];
         };
+        /** DataEnvelope[list[AutomationRuleResponse]] */
+        DataEnvelope_list_AutomationRuleResponse__: {
+            /** Data */
+            data: components["schemas"]["AutomationRuleResponse"][];
+        };
         /** DataEnvelope[list[CalendarConflictResponse]] */
         DataEnvelope_list_CalendarConflictResponse__: {
             /** Data */
@@ -2661,6 +3430,16 @@ export interface components {
         DataEnvelope_list_CommitmentLinkResponse__: {
             /** Data */
             data: components["schemas"]["CommitmentLinkResponse"][];
+        };
+        /** DataEnvelope[list[CsvMappingProfileResponse]] */
+        DataEnvelope_list_CsvMappingProfileResponse__: {
+            /** Data */
+            data: components["schemas"]["CsvMappingProfileResponse"][];
+        };
+        /** DataEnvelope[list[NotificationResponse]] */
+        DataEnvelope_list_NotificationResponse__: {
+            /** Data */
+            data: components["schemas"]["NotificationResponse"][];
         };
         /** DataEnvelope[list[PlannedTransactionResponse]] */
         DataEnvelope_list_PlannedTransactionResponse__: {
@@ -2965,6 +3744,143 @@ export interface components {
             /** Version */
             version: string;
         };
+        /** ImportApplyRequest */
+        ImportApplyRequest: {
+            /** Included Row Ids */
+            included_row_ids?: string[] | null;
+        };
+        /** ImportBatchResponse */
+        ImportBatchResponse: {
+            /** Applied At */
+            applied_at: string | null;
+            /** Changed Count */
+            changed_count: number;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Detected Delimiter */
+            detected_delimiter: string | null;
+            /** Detected Encoding */
+            detected_encoding: string | null;
+            /** Duplicate Count */
+            duplicate_count: number;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Imported Count */
+            imported_count: number;
+            /** Invalid Count */
+            invalid_count: number;
+            kind: components["schemas"]["ImportKind"];
+            /** Mapping Profile Id */
+            mapping_profile_id: string | null;
+            /** New Count */
+            new_count: number;
+            /** Original Filename */
+            original_filename: string;
+            /** Revision */
+            revision: number;
+            /** Source Fingerprint */
+            source_fingerprint: string;
+            status: components["schemas"]["ImportBatchStatus"];
+            /** Summary */
+            summary: {
+                [key: string]: unknown;
+            };
+            /** Total Rows */
+            total_rows: number;
+            /**
+             * Updated At
+             * Format: date-time
+             */
+            updated_at: string;
+            /**
+             * Workspace Id
+             * Format: uuid
+             */
+            workspace_id: string;
+        };
+        /**
+         * ImportBatchStatus
+         * @enum {string}
+         */
+        ImportBatchStatus: "previewed" | "applied" | "failed";
+        /** ImportIssue */
+        ImportIssue: {
+            /** Code */
+            code: string;
+            /** Field */
+            field?: string | null;
+            /** Message */
+            message: string;
+        };
+        /**
+         * ImportKind
+         * @enum {string}
+         */
+        ImportKind: "calendar_ics" | "bank_csv";
+        /** ImportPreviewResponse */
+        ImportPreviewResponse: {
+            batch: components["schemas"]["ImportBatchResponse"];
+            /** Columns */
+            columns?: string[];
+            /** Rows */
+            rows: components["schemas"]["ImportRowResponse"][];
+        };
+        /** ImportRowResponse */
+        ImportRowResponse: {
+            /**
+             * Batch Id
+             * Format: uuid
+             */
+            batch_id: string;
+            /** Duplicate Kind */
+            duplicate_kind: string | null;
+            /** Duplicate Target Id */
+            duplicate_target_id: string | null;
+            /** Fingerprint */
+            fingerprint: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Included */
+            included: boolean;
+            /** Issues */
+            issues: components["schemas"]["ImportIssue"][];
+            /** Normalized Data */
+            normalized_data: {
+                [key: string]: unknown;
+            };
+            /** Raw Data */
+            raw_data: {
+                [key: string]: unknown;
+            };
+            /** Revision */
+            revision: number;
+            /** Row Number */
+            row_number: number;
+            status: components["schemas"]["ImportRowStatus"];
+            /** Target Id */
+            target_id: string | null;
+        };
+        /** ImportRowSelectionRequest */
+        ImportRowSelectionRequest: {
+            /** Included */
+            included: boolean;
+            /** Revision */
+            revision: number;
+        };
+        /**
+         * ImportRowStatus
+         * @enum {string}
+         */
+        ImportRowStatus: "new" | "changed" | "duplicate" | "invalid" | "imported" | "excluded";
         /** LedgerEntryResponse */
         LedgerEntryResponse: {
             /** Balance After Minor */
@@ -2989,6 +3905,12 @@ export interface components {
         ListEnvelope_AttachmentResponse_: {
             /** Data */
             data: components["schemas"]["AttachmentResponse"][];
+            meta: components["schemas"]["PaginationMeta"];
+        };
+        /** ListEnvelope[AutomationExecutionResponse] */
+        ListEnvelope_AutomationExecutionResponse_: {
+            /** Data */
+            data: components["schemas"]["AutomationExecutionResponse"][];
             meta: components["schemas"]["PaginationMeta"];
         };
         /** ListEnvelope[BudgetResponse] */
@@ -3019,6 +3941,12 @@ export interface components {
         ListEnvelope_GoalResponse_: {
             /** Data */
             data: components["schemas"]["GoalResponse"][];
+            meta: components["schemas"]["PaginationMeta"];
+        };
+        /** ListEnvelope[ImportBatchResponse] */
+        ListEnvelope_ImportBatchResponse_: {
+            /** Data */
+            data: components["schemas"]["ImportBatchResponse"][];
             meta: components["schemas"]["PaginationMeta"];
         };
         /** ListEnvelope[NoteResponse] */
@@ -3212,6 +4140,31 @@ export interface components {
             tag_ids?: string[] | null;
             /** Title */
             title?: string | null;
+        };
+        /**
+         * NotificationKind
+         * @enum {string}
+         */
+        NotificationKind: "information" | "backup_reminder";
+        /** NotificationResponse */
+        NotificationResponse: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            kind: components["schemas"]["NotificationKind"];
+            /** Message */
+            message: string | null;
+            /** Read At */
+            read_at: string | null;
+            /** Title */
+            title: string;
         };
         /** PaginationMeta */
         PaginationMeta: {
@@ -4039,6 +4992,15 @@ export interface components {
             name?: string | null;
             /** Revision */
             revision: number;
+        };
+        /** SchedulerStatusResponse */
+        SchedulerStatusResponse: {
+            /** Next Wakeup At */
+            next_wakeup_at: string | null;
+            /** Running */
+            running: boolean;
+            /** Scheduled Rule Ids */
+            scheduled_rule_ids: string[];
         };
         /** SchedulingApplyRequest */
         SchedulingApplyRequest: {
@@ -5234,6 +6196,302 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_executions_api_v1_automation_executions_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+                rule_id?: string | null;
+                status?: components["schemas"]["AutomationExecutionStatus"] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListEnvelope_AutomationExecutionResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    notifications_api_v1_automation_notifications_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_list_NotificationResponse__"];
+                };
+            };
+        };
+    };
+    list_rules_api_v1_automation_rules_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_list_AutomationRuleResponse__"];
+                };
+            };
+        };
+    };
+    create_rule_api_v1_automation_rules_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AutomationRuleCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_AutomationRuleResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_rule_api_v1_automation_rules__rule_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rule_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_AutomationRuleResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_rule_api_v1_automation_rules__rule_id__delete: {
+        parameters: {
+            query: {
+                revision: number;
+            };
+            header?: never;
+            path: {
+                rule_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_DeletedResource_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_rule_api_v1_automation_rules__rule_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rule_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AutomationRuleUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_AutomationRuleResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    preview_rule_api_v1_automation_rules__rule_id__preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rule_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AutomationPreviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_AutomationPreviewResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    test_rule_api_v1_automation_rules__rule_id__test_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                rule_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AutomationPreviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_AutomationPreviewResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_scheduler_status_api_v1_automation_scheduler_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_SchedulerStatusResponse_"];
                 };
             };
         };
@@ -8037,6 +9295,455 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    read_import_batches_api_v1_imports_get: {
+        parameters: {
+            query?: {
+                page?: number;
+                page_size?: number;
+                kind?: components["schemas"]["ImportKind"] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ListEnvelope_ImportBatchResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_calendar_export_api_v1_imports_calendar_export_ics_get: {
+        parameters: {
+            query?: {
+                event_id?: string[] | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_calendar_preview_api_v1_imports_calendar_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_post_calendar_preview_api_v1_imports_calendar_preview_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_ImportPreviewResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_calendar_apply_api_v1_imports_calendar__batch_id__apply_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportApplyRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_ImportBatchResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_csv_preview_api_v1_imports_csv_preview_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_post_csv_preview_api_v1_imports_csv_preview_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_ImportPreviewResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_csv_apply_api_v1_imports_csv__batch_id__apply_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportApplyRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_ImportBatchResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_csv_mapping_api_v1_imports_csv__batch_id__map_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CsvMappingRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_ImportPreviewResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_mapping_profiles_api_v1_imports_mapping_profiles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_list_CsvMappingProfileResponse__"];
+                };
+            };
+        };
+    };
+    post_mapping_profile_api_v1_imports_mapping_profiles_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CsvMappingProfileCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_CsvMappingProfileResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_mapping_profile_api_v1_imports_mapping_profiles__profile_id__delete: {
+        parameters: {
+            query: {
+                revision: number;
+            };
+            header?: never;
+            path: {
+                profile_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_DeletedResource_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_mapping_profile_api_v1_imports_mapping_profiles__profile_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                profile_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CsvMappingProfileUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_CsvMappingProfileResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    patch_import_row_api_v1_imports_rows__row_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                row_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ImportRowSelectionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_ImportRowResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_import_batch_api_v1_imports__batch_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_ImportPreviewResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_import_rows_api_v1_imports__batch_id__rows_csv_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                batch_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

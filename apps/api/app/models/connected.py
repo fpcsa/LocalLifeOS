@@ -114,9 +114,12 @@ class AutomationRule(WorkspaceSoftDeleteEntityBase, table=True):
     )
 
     name: str = Field(max_length=160)
+    description: str | None = Field(default=None, sa_type=Text)
     enabled: bool = Field(default=True)
     trigger: dict[str, Any] = Field(default_factory=dict, sa_type=JSON)
     action: dict[str, Any] = Field(default_factory=dict, sa_type=JSON)
+    last_run_at: datetime | None = Field(default=None, sa_type=UTCDateTime)
+    next_run_at: datetime | None = Field(default=None, sa_type=UTCDateTime)
 
 
 class Scenario(WorkspaceSoftDeleteEntityBase, table=True):

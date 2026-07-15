@@ -448,6 +448,9 @@ class CalendarEventResponse(ApiModel):
     travel_buffer_minutes: int
     recovery_buffer_minutes: int
     recurrence_rrule: str | None
+    external_uid: str | None
+    source_sequence: int
+    import_fingerprint: str | None
     linked_entities: list[DomainLinkResponse]
     commitment_ids: list[UUID]
     attachment_ids: list[UUID]

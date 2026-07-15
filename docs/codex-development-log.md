@@ -1028,3 +1028,171 @@ git -c safe.directory=C:/Python/fpcsa/LocalLifeOS diff --check
 - Offline source verification passed. Compose configuration parsed successfully; Docker emitted
   only the known access warning for the user's Docker config file.
 - Git whitespace check passed.
+
+## 2026-07-15 — Prompt 10: calendar/finance imports and local automation
+
+### Scope
+
+Implemented a local two-phase import system for iCalendar and bank CSV data, calendar export,
+reusable bank mappings, structured deterministic automation, restart-safe recurring scheduling,
+execution audit history, and complete Imports and Automation frontend workspaces. Runtime behavior
+remains loopback-only and requires no API key, remote service, telemetry, runtime AI, or external
+asset.
+
+### Important decisions
+
+- Used `icalendar` for RFC 5545 parsing/generation, Pandas for conservative all-text CSV ingestion,
+  and APScheduler 3 for interval/daily/weekly local scheduling rather than custom parsers or timing
+  loops.
+- Split imports into persisted preview and atomic apply phases. Byte fingerprints make re-upload
+  idempotent; row fingerprints, external IDs, UIDs, and database uniqueness provide final duplicate
+  and concurrency protection.
+- Kept changed ICS writes revision-aware. A local edit after preview returns a structured conflict
+  instead of being overwritten. Exact duplicates are excluded; probable bank duplicates remain an
+  explicit user choice.
+- Stored original sources beneath a generated confined import path for local history. Generated CSV
+  review exports escape spreadsheet-formula prefixes; original source bytes remain unchanged and
+  explicitly untrusted.
+- Kept money in integer ISO 4217 minor units. Pandas never infers numeric or date types; application
+  mapping owns delimiter, encoding, decimal, debit/credit, date, account, category, and currency
+  validation.
+- Modeled automation as one typed trigger, allow-listed AND conditions, and one fixed action. Rules
+  cannot contain source code, expressions, shell commands, URLs, SQL, file operations, or network
+  operations.
+- Made SQLite rules and `next_run_at` authoritative. APScheduler uses reconstructed in-memory jobs,
+  performs at most one overdue catch-up at restart, coalesces late fires, and limits a job to one
+  active instance.
+- Derived execution idempotency from rule, trigger, and stable source identity, protected by a
+  database unique constraint. Action writes and success logs share one transaction; action failure
+  rolls back before a failed log is recorded.
+- Kept all automation responses aligned with existing data/list envelopes, regenerated TypeScript
+  from OpenAPI, and kept TanStack Query responsible for server state while Zustand remains UI-only.
+- Applied the deferred neutral brand, system fonts, semantic tokens, native controls, focus states,
+  explicit loading/empty/error feedback, and responsive overflow containment. No frontend runtime
+  dependency or remote font was added.
+- Documented that imports are plaintext and not malware-scanned, duplicate detection is not source
+  authentication, local backup actions only create reminders, and authentication/encryption remain
+  deferred.
+
+### Files created or materially changed
+
+Configuration and persistence:
+
+- `.env.example`
+- `apps/api/requirements.txt`
+- `apps/api/pyproject.toml`
+- `apps/api/alembic/versions/20260716_0010_imports_automation.py`
+- `apps/api/app/core/config.py`
+- `apps/api/app/main.py`
+- `apps/api/app/models/__init__.py`
+- `apps/api/app/models/common.py`
+- `apps/api/app/models/connected.py`
+- `apps/api/app/models/productivity.py`
+- `apps/api/app/models/imports_automation.py`
+
+Backend schemas, repositories, services, routes, and tests:
+
+- `apps/api/app/schemas/productivity.py`
+- `apps/api/app/schemas/imports.py`
+- `apps/api/app/schemas/automation.py`
+- `apps/api/app/repositories/imports.py`
+- `apps/api/app/repositories/automation.py`
+- `apps/api/app/services/import_files.py`
+- `apps/api/app/services/imports.py`
+- `apps/api/app/services/calendar_imports.py`
+- `apps/api/app/services/csv_imports.py`
+- `apps/api/app/services/automation.py`
+- `apps/api/app/services/automation_scheduler.py`
+- `apps/api/app/utils/automation_schedule.py`
+- `apps/api/app/services/calendar.py`
+- `apps/api/app/services/finance_transactions.py`
+- `apps/api/app/services/subscriptions.py`
+- `apps/api/app/services/commitment_engine.py`
+- `apps/api/app/api/v1/router.py`
+- `apps/api/app/api/v1/routes/imports.py`
+- `apps/api/app/api/v1/routes/automation.py`
+- `apps/api/tests/conftest.py`
+- `apps/api/tests/test_migrations.py`
+- `apps/api/tests/test_imports_api.py`
+- `apps/api/tests/test_automation_api.py`
+
+Frontend and generated contracts:
+
+- `apps/web/components/app-shell.tsx`
+- `apps/web/lib/api/types.ts`
+- `apps/web/lib/api/query-keys.ts`
+- `apps/web/lib/api/imports-automation.ts`
+- `apps/web/app/imports/page.tsx`
+- `apps/web/features/imports/imports-workspace.tsx`
+- `apps/web/features/imports/imports-workspace.test.tsx`
+- `apps/web/app/automation/page.tsx`
+- `apps/web/features/automation/automation-workspace.tsx`
+- `apps/web/features/automation/automation-workspace.test.tsx`
+- `packages/shared-types/src/openapi.json`
+- `packages/shared-types/src/openapi.ts`
+- `tests/e2e/frontend-smoke.mjs`
+
+Samples and documentation:
+
+- `data/demo/calendar.ics`
+- `data/demo/bank-transactions.csv`
+- `data/demo/sample-bank-debit-credit.csv`
+- `data/demo/automation-rules.json`
+- `docs/imports.md`
+- `docs/automation.md`
+- `docs/automation-rules.md`
+- `docs/security.md`
+- `docs/api-conventions.md`
+- `docs/architecture.md`
+- `docs/frontend-architecture.md`
+- `docs/implementation-status.md`
+- `docs/codex-development-log.md`
+
+### Verification record
+
+Final acceptance commands run from the repository root unless a working directory is noted:
+
+```text
+.\.venv\Scripts\python.exe -m ruff format --check app tests alembic   # apps/api
+.\.venv\Scripts\python.exe -m ruff check .                           # apps/api
+.\.venv\Scripts\python.exe -m mypy app                               # apps/api
+.\.venv\Scripts\python.exe -m pytest -q                              # apps/api
+.\.venv\Scripts\alembic.exe upgrade head                             # apps/api, isolated database
+.\.venv\Scripts\alembic.exe current                                  # apps/api, isolated database
+.\.venv\Scripts\alembic.exe check                                    # apps/api, isolated database
+.\apps\api\.venv\Scripts\python.exe scripts\export-openapi.py
+npm run generate:api-types
+npm run test:web
+npm run lint:web
+npm run typecheck:web
+npm run build:web
+npm run test:e2e:web
+.\apps\api\.venv\Scripts\python.exe scripts\verify-offline-mode.py
+docker compose config --quiet
+docker compose build api web
+node --check tests/e2e/frontend-smoke.mjs
+git -c safe.directory=C:/Python/fpcsa/LocalLifeOS diff --check
+```
+
+- Backend: 66 tests passed. Ruff format check covered 160 files; Ruff lint passed; strict mypy
+  passed across 125 source files. Warnings were the existing Alembic SQLite implicit-constraint
+  notices.
+- Migrations: a clean isolated SQLite database upgraded through `20260716_0010`; `current` reported
+  that head and `check` reported no new upgrade operations.
+- OpenAPI: exported 106 paths and 296 schemas; generated TypeScript refreshed successfully.
+- Frontend: 8 Vitest files and 12 tests passed; ESLint passed with zero warnings; strict TypeScript
+  passed; the production build generated 16 route entries including `/imports` and `/automation`.
+- Live Chrome: all 13 application routes passed at desktop, tablet, and compact widths (39 route
+  checks), plus signature mutation/search/calendar and labelled-control checks. No route boundary,
+  runtime console error, external request, or document-level horizontal overflow occurred.
+- Design review: semantic neutral tokens, dark-mode-compatible styling, native keyboard controls,
+  40-pixel targets, focus states, reduced motion, and desktop/compact shell screenshots passed the
+  frontend checklist.
+- Offline source verification passed. Compose configuration parsed successfully. Final API and web
+  Docker images built with the pinned APScheduler, iCalendar, and Pandas dependencies.
+- Git whitespace check and JavaScript syntax check passed. Temporary migration/browser databases,
+  logs, screenshots, and services were removed; ports 3000 and 8000 were stopped.
+- Two diagnostic runs failed before the final pass: the first Docker build lacked sandbox access to
+  the user's Docker configuration and succeeded after approved access; the first live browser run
+  intentionally exposed a stale production bundle after an API-envelope correction, then passed
+  after rebuilding. Neither failure remained in final verification.

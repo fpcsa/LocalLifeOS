@@ -12,6 +12,7 @@ from app.core.exceptions import (
 )
 from app.db.transactions import transaction
 from app.models import (
+    AutomationTriggerType,
     CommitmentEntityType,
     DomainEntityType,
     PlannedTransaction,
@@ -35,6 +36,7 @@ from app.schemas.finance import (
     TransactionUpdateRequest,
     TransferCreateRequest,
 )
+from app.services.automation import dispatch_automation_event
 from app.services.domain_links import remove_commitment_entity_links
 from app.services.events import emit_timeline_event
 from app.services.finance_validation import validate_transaction_relationships
@@ -170,6 +172,21 @@ def create_finance_transaction(
             ),
             payload={"amount_minor": item.amount_minor, "currency": item.currency_code},
         )
+    dispatch_automation_event(
+        session,
+        AutomationTriggerType.TRANSACTION_CREATED,
+        context={
+            "entity_type": DomainEntityType.TRANSACTION.value,
+            "entity_id": str(item.id),
+            "account_id": str(item.account_id),
+            "category_id": str(item.category_id) if item.category_id else None,
+            "transaction_type": item.transaction_type.value,
+            "amount_minor": item.amount_minor,
+            "currency_code": item.currency_code,
+            "payee": item.payee,
+        },
+        source_key=f"transaction:{item.id}",
+    )
     return _transaction_response(item)
 
 

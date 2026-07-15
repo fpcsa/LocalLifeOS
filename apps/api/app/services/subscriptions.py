@@ -7,6 +7,7 @@ from sqlmodel import Session, col, select
 from app.core.exceptions import DomainNotFoundError, DomainValidationError
 from app.db.transactions import transaction
 from app.models import (
+    AutomationTriggerType,
     CategoryKind,
     DomainEntityType,
     RecurringTransactionRule,
@@ -23,6 +24,7 @@ from app.schemas.finance import (
     SubscriptionResponse,
     SubscriptionUpdateRequest,
 )
+from app.services.automation import dispatch_automation_event
 from app.services.events import emit_timeline_event
 from app.services.finance_validation import require_account, require_category
 from app.services.workspace import get_current_workspace
@@ -226,6 +228,24 @@ def update_subscription(
                 title=f"Subscription updated: {item.name}",
                 payload={"finance_resource": "subscription", "fields": sorted(values)},
             )
+    if new_amount != old_amount:
+        dispatch_automation_event(
+            session,
+            AutomationTriggerType.SUBSCRIPTION_AMOUNT_CHANGED,
+            context={
+                "entity_type": "subscription",
+                "entity_id": str(item.id),
+                "name": item.name,
+                "old_amount_minor": old_amount,
+                "new_amount_minor": new_amount,
+                "delta_minor": new_amount - old_amount,
+                "delta_percent": (
+                    round((new_amount - old_amount) * 100 / old_amount, 4) if old_amount else None
+                ),
+                "currency_code": item.currency_code,
+            },
+            source_key=f"subscription:{item.id}:{item.revision}",
+        )
     return _responses(repository, [item])[0]
 
 

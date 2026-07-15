@@ -5,7 +5,7 @@ import { chromium } from "playwright-core";
 const baseUrl = process.env.LOCALLIFE_WEB_URL || "http://127.0.0.1:3000";
 const executablePath = process.env.CHROME_PATH || "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
 const outputDirectory = process.env.BROWSER_SMOKE_OUTPUT || path.join(process.cwd(), "data", "browser-smoke-artifacts");
-const routes = ["/", "/tasks", "/calendar", "/notes", "/finance", "/goals", "/commitments", "/capacity", "/scenarios", "/timeline", "/settings"];
+const routes = ["/", "/tasks", "/calendar", "/notes", "/finance", "/goals", "/commitments", "/capacity", "/scenarios", "/timeline", "/imports", "/automation", "/settings"];
 const viewports = [
   { name: "desktop", width: 1280, height: 900 },
   { name: "tablet", width: 768, height: 900 },
@@ -120,7 +120,7 @@ try {
       await page.getByRole("heading", { name: "Timeline" }).waitFor();
       requireState(await page.getByLabel("Commitment").inputValue() !== "", "Timeline commitment filter did not remain usable");
 
-      for (const signatureRoute of ["/commitments", "/capacity", "/scenarios", "/timeline"]) {
+      for (const signatureRoute of ["/commitments", "/capacity", "/scenarios", "/timeline", "/imports", "/automation"]) {
         await page.goto(`${baseUrl}${signatureRoute}`, { waitUntil: "networkidle" });
         const unlabeled = await page.evaluate(() => Array.from(document.querySelectorAll("input, select, textarea")).filter((control) => {
           const id = control.getAttribute("id");

@@ -1,6 +1,9 @@
 alembic==1.18.5
+APScheduler==3.11.2
 fastapi==0.139.0
+icalendar==7.1.3
 ortools==9.15.6755
+pandas==3.0.3
 pydantic-settings==2.14.2
 python-dateutil==2.9.0.post0
 python-multipart==0.0.32

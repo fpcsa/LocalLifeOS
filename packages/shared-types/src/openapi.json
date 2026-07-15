@@ -172,6 +172,776 @@
         "title": "AttachmentResponse",
         "type": "object"
       },
+      "AutomationAction": {
+        "additionalProperties": false,
+        "properties": {
+          "account_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account Id"
+          },
+          "amount_minor": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Minor"
+          },
+          "body": {
+            "anyOf": [
+              {
+                "maxLength": 10000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Body"
+          },
+          "category_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category Id"
+          },
+          "currency_code": {
+            "anyOf": [
+              {
+                "maxLength": 3,
+                "minLength": 3,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency Code"
+          },
+          "days_from_trigger": {
+            "default": 0,
+            "maximum": 3650.0,
+            "minimum": 0.0,
+            "title": "Days From Trigger",
+            "type": "integer"
+          },
+          "due_in_days": {
+            "anyOf": [
+              {
+                "maximum": 3650.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Due In Days"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/TaskPriority",
+            "default": "medium"
+          },
+          "tag_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tag Id"
+          },
+          "target_entity_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Entity Id"
+          },
+          "target_entity_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DomainEntityType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "transaction_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TransactionType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "$ref": "#/components/schemas/AutomationActionType"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "title": "AutomationAction",
+        "type": "object"
+      },
+      "AutomationActionPreview": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "type": {
+            "$ref": "#/components/schemas/AutomationActionType"
+          }
+        },
+        "required": [
+          "type",
+          "description",
+          "payload"
+        ],
+        "title": "AutomationActionPreview",
+        "type": "object"
+      },
+      "AutomationActionType": {
+        "enum": [
+          "create_task",
+          "create_note",
+          "create_planned_transaction",
+          "add_tag",
+          "create_notification",
+          "request_local_backup_reminder"
+        ],
+        "title": "AutomationActionType",
+        "type": "string"
+      },
+      "AutomationCondition": {
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-z][a-z0-9_]*$",
+            "title": "Field",
+            "type": "string"
+          },
+          "operator": {
+            "$ref": "#/components/schemas/AutomationOperator",
+            "default": "equals"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "items": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "integer"
+                    },
+                    {
+                      "type": "number"
+                    },
+                    {
+                      "type": "boolean"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "field",
+          "value"
+        ],
+        "title": "AutomationCondition",
+        "type": "object"
+      },
+      "AutomationExecutionResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "action_result": {
+            "additionalProperties": true,
+            "title": "Action Result",
+            "type": "object"
+          },
+          "action_type": {
+            "$ref": "#/components/schemas/AutomationActionType"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "rule_id": {
+            "format": "uuid",
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "source_key": {
+            "title": "Source Key",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AutomationExecutionStatus"
+          },
+          "trigger_context": {
+            "additionalProperties": true,
+            "title": "Trigger Context",
+            "type": "object"
+          },
+          "trigger_type": {
+            "$ref": "#/components/schemas/AutomationTriggerType"
+          }
+        },
+        "required": [
+          "id",
+          "rule_id",
+          "trigger_type",
+          "action_type",
+          "status",
+          "source_key",
+          "trigger_context",
+          "action_result",
+          "error",
+          "completed_at",
+          "created_at"
+        ],
+        "title": "AutomationExecutionResponse",
+        "type": "object"
+      },
+      "AutomationExecutionStatus": {
+        "enum": [
+          "succeeded",
+          "skipped",
+          "failed"
+        ],
+        "title": "AutomationExecutionStatus",
+        "type": "string"
+      },
+      "AutomationOperator": {
+        "enum": [
+          "equals",
+          "not_equals",
+          "greater_than",
+          "greater_than_or_equal",
+          "less_than",
+          "less_than_or_equal",
+          "contains",
+          "in"
+        ],
+        "title": "AutomationOperator",
+        "type": "string"
+      },
+      "AutomationPreviewRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "context": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Context",
+            "type": "object"
+          },
+          "source_key": {
+            "default": "manual-preview",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Source Key",
+            "type": "string"
+          }
+        },
+        "title": "AutomationPreviewRequest",
+        "type": "object"
+      },
+      "AutomationPreviewResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AutomationActionPreview"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "condition_results": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Condition Results",
+            "type": "array"
+          },
+          "matched": {
+            "title": "Matched",
+            "type": "boolean"
+          },
+          "rule_id": {
+            "format": "uuid",
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "writes_performed": {
+            "default": false,
+            "title": "Writes Performed",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "rule_id",
+          "matched",
+          "condition_results",
+          "action"
+        ],
+        "title": "AutomationPreviewResponse",
+        "type": "object"
+      },
+      "AutomationRuleCreateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/AutomationAction"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "enabled": {
+            "default": true,
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "name": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/AutomationTrigger"
+          }
+        },
+        "required": [
+          "name",
+          "trigger",
+          "action"
+        ],
+        "title": "AutomationRuleCreateRequest",
+        "type": "object"
+      },
+      "AutomationRuleResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/AutomationAction"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "execution_count": {
+            "default": 0,
+            "title": "Execution Count",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "last_run_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Run At"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "next_run_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Run At"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/AutomationTrigger"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "workspace_id": {
+            "format": "uuid",
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "name",
+          "description",
+          "enabled",
+          "trigger",
+          "action",
+          "last_run_at",
+          "next_run_at",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "AutomationRuleResponse",
+        "type": "object"
+      },
+      "AutomationRuleUpdateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AutomationAction"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 160,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "revision": {
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "trigger": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AutomationTrigger"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "revision"
+        ],
+        "title": "AutomationRuleUpdateRequest",
+        "type": "object"
+      },
+      "AutomationSchedule": {
+        "additionalProperties": false,
+        "properties": {
+          "frequency": {
+            "$ref": "#/components/schemas/AutomationScheduleFrequency"
+          },
+          "interval_minutes": {
+            "anyOf": [
+              {
+                "maximum": 43200.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interval Minutes"
+          },
+          "local_time": {
+            "anyOf": [
+              {
+                "format": "time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Local Time"
+          },
+          "timezone": {
+            "default": "UTC",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Timezone",
+            "type": "string"
+          },
+          "weekdays": {
+            "items": {
+              "type": "integer"
+            },
+            "maxItems": 7,
+            "title": "Weekdays",
+            "type": "array"
+          }
+        },
+        "required": [
+          "frequency"
+        ],
+        "title": "AutomationSchedule",
+        "type": "object"
+      },
+      "AutomationScheduleFrequency": {
+        "enum": [
+          "interval",
+          "daily",
+          "weekly"
+        ],
+        "title": "AutomationScheduleFrequency",
+        "type": "string"
+      },
+      "AutomationTrigger": {
+        "additionalProperties": false,
+        "properties": {
+          "conditions": {
+            "items": {
+              "$ref": "#/components/schemas/AutomationCondition"
+            },
+            "maxItems": 20,
+            "title": "Conditions",
+            "type": "array"
+          },
+          "lookahead_minutes": {
+            "anyOf": [
+              {
+                "maximum": 10080.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lookahead Minutes"
+          },
+          "schedule": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AutomationSchedule"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "type": {
+            "$ref": "#/components/schemas/AutomationTriggerType"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "title": "AutomationTrigger",
+        "type": "object"
+      },
+      "AutomationTriggerType": {
+        "enum": [
+          "transaction_created",
+          "subscription_amount_changed",
+          "event_created",
+          "event_approaching",
+          "task_overdue",
+          "commitment_warning_created",
+          "recurring_schedule"
+        ],
+        "title": "AutomationTriggerType",
+        "type": "string"
+      },
       "AvailabilityWindowInput": {
         "additionalProperties": false,
         "properties": {
@@ -215,6 +985,34 @@
           "entity_id"
         ],
         "title": "Body_post_attachment_api_v1_attachments_post",
+        "type": "object"
+      },
+      "Body_post_calendar_preview_api_v1_imports_calendar_preview_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_post_calendar_preview_api_v1_imports_calendar_preview_post",
+        "type": "object"
+      },
+      "Body_post_csv_preview_api_v1_imports_csv_preview_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_post_csv_preview_api_v1_imports_csv_preview_post",
         "type": "object"
       },
       "BudgetCategoryConsumptionResponse": {
@@ -1108,10 +1906,32 @@
             ],
             "title": "Ends At"
           },
+          "external_uid": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Uid"
+          },
           "id": {
             "format": "uuid",
             "title": "Id",
             "type": "string"
+          },
+          "import_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Import Fingerprint"
           },
           "linked_entities": {
             "items": {
@@ -1152,6 +1972,10 @@
           },
           "revision": {
             "title": "Revision",
+            "type": "integer"
+          },
+          "source_sequence": {
+            "title": "Source Sequence",
             "type": "integer"
           },
           "starts_at": {
@@ -1210,6 +2034,9 @@
           "travel_buffer_minutes",
           "recovery_buffer_minutes",
           "recurrence_rrule",
+          "external_uid",
+          "source_sequence",
+          "import_fingerprint",
           "linked_entities",
           "commitment_ids",
           "attachment_ids",
@@ -2663,6 +3490,607 @@
         "title": "CommittedCurrencyGroup",
         "type": "object"
       },
+      "CsvColumnMapping": {
+        "additionalProperties": false,
+        "properties": {
+          "account": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Account"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "credit": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Credit"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "date": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Date",
+            "type": "string"
+          },
+          "debit": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Debit"
+          },
+          "description": {
+            "maxLength": 255,
+            "minLength": 1,
+            "title": "Description",
+            "type": "string"
+          },
+          "external_id": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "External Id"
+          }
+        },
+        "required": [
+          "date",
+          "description"
+        ],
+        "title": "CsvColumnMapping",
+        "type": "object"
+      },
+      "CsvMappingProfileCreateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "amount_positive_is_income": {
+            "default": true,
+            "title": "Amount Positive Is Income",
+            "type": "boolean"
+          },
+          "columns": {
+            "$ref": "#/components/schemas/CsvColumnMapping"
+          },
+          "date_format": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Format"
+          },
+          "decimal_separator": {
+            "default": ".",
+            "pattern": "^[.,]$",
+            "title": "Decimal Separator",
+            "type": "string"
+          },
+          "default_account_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Account Id"
+          },
+          "default_category_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Category Id"
+          },
+          "default_currency": {
+            "anyOf": [
+              {
+                "maxLength": 3,
+                "minLength": 3,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Currency"
+          },
+          "delimiter": {
+            "anyOf": [
+              {
+                "maxLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delimiter"
+          },
+          "encoding": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Encoding"
+          },
+          "name": {
+            "maxLength": 160,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "profile_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Name"
+          },
+          "save_profile": {
+            "default": false,
+            "title": "Save Profile",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "columns",
+          "name"
+        ],
+        "title": "CsvMappingProfileCreateRequest",
+        "type": "object"
+      },
+      "CsvMappingProfileResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "amount_positive_is_income": {
+            "title": "Amount Positive Is Income",
+            "type": "boolean"
+          },
+          "columns": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Columns",
+            "type": "object"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "date_format": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Format"
+          },
+          "decimal_separator": {
+            "title": "Decimal Separator",
+            "type": "string"
+          },
+          "default_account_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Account Id"
+          },
+          "default_category_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Category Id"
+          },
+          "default_currency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Currency"
+          },
+          "delimiter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delimiter"
+          },
+          "encoding": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Encoding"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "workspace_id": {
+            "format": "uuid",
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "name",
+          "columns",
+          "date_format",
+          "decimal_separator",
+          "amount_positive_is_income",
+          "default_currency",
+          "default_account_id",
+          "default_category_id",
+          "delimiter",
+          "encoding",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "CsvMappingProfileResponse",
+        "type": "object"
+      },
+      "CsvMappingProfileUpdateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "amount_positive_is_income": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount Positive Is Income"
+          },
+          "columns": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CsvColumnMapping"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "date_format": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Format"
+          },
+          "decimal_separator": {
+            "anyOf": [
+              {
+                "pattern": "^[.,]$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decimal Separator"
+          },
+          "default_account_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Account Id"
+          },
+          "default_category_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Category Id"
+          },
+          "default_currency": {
+            "anyOf": [
+              {
+                "maxLength": 3,
+                "minLength": 3,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Currency"
+          },
+          "delimiter": {
+            "anyOf": [
+              {
+                "maxLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Delimiter"
+          },
+          "encoding": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Encoding"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 160,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "revision": {
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "revision"
+        ],
+        "title": "CsvMappingProfileUpdateRequest",
+        "type": "object"
+      },
+      "CsvMappingRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "amount_positive_is_income": {
+            "default": true,
+            "title": "Amount Positive Is Income",
+            "type": "boolean"
+          },
+          "columns": {
+            "$ref": "#/components/schemas/CsvColumnMapping"
+          },
+          "date_format": {
+            "anyOf": [
+              {
+                "maxLength": 80,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date Format"
+          },
+          "decimal_separator": {
+            "default": ".",
+            "pattern": "^[.,]$",
+            "title": "Decimal Separator",
+            "type": "string"
+          },
+          "default_account_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Account Id"
+          },
+          "default_category_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Category Id"
+          },
+          "default_currency": {
+            "anyOf": [
+              {
+                "maxLength": 3,
+                "minLength": 3,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Default Currency"
+          },
+          "profile_name": {
+            "anyOf": [
+              {
+                "maxLength": 160,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Profile Name"
+          },
+          "save_profile": {
+            "default": false,
+            "title": "Save Profile",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "columns"
+        ],
+        "title": "CsvMappingRequest",
+        "type": "object"
+      },
       "CurrencyImpact": {
         "additionalProperties": false,
         "properties": {
@@ -2736,6 +4164,32 @@
           "data"
         ],
         "title": "DataEnvelope[AttachmentResponse]",
+        "type": "object"
+      },
+      "DataEnvelope_AutomationPreviewResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AutomationPreviewResponse"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[AutomationPreviewResponse]",
+        "type": "object"
+      },
+      "DataEnvelope_AutomationRuleResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/AutomationRuleResponse"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[AutomationRuleResponse]",
         "type": "object"
       },
       "DataEnvelope_BudgetConsumptionResponse_": {
@@ -2881,6 +4335,19 @@
         "title": "DataEnvelope[CommittedBalanceReportResponse]",
         "type": "object"
       },
+      "DataEnvelope_CsvMappingProfileResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CsvMappingProfileResponse"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[CsvMappingProfileResponse]",
+        "type": "object"
+      },
       "DataEnvelope_DeletedResource_": {
         "additionalProperties": false,
         "properties": {
@@ -2918,6 +4385,45 @@
           "data"
         ],
         "title": "DataEnvelope[GoalResponse]",
+        "type": "object"
+      },
+      "DataEnvelope_ImportBatchResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ImportBatchResponse"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[ImportBatchResponse]",
+        "type": "object"
+      },
+      "DataEnvelope_ImportPreviewResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ImportPreviewResponse"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[ImportPreviewResponse]",
+        "type": "object"
+      },
+      "DataEnvelope_ImportRowResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ImportRowResponse"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[ImportRowResponse]",
         "type": "object"
       },
       "DataEnvelope_MetaEnumsResponse_": {
@@ -3102,6 +4608,19 @@
         "title": "DataEnvelope[ScenarioResponse]",
         "type": "object"
       },
+      "DataEnvelope_SchedulerStatusResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/SchedulerStatusResponse"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[SchedulerStatusResponse]",
+        "type": "object"
+      },
       "DataEnvelope_SchedulingApplyResponse_": {
         "additionalProperties": false,
         "properties": {
@@ -3245,6 +4764,23 @@
         "title": "DataEnvelope[WorkspaceResponse]",
         "type": "object"
       },
+      "DataEnvelope_list_AutomationRuleResponse__": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AutomationRuleResponse"
+            },
+            "title": "Data",
+            "type": "array"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[list[AutomationRuleResponse]]",
+        "type": "object"
+      },
       "DataEnvelope_list_CalendarConflictResponse__": {
         "additionalProperties": false,
         "properties": {
@@ -3277,6 +4813,40 @@
           "data"
         ],
         "title": "DataEnvelope[list[CommitmentLinkResponse]]",
+        "type": "object"
+      },
+      "DataEnvelope_list_CsvMappingProfileResponse__": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/CsvMappingProfileResponse"
+            },
+            "title": "Data",
+            "type": "array"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[list[CsvMappingProfileResponse]]",
+        "type": "object"
+      },
+      "DataEnvelope_list_NotificationResponse__": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/NotificationResponse"
+            },
+            "title": "Data",
+            "type": "array"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[list[NotificationResponse]]",
         "type": "object"
       },
       "DataEnvelope_list_PlannedTransactionResponse__": {
@@ -4146,6 +5716,388 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "ImportApplyRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "included_row_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                "maxItems": 10000,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Included Row Ids"
+          }
+        },
+        "title": "ImportApplyRequest",
+        "type": "object"
+      },
+      "ImportBatchResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "applied_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Applied At"
+          },
+          "changed_count": {
+            "title": "Changed Count",
+            "type": "integer"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "detected_delimiter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detected Delimiter"
+          },
+          "detected_encoding": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detected Encoding"
+          },
+          "duplicate_count": {
+            "title": "Duplicate Count",
+            "type": "integer"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "imported_count": {
+            "title": "Imported Count",
+            "type": "integer"
+          },
+          "invalid_count": {
+            "title": "Invalid Count",
+            "type": "integer"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ImportKind"
+          },
+          "mapping_profile_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mapping Profile Id"
+          },
+          "new_count": {
+            "title": "New Count",
+            "type": "integer"
+          },
+          "original_filename": {
+            "title": "Original Filename",
+            "type": "string"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "source_fingerprint": {
+            "title": "Source Fingerprint",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ImportBatchStatus"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "title": "Summary",
+            "type": "object"
+          },
+          "total_rows": {
+            "title": "Total Rows",
+            "type": "integer"
+          },
+          "updated_at": {
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "workspace_id": {
+            "format": "uuid",
+            "title": "Workspace Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "workspace_id",
+          "kind",
+          "status",
+          "original_filename",
+          "source_fingerprint",
+          "detected_encoding",
+          "detected_delimiter",
+          "mapping_profile_id",
+          "total_rows",
+          "new_count",
+          "changed_count",
+          "duplicate_count",
+          "invalid_count",
+          "imported_count",
+          "summary",
+          "applied_at",
+          "revision",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ImportBatchResponse",
+        "type": "object"
+      },
+      "ImportBatchStatus": {
+        "enum": [
+          "previewed",
+          "applied",
+          "failed"
+        ],
+        "title": "ImportBatchStatus",
+        "type": "string"
+      },
+      "ImportIssue": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ImportIssue",
+        "type": "object"
+      },
+      "ImportKind": {
+        "enum": [
+          "calendar_ics",
+          "bank_csv"
+        ],
+        "title": "ImportKind",
+        "type": "string"
+      },
+      "ImportPreviewResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "batch": {
+            "$ref": "#/components/schemas/ImportBatchResponse"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/ImportRowResponse"
+            },
+            "title": "Rows",
+            "type": "array"
+          }
+        },
+        "required": [
+          "batch",
+          "rows"
+        ],
+        "title": "ImportPreviewResponse",
+        "type": "object"
+      },
+      "ImportRowResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "batch_id": {
+            "format": "uuid",
+            "title": "Batch Id",
+            "type": "string"
+          },
+          "duplicate_kind": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duplicate Kind"
+          },
+          "duplicate_target_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duplicate Target Id"
+          },
+          "fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fingerprint"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "included": {
+            "title": "Included",
+            "type": "boolean"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/ImportIssue"
+            },
+            "title": "Issues",
+            "type": "array"
+          },
+          "normalized_data": {
+            "additionalProperties": true,
+            "title": "Normalized Data",
+            "type": "object"
+          },
+          "raw_data": {
+            "additionalProperties": true,
+            "title": "Raw Data",
+            "type": "object"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "row_number": {
+            "title": "Row Number",
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ImportRowStatus"
+          },
+          "target_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Id"
+          }
+        },
+        "required": [
+          "id",
+          "batch_id",
+          "row_number",
+          "status",
+          "included",
+          "fingerprint",
+          "raw_data",
+          "normalized_data",
+          "issues",
+          "duplicate_kind",
+          "duplicate_target_id",
+          "target_id",
+          "revision"
+        ],
+        "title": "ImportRowResponse",
+        "type": "object"
+      },
+      "ImportRowSelectionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "included": {
+            "title": "Included",
+            "type": "boolean"
+          },
+          "revision": {
+            "minimum": 1.0,
+            "title": "Revision",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "revision",
+          "included"
+        ],
+        "title": "ImportRowSelectionRequest",
+        "type": "object"
+      },
+      "ImportRowStatus": {
+        "enum": [
+          "new",
+          "changed",
+          "duplicate",
+          "invalid",
+          "imported",
+          "excluded"
+        ],
+        "title": "ImportRowStatus",
+        "type": "string"
+      },
       "LedgerEntryResponse": {
         "additionalProperties": false,
         "properties": {
@@ -4212,6 +6164,27 @@
           "meta"
         ],
         "title": "ListEnvelope[AttachmentResponse]",
+        "type": "object"
+      },
+      "ListEnvelope_AutomationExecutionResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/AutomationExecutionResponse"
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "title": "ListEnvelope[AutomationExecutionResponse]",
         "type": "object"
       },
       "ListEnvelope_BudgetResponse_": {
@@ -4317,6 +6290,27 @@
           "meta"
         ],
         "title": "ListEnvelope[GoalResponse]",
+        "type": "object"
+      },
+      "ListEnvelope_ImportBatchResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/ImportBatchResponse"
+            },
+            "title": "Data",
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "title": "ListEnvelope[ImportBatchResponse]",
         "type": "object"
       },
       "ListEnvelope_NoteResponse_": {
@@ -4924,6 +6918,69 @@
           "revision"
         ],
         "title": "NoteUpdateRequest",
+        "type": "object"
+      },
+      "NotificationKind": {
+        "enum": [
+          "information",
+          "backup_reminder"
+        ],
+        "title": "NotificationKind",
+        "type": "string"
+      },
+      "NotificationResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/NotificationKind"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "read_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Read At"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "message",
+          "read_at",
+          "created_at"
+        ],
+        "title": "NotificationResponse",
         "type": "object"
       },
       "PaginationMeta": {
@@ -7354,6 +9411,42 @@
           "revision"
         ],
         "title": "ScenarioUpdateRequest",
+        "type": "object"
+      },
+      "SchedulerStatusResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "next_wakeup_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Wakeup At"
+          },
+          "running": {
+            "title": "Running",
+            "type": "boolean"
+          },
+          "scheduled_rule_ids": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "title": "Scheduled Rule Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "running",
+          "scheduled_rule_ids",
+          "next_wakeup_at"
+        ],
+        "title": "SchedulerStatusResponse",
         "type": "object"
       },
       "SchedulingApplyRequest": {
@@ -10600,6 +12693,449 @@
         "summary": "Download Attachment",
         "tags": [
           "attachments"
+        ]
+      }
+    },
+    "/api/v1/automation/executions": {
+      "get": {
+        "operationId": "list_executions_api_v1_automation_executions_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "rule_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Rule Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/AutomationExecutionStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListEnvelope_AutomationExecutionResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Executions",
+        "tags": [
+          "automation"
+        ]
+      }
+    },
+    "/api/v1/automation/notifications": {
+      "get": {
+        "operationId": "notifications_api_v1_automation_notifications_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_list_NotificationResponse__"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Notifications",
+        "tags": [
+          "automation"
+        ]
+      }
+    },
+    "/api/v1/automation/rules": {
+      "get": {
+        "operationId": "list_rules_api_v1_automation_rules_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_list_AutomationRuleResponse__"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List Rules",
+        "tags": [
+          "automation"
+        ]
+      },
+      "post": {
+        "operationId": "create_rule_api_v1_automation_rules_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomationRuleCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_AutomationRuleResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Create Rule",
+        "tags": [
+          "automation"
+        ]
+      }
+    },
+    "/api/v1/automation/rules/{rule_id}": {
+      "delete": {
+        "operationId": "delete_rule_api_v1_automation_rules__rule_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Rule Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "revision",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "Revision",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_DeletedResource_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Rule",
+        "tags": [
+          "automation"
+        ]
+      },
+      "get": {
+        "operationId": "get_rule_api_v1_automation_rules__rule_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Rule Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_AutomationRuleResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Rule",
+        "tags": [
+          "automation"
+        ]
+      },
+      "patch": {
+        "operationId": "update_rule_api_v1_automation_rules__rule_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Rule Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomationRuleUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_AutomationRuleResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Update Rule",
+        "tags": [
+          "automation"
+        ]
+      }
+    },
+    "/api/v1/automation/rules/{rule_id}/preview": {
+      "post": {
+        "operationId": "preview_rule_api_v1_automation_rules__rule_id__preview_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Rule Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomationPreviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_AutomationPreviewResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Preview Rule",
+        "tags": [
+          "automation"
+        ]
+      }
+    },
+    "/api/v1/automation/rules/{rule_id}/test": {
+      "post": {
+        "description": "Evaluate a rule without running the configured action or writing data.",
+        "operationId": "test_rule_api_v1_automation_rules__rule_id__test_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Rule Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomationPreviewRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_AutomationPreviewResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Test Rule",
+        "tags": [
+          "automation"
+        ]
+      }
+    },
+    "/api/v1/automation/scheduler": {
+      "get": {
+        "operationId": "get_scheduler_status_api_v1_automation_scheduler_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_SchedulerStatusResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Get Scheduler Status",
+        "tags": [
+          "automation"
         ]
       }
     },
@@ -15482,6 +18018,661 @@
         "summary": "Health",
         "tags": [
           "system"
+        ]
+      }
+    },
+    "/api/v1/imports": {
+      "get": {
+        "operationId": "read_import_batches_api_v1_imports_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ImportKind"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Kind"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListEnvelope_ImportBatchResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Import Batches",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/calendar/export.ics": {
+      "get": {
+        "operationId": "download_calendar_export_api_v1_imports_calendar_export_ics_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "event_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "items": {
+                    "format": "uuid",
+                    "type": "string"
+                  },
+                  "type": "array"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Event Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download Calendar Export",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/calendar/preview": {
+      "post": {
+        "operationId": "post_calendar_preview_api_v1_imports_calendar_preview_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_post_calendar_preview_api_v1_imports_calendar_preview_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_ImportPreviewResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Calendar Preview",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/calendar/{batch_id}/apply": {
+      "post": {
+        "operationId": "post_calendar_apply_api_v1_imports_calendar__batch_id__apply_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Batch Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportApplyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_ImportBatchResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Calendar Apply",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/csv/preview": {
+      "post": {
+        "operationId": "post_csv_preview_api_v1_imports_csv_preview_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_post_csv_preview_api_v1_imports_csv_preview_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_ImportPreviewResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Csv Preview",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/csv/{batch_id}/apply": {
+      "post": {
+        "operationId": "post_csv_apply_api_v1_imports_csv__batch_id__apply_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Batch Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportApplyRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_ImportBatchResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Csv Apply",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/csv/{batch_id}/map": {
+      "post": {
+        "operationId": "post_csv_mapping_api_v1_imports_csv__batch_id__map_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Batch Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CsvMappingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_ImportPreviewResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Csv Mapping",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/mapping-profiles": {
+      "get": {
+        "operationId": "read_mapping_profiles_api_v1_imports_mapping_profiles_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_list_CsvMappingProfileResponse__"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Read Mapping Profiles",
+        "tags": [
+          "imports"
+        ]
+      },
+      "post": {
+        "operationId": "post_mapping_profile_api_v1_imports_mapping_profiles_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CsvMappingProfileCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_CsvMappingProfileResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Mapping Profile",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/mapping-profiles/{profile_id}": {
+      "delete": {
+        "operationId": "remove_mapping_profile_api_v1_imports_mapping_profiles__profile_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Profile Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "revision",
+            "required": true,
+            "schema": {
+              "minimum": 1,
+              "title": "Revision",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_DeletedResource_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Remove Mapping Profile",
+        "tags": [
+          "imports"
+        ]
+      },
+      "patch": {
+        "operationId": "patch_mapping_profile_api_v1_imports_mapping_profiles__profile_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "profile_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Profile Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CsvMappingProfileUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_CsvMappingProfileResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Mapping Profile",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/rows/{row_id}": {
+      "patch": {
+        "operationId": "patch_import_row_api_v1_imports_rows__row_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "row_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Row Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportRowSelectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_ImportRowResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Patch Import Row",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/{batch_id}": {
+      "get": {
+        "operationId": "read_import_batch_api_v1_imports__batch_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Batch Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_ImportPreviewResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read Import Batch",
+        "tags": [
+          "imports"
+        ]
+      }
+    },
+    "/api/v1/imports/{batch_id}/rows.csv": {
+      "get": {
+        "operationId": "download_import_rows_api_v1_imports__batch_id__rows_csv_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "batch_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Batch Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download Import Rows",
+        "tags": [
+          "imports"
         ]
       }
     },

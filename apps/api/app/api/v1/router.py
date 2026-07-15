@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.api.v1.routes import (
     attachments,
+    automation,
     calendar,
     commitments,
     finance_accounts,
@@ -12,6 +13,7 @@ from app.api.v1.routes import (
     finance_transactions,
     goals,
     health,
+    imports,
     meta,
     notes,
     projects,
@@ -25,6 +27,7 @@ from app.api.v1.routes import (
 )
 
 api_router = APIRouter()
+api_router.include_router(automation.router)
 api_router.include_router(health.router)
 api_router.include_router(system.router)
 api_router.include_router(workspaces.router)
@@ -35,6 +38,7 @@ api_router.include_router(projects.router)
 api_router.include_router(tasks.router)
 api_router.include_router(notes.router)
 api_router.include_router(attachments.router)
+api_router.include_router(imports.router)
 api_router.include_router(calendar.router)
 api_router.include_router(commitments.router)
 api_router.include_router(scheduling.router)

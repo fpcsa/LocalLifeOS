@@ -11,6 +11,8 @@ import {
   FlaskConical,
   Goal,
   Layers3,
+  Upload,
+  Workflow,
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
@@ -45,6 +47,8 @@ const navigation: NavigationItem[] = [
   { label: "Capacity", href: "/capacity", icon: Gauge },
   { label: "Scenarios", href: "/scenarios", icon: FlaskConical },
   { label: "Timeline", href: "/timeline", icon: Clock3 },
+  { label: "Imports", href: "/imports", icon: Upload },
+  { label: "Automation", href: "/automation", icon: Workflow },
   { label: "Settings", href: "/settings", icon: Settings },
 ];
 

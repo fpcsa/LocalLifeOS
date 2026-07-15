@@ -51,6 +51,9 @@ class Settings(BaseSettings):
     default_currency: str = "EUR"
     max_attachment_bytes: int = Field(default=25 * 1024 * 1024, ge=1, le=1024 * 1024 * 1024)
     scheduling_preview_ttl_minutes: int = Field(default=60, ge=1, le=1_440)
+    max_import_bytes: int = Field(default=25 * 1024 * 1024, ge=1, le=1024 * 1024 * 1024)
+    max_import_rows: int = Field(default=10_000, ge=1, le=100_000)
+    automation_scheduler_enabled: bool = True
     telemetry_enabled: bool = False
     external_requests_enabled: bool = False
 

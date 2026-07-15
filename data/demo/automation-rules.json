@@ -1,0 +1,47 @@
+[
+  {
+    "name": "Friday local backup reminder",
+    "description": "Creates an on-device reminder every Friday evening.",
+    "enabled": true,
+    "trigger": {
+      "type": "recurring_schedule",
+      "conditions": [],
+      "schedule": {
+        "frequency": "weekly",
+        "timezone": "Europe/Rome",
+        "local_time": "18:30:00",
+        "weekdays": [4]
+      }
+    },
+    "action": {
+      "type": "request_local_backup_reminder",
+      "title": "Create a LocalLife backup",
+      "body": "Store a fresh local backup in your chosen offline location."
+    }
+  },
+  {
+    "name": "Review larger transactions",
+    "description": "Creates a local note when a newly recorded transaction is at least EUR 500.",
+    "enabled": true,
+    "trigger": {
+      "type": "transaction_created",
+      "conditions": [
+        {
+          "field": "amount_minor",
+          "operator": "greater_than_or_equal",
+          "value": 50000
+        },
+        {
+          "field": "currency_code",
+          "operator": "equals",
+          "value": "EUR"
+        }
+      ]
+    },
+    "action": {
+      "type": "create_note",
+      "title": "Review larger transaction",
+      "body": "Check the category, commitment impact, and planned cash flow."
+    }
+  }
+]

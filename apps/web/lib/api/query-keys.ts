@@ -72,5 +72,16 @@ export const queryKeys = {
     all: ["timeline"] as const,
     list: (filters: object = {}) => ["timeline", "list", filters] as const,
   },
+  imports: {
+    all: ["imports"] as const,
+    history: ["imports", "history"] as const,
+    profiles: ["imports", "mapping-profiles"] as const,
+  },
+  automation: {
+    all: ["automation"] as const,
+    rules: ["automation", "rules"] as const,
+    executions: ["automation", "executions"] as const,
+    notifications: ["automation", "notifications"] as const,
+  },
   search: (query: string) => ["global-search", query] as const,
 } as const;

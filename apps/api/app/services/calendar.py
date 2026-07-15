@@ -10,6 +10,7 @@ from sqlmodel import Session, col, select
 from app.core.exceptions import DomainNotFoundError, DomainValidationError
 from app.db.transactions import transaction
 from app.models import (
+    AutomationTriggerType,
     CalendarEvent,
     CalendarEventEntityLink,
     CalendarEventStatus,
@@ -30,6 +31,7 @@ from app.schemas.productivity import (
     DomainLinkResponse,
     RecurrenceOccurrenceResponse,
 )
+from app.services.automation import dispatch_automation_event
 from app.services.domain_links import (
     remove_generic_links,
     replace_calendar_entity_links,
@@ -276,6 +278,20 @@ def create_calendar_event(
             action="calendar_event_created",
             title=f"Calendar event created: {event.title}",
         )
+    dispatch_automation_event(
+        session,
+        AutomationTriggerType.EVENT_CREATED,
+        context={
+            "entity_type": DomainEntityType.CALENDAR_EVENT.value,
+            "entity_id": str(event.id),
+            "title": event.title,
+            "category": event.category,
+            "location": event.location,
+            "status": event.status.value,
+            "timezone": event.timezone,
+        },
+        source_key=f"calendar-event:{event.id}",
+    )
     return _event_responses(repository, [event])[0]
 
 

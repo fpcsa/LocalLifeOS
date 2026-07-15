@@ -324,3 +324,41 @@ Solver status distinguishes `optimal`, best-known `feasible`, `infeasible`, `unk
 optimality; `unknown` returns no invented placement and uses the `solver_timeout` reason. Preview
 responses also include hard/soft conflicts, daily and weekly capacity, deadline risk, assumptions,
 source fingerprint, and an objective breakdown.
+
+## Import and automation endpoints
+
+Import upload uses `multipart/form-data`; previews and apply results use the ordinary data
+envelope. Preview creates immutable source-file identity plus revisioned include/exclude rows. Apply
+accepts an optional exact `included_row_ids` selection and is idempotent for an already-applied
+batch. Changed calendar rows and persisted CSV mapping profiles use the same optimistic revision
+contract as domain records.
+
+| Method and path | Purpose |
+| --- | --- |
+| `GET /api/v1/imports` | Paginated, optionally kind-filtered local import history |
+| `GET /api/v1/imports/{id}` | Batch metadata, classification, normalized rows, and issues |
+| `POST /api/v1/imports/calendar/preview` | Parse and classify one local ICS source |
+| `POST /api/v1/imports/calendar/{id}/apply` | Atomically create/update selected events |
+| `GET /api/v1/imports/calendar/export.ics` | Export all or selected active events |
+| `POST /api/v1/imports/csv/preview` | Detect and parse one local bank CSV |
+| `POST /api/v1/imports/csv/{id}/map` | Normalize mapped columns and classify duplicates |
+| `POST /api/v1/imports/csv/{id}/apply` | Atomically create selected ledger transactions |
+| `/api/v1/imports/mapping-profiles` | CRUD for reusable revisioned CSV mappings |
+| `PATCH /api/v1/imports/rows/{id}` | Revision-check persisted include/exclude state |
+| `GET /api/v1/imports/{id}/rows.csv` | Formula-safe review export |
+| `GET/POST /api/v1/automation/rules` | Rule list and structured creation |
+| `GET/PATCH/DELETE /api/v1/automation/rules/{id}` | Revision-aware rule lifecycle |
+| `POST .../rules/{id}/{preview,test}` | Write-free condition/action description |
+| `GET /api/v1/automation/executions` | Filtered execution history |
+| `GET /api/v1/automation/notifications` | Unread local notification records |
+| `GET /api/v1/automation/scheduler` | Read-only local scheduler status |
+
+Automation rule, preview, notification, and scheduler endpoints use the standard data envelope;
+paginated execution history uses the standard list envelope. Rules contain a typed trigger,
+allow-listed conditions, and one typed action. Each evaluation derives a
+database-unique idempotency key from rule, trigger, and source identity. Preview/test never writes.
+Action success and its execution log share one transaction.
+
+Detailed format, mapping, duplicate, spreadsheet-safety, scheduler, restart, and security behavior
+is documented in [imports.md](imports.md), [automation.md](automation.md), and
+[security.md](security.md).

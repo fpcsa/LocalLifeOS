@@ -169,6 +169,56 @@ class ScenarioOperation(StrEnum):
     DELETE = "delete"
 
 
+class ImportKind(StrEnum):
+    CALENDAR_ICS = "calendar_ics"
+    BANK_CSV = "bank_csv"
+
+
+class ImportBatchStatus(StrEnum):
+    PREVIEWED = "previewed"
+    APPLIED = "applied"
+    FAILED = "failed"
+
+
+class ImportRowStatus(StrEnum):
+    NEW = "new"
+    CHANGED = "changed"
+    DUPLICATE = "duplicate"
+    INVALID = "invalid"
+    IMPORTED = "imported"
+    EXCLUDED = "excluded"
+
+
+class AutomationTriggerType(StrEnum):
+    TRANSACTION_CREATED = "transaction_created"
+    SUBSCRIPTION_AMOUNT_CHANGED = "subscription_amount_changed"
+    EVENT_CREATED = "event_created"
+    EVENT_APPROACHING = "event_approaching"
+    TASK_OVERDUE = "task_overdue"
+    COMMITMENT_WARNING_CREATED = "commitment_warning_created"
+    RECURRING_SCHEDULE = "recurring_schedule"
+
+
+class AutomationActionType(StrEnum):
+    CREATE_TASK = "create_task"
+    CREATE_NOTE = "create_note"
+    CREATE_PLANNED_TRANSACTION = "create_planned_transaction"
+    ADD_TAG = "add_tag"
+    CREATE_NOTIFICATION = "create_notification"
+    REQUEST_LOCAL_BACKUP_REMINDER = "request_local_backup_reminder"
+
+
+class AutomationExecutionStatus(StrEnum):
+    SUCCEEDED = "succeeded"
+    SKIPPED = "skipped"
+    FAILED = "failed"
+
+
+class NotificationKind(StrEnum):
+    INFORMATION = "information"
+    BACKUP_REMINDER = "backup_reminder"
+
+
 SUPPORTED_CURRENCY_CODES = frozenset(
     """
     AED AFN ALL AMD ANG AOA ARS AUD AWG AZN BAM BBD BDT BGN BHD BIF BMD BND
