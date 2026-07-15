@@ -1,0 +1,42 @@
+[build-system]
+requires = ["setuptools>=78"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "locallife-api"
+version = "0.1.0"
+description = "Local-only FastAPI service for LocalLife OS"
+requires-python = ">=3.12"
+dependencies = [
+  "alembic==1.18.5",
+  "fastapi==0.139.0",
+  "ortools==9.15.6755",
+  "pydantic-settings==2.14.2",
+  "python-dateutil==2.9.0.post0",
+  "python-multipart==0.0.32",
+  "sqlmodel==0.0.39",
+  "tzdata==2026.2",
+  "uvicorn[standard]==0.51.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "-q"
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "SIM", "UP"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+exclude = ["alembic"]
+
+[[tool.mypy.overrides]]
+module = ["alembic.*"]
+ignore_missing_imports = true

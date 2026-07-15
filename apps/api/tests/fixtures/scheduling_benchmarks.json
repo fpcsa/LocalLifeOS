@@ -1,0 +1,30 @@
+{
+  "limits": {
+    "maximum_tasks": 100,
+    "maximum_events": 200,
+    "maximum_horizon_days": 30
+  },
+  "scenarios": [
+    {
+      "name": "small_week",
+      "task_count": 10,
+      "event_count": 20,
+      "horizon_days": 7,
+      "solver_time_limit_seconds": 1.0
+    },
+    {
+      "name": "medium_fortnight",
+      "task_count": 50,
+      "event_count": 100,
+      "horizon_days": 14,
+      "solver_time_limit_seconds": 1.0
+    },
+    {
+      "name": "bounded_maximum",
+      "task_count": 100,
+      "event_count": 200,
+      "horizon_days": 30,
+      "solver_time_limit_seconds": 1.0
+    }
+  ]
+}

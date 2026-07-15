@@ -1,0 +1,76 @@
+{
+  "scenarios": [
+    {
+      "name": "conference",
+      "commitment": {
+        "title": "Local technology conference",
+        "status": "planned",
+        "category": "conference",
+        "target_start_at": "2026-09-14T09:00:00Z",
+        "target_end_at": "2026-09-18T17:00:00Z",
+        "time_capacity_requirement_minutes": 420
+      },
+      "tasks": [
+        {
+          "title": "Prepare conference talk",
+          "estimated_duration_minutes": 180,
+          "priority": "urgent",
+          "due_at": "2026-09-17T17:00:00Z",
+          "preferred_time_of_day": "morning"
+        },
+        {
+          "title": "Rehearse conference talk",
+          "estimated_duration_minutes": 120,
+          "priority": "high",
+          "due_at": "2026-09-18T12:00:00Z"
+        },
+        {
+          "title": "Prepare travel checklist",
+          "estimated_duration_minutes": 60,
+          "priority": "medium",
+          "due_at": "2026-09-18T16:00:00Z"
+        }
+      ],
+      "scope": {
+        "planning_start_at": "2026-09-14T00:00:00Z",
+        "planning_end_at": "2026-09-19T00:00:00Z"
+      }
+    },
+    {
+      "name": "hackathon",
+      "commitment": {
+        "title": "Local-first product hackathon",
+        "status": "active",
+        "category": "hackathon",
+        "target_start_at": "2026-10-05T09:00:00Z",
+        "target_end_at": "2026-10-09T18:00:00Z",
+        "time_capacity_requirement_minutes": 600
+      },
+      "tasks": [
+        {
+          "title": "Build hackathon prototype",
+          "estimated_duration_minutes": 240,
+          "priority": "urgent",
+          "due_at": "2026-10-08T17:00:00Z"
+        },
+        {
+          "title": "Record hackathon demo",
+          "estimated_duration_minutes": 120,
+          "priority": "high",
+          "due_at": "2026-10-09T12:00:00Z",
+          "preferred_time_of_day": "afternoon"
+        },
+        {
+          "title": "Write hackathon submission",
+          "estimated_duration_minutes": 120,
+          "priority": "high",
+          "due_at": "2026-10-09T17:00:00Z"
+        }
+      ],
+      "scope": {
+        "planning_start_at": "2026-10-05T00:00:00Z",
+        "planning_end_at": "2026-10-10T00:00:00Z"
+      }
+    }
+  ]
+}
