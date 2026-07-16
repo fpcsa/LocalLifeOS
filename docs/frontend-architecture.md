@@ -23,7 +23,7 @@ TanStack Query hook -> typed domain API module -> loopback FastAPI /api/v1
 query-key factory / cache                     domain services + SQLite
 
 Zustand is separate and stores UI-only state:
-sidebar, command palette, quick-create dialog, and toasts.
+sidebar, command palette, quick-create dialog, toasts, and the privacy-screen state.
 ```
 
 - `scripts/export-openapi.py` exports the running FastAPI schema without a network request.
@@ -42,7 +42,8 @@ domain outcomes.
 ## Application shell
 
 The root providers install the shared query client, preference-driven theme synchronization,
-offline banner, command palette, quick-create dialog, and toast viewport. The application shell
+service-worker registration, local-connection banner, inactivity privacy shield, command palette,
+quick-create dialog, and toast viewport. The application shell
 adds a sticky top bar, a collapsible 240-pixel desktop sidebar, and an overflow-contained compact
 navigation row. Primary destinations are:
 
@@ -81,7 +82,7 @@ transactions without replacing server state in Zustand.
 | `/timeline` | Incrementally loaded, date-grouped cross-domain activity with URL-backed type, commitment, and date filters and privacy-limited summaries |
 | `/imports` | Local ICS/CSV upload, classified and normalized previews, row selection, mapping profiles, apply, export, and history |
 | `/automation` | Structured rule builder, lifecycle, write-free test context, scheduler status, notifications, and execution history |
-| `/settings` | Revision-checked locale, timezone, currency, week-start, and theme preferences plus local-system guarantees |
+| `/settings` | Revision-checked locale, timezone, currency, week-start, theme, session timeout, resolved data paths, offline guarantees, verified backup status/actions, and exact-confirmation local deletion |
 
 Route-level `loading.tsx` and `error.tsx` provide safe fallbacks. Feature views also render local
 skeleton, empty, error, and retry states so query failures do not blank the shell.
@@ -140,20 +141,24 @@ stale scenario visible and non-acceptable until it is refreshed.
 
 Vitest and Testing Library cover service status, exact money conversion, timezone/DST boundaries,
 task validation, commitment creation and linking, reviewed schedule application, import row
-selection, and write-free automation test preview. The
+selection, write-free automation test preview, session expiration, and service-worker cache
+boundaries. The
 Playwright-Core smoke script uses the locally installed Chrome executable—without downloading a
 browser—to exercise every route at 1280, 768, and 375 pixels. Its signature desktop flow prepares
 the Build Week, Berlin conference, and Laptop purchase records through public APIs, compares the
 physical and remote conference scenarios, opens the commitment graph and schedule review, filters
 the timeline by commitment, and checks signature-page controls for accessible names. It also
 rejects runtime console errors, external HTTP requests, route-boundary failures, and page-level
-horizontal overflow.
+horizontal overflow. Its desktop flow also waits for a controlling service worker, disables browser
+networking, reloads the cached shell, confirms the offline indicator, and then restores networking.
 
 The test database and screenshots are temporary verification artifacts and are removed after
 inspection.
 
-## Deferred work
+## Deliberate limitations
 
-The following remain intentionally outside this goal: service-worker caching, encryption,
-authentication, and any advisory or runtime-AI behavior. Scenario projections
-are deterministic planning aids based only on local data and user-entered assumptions.
+The service worker caches application-shell HTML and same-origin static resources only; it does not
+cache API responses, so current workspace reads and writes still need the local backend. The
+privacy shield is a casual screen lock, not authentication. Live local data is not
+application-encrypted. Scenario projections remain deterministic planning aids based only on local
+data and user-entered assumptions; there is no advisory or runtime-AI behavior.

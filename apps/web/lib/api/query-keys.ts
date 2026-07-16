@@ -4,6 +4,7 @@ export const queryKeys = {
     health: ["system", "health"] as const,
     info: ["system", "info"] as const,
     preferences: ["system", "preferences"] as const,
+    privacy: ["system", "privacy"] as const,
   },
   projects: {
     all: ["projects"] as const,

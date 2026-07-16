@@ -5,12 +5,12 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+from alembic import command
 from alembic.config import Config
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, create_engine
 
-from alembic import command
 from app.core.config import get_settings
 from app.db.transactions import transaction
 from app.services.seed import seed_default_data

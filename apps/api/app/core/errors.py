@@ -94,7 +94,11 @@ async def domain_exception_handler(request: Request, exc: Exception) -> JSONResp
 
 
 async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    logger.exception("Unhandled API error", exc_info=exc)
+    logger.error(
+        "Unhandled API error type=%s request_id=%s",
+        type(exc).__name__,
+        _request_id(request),
+    )
     return _error_response(
         request,
         status_code=500,

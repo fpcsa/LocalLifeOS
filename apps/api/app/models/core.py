@@ -49,6 +49,10 @@ class UserPreferences(WorkspaceEntityBase, table=True):
             name="ck_preferences_currency_upper",
         ),
         CheckConstraint("week_starts_on BETWEEN 0 AND 6", name="ck_preferences_week_start"),
+        CheckConstraint(
+            "session_timeout_minutes BETWEEN 1 AND 1440",
+            name="ck_preferences_session_timeout",
+        ),
         CheckConstraint("revision >= 1", name="ck_preferences_revision_positive"),
     )
 
@@ -62,6 +66,7 @@ class UserPreferences(WorkspaceEntityBase, table=True):
     )
     week_starts_on: int = Field(default=0, ge=0, le=6)
     theme: ThemeMode = Field(default=ThemeMode.SYSTEM)
+    session_timeout_minutes: int = Field(default=30, ge=1, le=1_440)
 
 
 class Tag(WorkspaceSoftDeleteEntityBase, table=True):

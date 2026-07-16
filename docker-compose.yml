@@ -8,12 +8,14 @@ services:
     environment:
       LOCALLIFE_ENV: development
       LOCALLIFE_HOST: 0.0.0.0
+      LOCALLIFE_CONTAINER_MODE: "true"
       LOCALLIFE_PORT: 8000
       LOCALLIFE_DATA_DIR: /workspace/data
       LOCALLIFE_DATABASE_URL: sqlite:////workspace/data/locallife.db
       LOCALLIFE_ATTACHMENTS_DIR: /workspace/data/attachments
       LOCALLIFE_BACKUPS_DIR: /workspace/data/backups
       LOCALLIFE_IMPORTS_DIR: /workspace/data/imports
+      LOCALLIFE_RUNTIME_DIR: /workspace/data/runtime
       LOCALLIFE_CORS_ORIGINS: '["http://127.0.0.1:3000","http://localhost:3000"]'
       LOCALLIFE_DEFAULT_TIMEZONE: UTC
       LOCALLIFE_TELEMETRY_ENABLED: "false"

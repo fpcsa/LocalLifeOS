@@ -3,11 +3,10 @@ from __future__ import annotations
 from typing import Any
 from uuid import UUID, uuid4
 
+from app.models import CommitmentEntityLink
 from fastapi.testclient import TestClient
 from httpx import Response
 from sqlmodel import Session, col, select
-
-from app.models import CommitmentEntityLink
 
 
 def _data(response: Response, expected_status: int = 200) -> dict[str, Any]:

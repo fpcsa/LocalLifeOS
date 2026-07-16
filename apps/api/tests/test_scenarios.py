@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from sqlmodel import Session
-
 from app.db.transactions import transaction
 from app.models import (
     DomainEntityType,
@@ -13,6 +11,7 @@ from app.models import (
 from app.repositories import ScenarioChangeRepository, ScenarioRepository
 from app.services.scenarios import preview_overlay
 from app.services.seed import DEFAULT_WORKSPACE_ID
+from sqlmodel import Session
 
 
 def test_scenario_preview_is_isolated_from_primary_records(db_session: Session) -> None:

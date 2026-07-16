@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from sqlalchemy import inspect, text
-
 from app.db.session import get_engine, run_migrations
+from sqlalchemy import inspect, text
 
 EXPECTED_TABLES = {
     "alembic_version",
@@ -66,4 +65,4 @@ def test_alembic_upgrades_an_empty_database_to_the_complete_schema(
     assert set(inspector.get_table_names()) == EXPECTED_TABLES
     with get_engine().connect() as connection:
         revision = connection.execute(text("SELECT version_num FROM alembic_version")).scalar_one()
-    assert revision == "20260716_0010"
+    assert revision == "20260716_0011"

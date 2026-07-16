@@ -5,7 +5,9 @@ import { useState, type ReactNode } from "react";
 
 import { CommandPalette } from "@/components/command-palette";
 import { OfflineBanner } from "@/components/offline-banner";
+import { PrivacyLock } from "@/components/privacy-lock";
 import { QuickCreate } from "@/components/quick-create";
+import { ServiceWorkerRegistration } from "@/components/service-worker-registration";
 import { ToastViewport } from "@/components/toast-viewport";
 import { ThemeSync } from "@/components/theme-sync";
 
@@ -26,11 +28,14 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeSync />
+      <ServiceWorkerRegistration />
       <OfflineBanner />
-      {children}
-      <CommandPalette />
-      <QuickCreate />
-      <ToastViewport />
+      <PrivacyLock>
+        {children}
+        <CommandPalette />
+        <QuickCreate />
+        <ToastViewport />
+      </PrivacyLock>
     </QueryClientProvider>
   );
 }

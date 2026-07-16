@@ -17,6 +17,7 @@ from app.schemas.common import DeletedResource
 from app.schemas.productivity import AttachmentResponse
 from app.services.domain_links import require_active_entity
 from app.services.events import emit_timeline_event
+from app.services.storage_lock import STORAGE_LOCK
 from app.services.workspace import get_current_workspace
 
 CHUNK_SIZE = 1024 * 1024
@@ -146,41 +147,46 @@ async def upload_attachment(
     size = 0
     max_bytes = get_settings().max_attachment_bytes
     try:
-        with temporary_path.open("xb") as output:
-            while chunk := await upload.read(CHUNK_SIZE):
-                size += len(chunk)
-                if size > max_bytes:
-                    raise DomainValidationError(
-                        "attachment_too_large",
-                        f"Attachments cannot exceed {max_bytes} bytes.",
-                        {"max_bytes": max_bytes},
+        with STORAGE_LOCK:
+            with temporary_path.open("xb") as output:
+                while chunk := await upload.read(CHUNK_SIZE):
+                    size += len(chunk)
+                    if size > max_bytes:
+                        raise DomainValidationError(
+                            "attachment_too_large",
+                            f"Attachments cannot exceed {max_bytes} bytes.",
+                            {"max_bytes": max_bytes},
+                        )
+                    digest.update(chunk)
+                    output.write(chunk)
+                output.flush()
+                import os
+
+                os.fsync(output.fileno())
+            temporary_path.replace(target_path)
+            attachment.storage_path = relative_path.as_posix()
+            attachment.size_bytes = size
+            attachment.sha256 = digest.hexdigest()
+            repository = AttachmentRepository(session)
+            with transaction(session):
+                attachment = repository.add(attachment)
+                session.add(
+                    AttachmentEntityLink(
+                        workspace_id=workspace.id,
+                        attachment_id=attachment.id,
+                        entity_type=entity_type,
+                        entity_id=entity_id,
                     )
-                digest.update(chunk)
-                output.write(chunk)
-        temporary_path.replace(target_path)
-        attachment.storage_path = relative_path.as_posix()
-        attachment.size_bytes = size
-        attachment.sha256 = digest.hexdigest()
-        repository = AttachmentRepository(session)
-        with transaction(session):
-            attachment = repository.add(attachment)
-            session.add(
-                AttachmentEntityLink(
-                    workspace_id=workspace.id,
-                    attachment_id=attachment.id,
-                    entity_type=entity_type,
-                    entity_id=entity_id,
                 )
-            )
-            emit_timeline_event(
-                session,
-                workspace_id=workspace.id,
-                entity_type=DomainEntityType.ATTACHMENT,
-                entity_id=attachment.id,
-                action="attachment_uploaded",
-                title=f"Attachment uploaded: {filename}",
-                payload={"entity_type": entity_type, "entity_id": str(entity_id)},
-            )
+                emit_timeline_event(
+                    session,
+                    workspace_id=workspace.id,
+                    entity_type=DomainEntityType.ATTACHMENT,
+                    entity_id=attachment.id,
+                    action="attachment_uploaded",
+                    title=f"Attachment uploaded: {filename}",
+                    payload={"entity_type": entity_type, "entity_id": str(entity_id)},
+                )
     except Exception:
         temporary_path.unlink(missing_ok=True)
         target_path.unlink(missing_ok=True)
@@ -212,22 +218,23 @@ def delete_attachment(
     if attachment is None:
         raise DomainNotFoundError("attachment", attachment_id)
     path = resolve_attachment_path(attachment.storage_path)
-    with transaction(session):
-        links = session.exec(
-            select(AttachmentEntityLink).where(
-                col(AttachmentEntityLink.attachment_id) == attachment_id
+    with STORAGE_LOCK:
+        with transaction(session):
+            links = session.exec(
+                select(AttachmentEntityLink).where(
+                    col(AttachmentEntityLink.attachment_id) == attachment_id
+                )
+            ).all()
+            for link in links:
+                session.delete(link)
+            deleted = repository.soft_delete(workspace.id, attachment_id, revision)
+            emit_timeline_event(
+                session,
+                workspace_id=workspace.id,
+                entity_type=DomainEntityType.ATTACHMENT,
+                entity_id=deleted.id,
+                action="attachment_deleted",
+                title=f"Attachment deleted: {deleted.original_filename}",
             )
-        ).all()
-        for link in links:
-            session.delete(link)
-        deleted = repository.soft_delete(workspace.id, attachment_id, revision)
-        emit_timeline_event(
-            session,
-            workspace_id=workspace.id,
-            entity_type=DomainEntityType.ATTACHMENT,
-            entity_id=deleted.id,
-            action="attachment_deleted",
-            title=f"Attachment deleted: {deleted.original_filename}",
-        )
-    path.unlink(missing_ok=True)
+        path.unlink(missing_ok=True)
     return DeletedResource(id=attachment_id)

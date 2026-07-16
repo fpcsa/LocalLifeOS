@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ipaddress
 import json
 from functools import lru_cache
 from pathlib import Path
@@ -35,12 +36,14 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     env: Literal["development", "test", "production"] = "development"
     host: str = "127.0.0.1"
+    container_mode: bool = False
     port: int = Field(default=8000, ge=1, le=65535)
     data_dir: Path = REPOSITORY_ROOT / "data"
     database_url: str | None = None
     attachments_dir: Path | None = None
     backups_dir: Path | None = None
     imports_dir: Path | None = None
+    runtime_dir: Path | None = None
     cors_origins: list[str] = Field(
         default_factory=lambda: [
             "http://127.0.0.1:3000",
@@ -53,6 +56,10 @@ class Settings(BaseSettings):
     scheduling_preview_ttl_minutes: int = Field(default=60, ge=1, le=1_440)
     max_import_bytes: int = Field(default=25 * 1024 * 1024, ge=1, le=1024 * 1024 * 1024)
     max_import_rows: int = Field(default=10_000, ge=1, le=100_000)
+    max_backup_bytes: int = Field(default=2 * 1024 * 1024 * 1024, ge=1024 * 1024)
+    backup_argon2_memory_kib: int = Field(default=65_536, ge=8 * 1024, le=1024 * 1024)
+    backup_argon2_time_cost: int = Field(default=3, ge=1, le=10)
+    backup_argon2_parallelism: int = Field(default=4, ge=1, le=16)
     automation_scheduler_enabled: bool = True
     telemetry_enabled: bool = False
     external_requests_enabled: bool = False
@@ -88,11 +95,11 @@ class Settings(BaseSettings):
                 raise ValueError(f"CORS origin must be loopback-only: {origin}")
         return origins
 
-    @field_validator("telemetry_enabled", "external_requests_enabled")
+    @field_validator("telemetry_enabled")
     @classmethod
-    def require_disabled_runtime_switches(cls, value: bool) -> bool:
+    def require_disabled_telemetry(cls, value: bool) -> bool:
         if value:
-            raise ValueError("telemetry and external runtime requests must remain disabled")
+            raise ValueError("telemetry must remain disabled")
         return value
 
     @field_validator("default_currency")
@@ -111,6 +118,13 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def resolve_storage(self) -> Settings:
+        try:
+            loopback_host = ipaddress.ip_address(self.host.strip("[]")).is_loopback
+        except ValueError:
+            loopback_host = self.host.casefold() == "localhost"
+        if not loopback_host and not (self.container_mode and self.host == "0.0.0.0"):
+            raise ValueError("LOCALLIFE_HOST must be loopback-only outside a container")
+
         data_dir = _resolve_path(self.data_dir)
         self.data_dir = data_dir
 
@@ -118,6 +132,7 @@ class Settings(BaseSettings):
             "attachments_dir": self.attachments_dir or data_dir / "attachments",
             "backups_dir": self.backups_dir or data_dir / "backups",
             "imports_dir": self.imports_dir or data_dir / "imports",
+            "runtime_dir": self.runtime_dir or data_dir / "runtime",
         }
         for field_name, value in path_fields.items():
             resolved = _resolve_path(Path(value))
@@ -146,9 +161,17 @@ class Settings(BaseSettings):
             self.attachments_dir,
             self.backups_dir,
             self.imports_dir,
+            self.runtime_dir,
         ):
             if directory is not None:
                 directory.mkdir(parents=True, exist_ok=True)
+
+    @property
+    def trusted_hosts(self) -> list[str]:
+        hosts = ["127.0.0.1", "localhost", "[::1]"]
+        if self.env == "test":
+            hosts.append("testserver")
+        return hosts
 
 
 @lru_cache

@@ -286,7 +286,9 @@ The target application configuration includes:
 
 ### Offline browser experience
 
-The frontend will use a service worker to cache the application shell and local assets. Once installed and launched locally, the application remains available without an internet connection.
+The frontend uses a service worker to cache the application shell and local assets. Once installed
+and launched locally, the shell remains available without an Internet connection; current data
+reads and writes still require the loopback API.
 
 ---
 
@@ -316,6 +318,8 @@ Zustand is selected for lightweight client-side state management. TanStack Query
 - **OR-Tools**
 - **Pandas**
 - **APScheduler**
+- **Typer**
+- **argon2-cffi + cryptography**
 
 ### Local execution
 
@@ -561,6 +565,37 @@ Open:
 http://127.0.0.1:3000
 ```
 
+### Supported native launcher
+
+After installing the Python and npm dependencies above, use the same supported command set on
+Windows, Linux, and macOS.
+
+Windows PowerShell:
+
+```powershell
+.\scripts\locallife.ps1 doctor
+.\scripts\locallife.ps1 start --open-browser
+.\scripts\locallife.ps1 status
+.\scripts\locallife.ps1 backup --encrypt
+.\scripts\locallife.ps1 restore .\data\backups\<backup>.llbackup
+.\scripts\locallife.ps1 stop
+```
+
+Linux or macOS:
+
+```bash
+./scripts/locallife.sh doctor
+./scripts/locallife.sh start --open-browser
+./scripts/locallife.sh status
+./scripts/locallife.sh backup --encrypt
+./scripts/locallife.sh restore ./data/backups/<backup>.llbackup
+./scripts/locallife.sh stop
+```
+
+The launcher binds both processes to `127.0.0.1`, checks occupied ports, displays process and data
+status, and opens a browser only with `--open-browser`. See
+[docs/native-launcher.md](docs/native-launcher.md).
+
 The backend API will be available locally at:
 
 ```text
@@ -652,12 +687,15 @@ Example `.env`:
 LOCALLIFE_ENV=development
 LOCALLIFE_HOST=127.0.0.1
 LOCALLIFE_PORT=8000
+LOCALLIFE_CONTAINER_MODE=false
 
 LOCALLIFE_DATA_DIR=./data
 LOCALLIFE_DATABASE_URL=sqlite:///./data/locallife.db
 LOCALLIFE_ATTACHMENTS_DIR=./data/attachments
 LOCALLIFE_BACKUPS_DIR=./data/backups
 LOCALLIFE_IMPORTS_DIR=./data/imports
+LOCALLIFE_RUNTIME_DIR=./data/runtime
+LOCALLIFE_MAX_BACKUP_BYTES=2147483648
 
 LOCALLIFE_CORS_ORIGINS=["http://127.0.0.1:3000","http://localhost:3000"]
 LOCALLIFE_DEFAULT_TIMEZONE=UTC
@@ -731,9 +769,11 @@ npm run typecheck:web
 npm run build:web
 ```
 
-### End-to-end tests (future goal)
+### End-to-end tests
 
-Repository-level end-to-end tests will be added after the product-domain workflows exist.
+The repository-level browser smoke flow uses the locally installed Chrome executable and exercises
+every route at desktop, tablet, and compact widths. It also covers core mutations, accessible form
+labels, external-request rejection, and an offline service-worker reload.
 
 E2E scenarios should include:
 
@@ -749,14 +789,21 @@ E2E scenarios should include:
 
 ```bash
 python scripts/verify-offline-mode.py
+python scripts/check-external-assets.py
+python scripts/backup-smoke-test.py
+python scripts/restore-smoke-test.py
 ```
 
-The verification script should confirm that:
+The verification scripts confirm that:
 
 - The backend binds only to the loopback interface.
 - The application makes no external HTTP requests.
 - No remote assets are referenced.
 - Core workflows function with network access disabled.
+
+The service worker caches only the application shell and same-origin static assets. API requests
+use `no-store` and are never placed in the service-worker cache. A live runtime URL can be checked
+with `python scripts/check-external-assets.py --runtime-url http://127.0.0.1:3000`.
 
 ---
 
@@ -776,7 +823,7 @@ LocalLife OS is designed around local ownership of personal data.
 
 ### Local security goals
 
-The MVP should provide:
+The MVP provides:
 
 - Local session protection
 - Secure backup format
@@ -790,7 +837,12 @@ The MVP should provide:
 - Safe file upload limits
 - Database migration safeguards
 
-A dedicated threat model will document which attacks are and are not covered.
+The inactivity lock is a casual privacy screen, not authentication. The live SQLite database and
+ordinary data directories are not application-encrypted; protect the OS account and disk. Optional
+password-protected `.llbackup` files use Argon2id and AES-256-GCM, are checksum-verified before
+success, and are safety-backed up before restore. See [privacy.md](docs/privacy.md),
+[threat-model.md](docs/threat-model.md), and [backup-format.md](docs/backup-format.md) for exact
+claims, limitations, and recovery instructions.
 
 ---
 

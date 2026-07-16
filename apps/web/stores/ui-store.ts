@@ -5,11 +5,14 @@ interface UiState {
   commandPaletteOpen: boolean;
   quickCreateOpen: boolean;
   quickCreateKind: QuickCreateKind;
+  privacyLocked: boolean;
   toasts: ToastMessage[];
   toggleSidebar: () => void;
   setCommandPaletteOpen: (open: boolean) => void;
   openQuickCreate: (kind?: QuickCreateKind) => void;
   closeQuickCreate: () => void;
+  lockPrivacy: () => void;
+  unlockPrivacy: () => void;
   pushToast: (message: Omit<ToastMessage, "id">) => void;
   dismissToast: (id: string) => void;
 }
@@ -28,6 +31,7 @@ export const useUiStore = create<UiState>((set) => ({
   commandPaletteOpen: false,
   quickCreateOpen: false,
   quickCreateKind: "task",
+  privacyLocked: false,
   toasts: [],
   toggleSidebar: () =>
     set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
@@ -35,6 +39,8 @@ export const useUiStore = create<UiState>((set) => ({
   openQuickCreate: (quickCreateKind = "task") =>
     set({ quickCreateOpen: true, quickCreateKind }),
   closeQuickCreate: () => set({ quickCreateOpen: false }),
+  lockPrivacy: () => set({ privacyLocked: true, commandPaletteOpen: false, quickCreateOpen: false }),
+  unlockPrivacy: () => set({ privacyLocked: false }),
   pushToast: (message) =>
     set((state) => ({
       toasts: [

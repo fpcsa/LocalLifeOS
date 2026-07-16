@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import re
 from pathlib import Path
 from uuid import UUID
@@ -9,6 +10,7 @@ from fastapi import UploadFile
 
 from app.core.config import get_settings
 from app.core.exceptions import DomainValidationError
+from app.services.storage_lock import STORAGE_LOCK
 
 SAFE_NAME = re.compile(r"[^A-Za-z0-9._ -]+")
 FORMULA_PREFIXES = ("=", "+", "-", "@", "\t", "\r")
@@ -44,7 +46,10 @@ def store_import_file(batch_id: UUID, filename: str, data: bytes) -> str:
     if not target.is_relative_to(imports_root.resolve()):
         raise DomainValidationError("unsafe_import_path", "Import storage path is unsafe.")
     target.parent.mkdir(parents=True, exist_ok=True)
-    target.write_bytes(data)
+    with STORAGE_LOCK, target.open("xb") as output:
+        output.write(data)
+        output.flush()
+        os.fsync(output.fileno())
     return relative.as_posix()
 
 

@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from logging.config import fileConfig
 
-from sqlalchemy import engine_from_config, pool
-from sqlmodel import SQLModel
-
 from alembic import context
 from app.core.config import get_settings
 from app.models import SystemSetting  # noqa: F401
+from sqlalchemy import engine_from_config, pool
+from sqlmodel import SQLModel
 
 config = context.config
 settings = get_settings()

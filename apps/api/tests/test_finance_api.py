@@ -3,13 +3,12 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
+from app.models import FinancialAccount, FinancialAccountType
+from app.services.seed import DEFAULT_WORKSPACE_ID
 from fastapi.testclient import TestClient
 from httpx import Response
 from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session
-
-from app.models import FinancialAccount, FinancialAccountType
-from app.services.seed import DEFAULT_WORKSPACE_ID
 
 
 def _data(response: Response, expected_status: int = 200) -> dict[str, Any]:

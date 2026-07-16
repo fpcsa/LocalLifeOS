@@ -4,13 +4,12 @@ import hashlib
 from pathlib import Path
 
 import pytest
-from fastapi.testclient import TestClient
-
 from app.core.config import get_settings
 from app.core.exceptions import DomainValidationError
 from app.db.session import get_engine
 from app.main import create_app
 from app.services.attachments import resolve_attachment_path
+from fastapi.testclient import TestClient
 
 
 def _create_note(

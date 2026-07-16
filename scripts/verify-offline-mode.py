@@ -1,75 +1,73 @@
 from __future__ import annotations
 
-import re
+import argparse
+import subprocess
 import sys
 from pathlib import Path
-from urllib.parse import urlsplit
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
-SCAN_ROOTS = (
-    REPOSITORY_ROOT / "apps" / "web",
-    REPOSITORY_ROOT / "packages" / "shared-types",
-    REPOSITORY_ROOT / "packages" / "ui",
-)
-SCANNED_SUFFIXES = {".css", ".js", ".json", ".mjs", ".ts", ".tsx"}
-IGNORED_PARTS = {".next", "coverage", "node_modules"}
-ALLOWED_URL_HOSTS = {"127.0.0.1", "localhost", "::1", "www.w3.org"}
-URL_PATTERN = re.compile(r"https?://[^\s'\"`)]+")
-BANNED_IMPORTS = (
-    "next/font/google",
-    "fonts.googleapis.com",
-    "fonts.gstatic.com",
-    "googletagmanager.com",
-)
-
-
-def source_files() -> list[Path]:
-    files: list[Path] = []
-    for root in SCAN_ROOTS:
-        for path in root.rglob("*"):
-            if (
-                path.is_file()
-                and path.suffix in SCANNED_SUFFIXES
-                and path.name != "next-env.d.ts"
-                and not any(part in IGNORED_PARTS for part in path.parts)
-            ):
-                files.append(path)
-    return files
-
-
-def verify_file(path: Path) -> list[str]:
-    relative_path = path.relative_to(REPOSITORY_ROOT)
-    text = path.read_text(encoding="utf-8")
-    errors: list[str] = []
-
-    for banned_import in BANNED_IMPORTS:
-        if banned_import in text:
-            errors.append(f"{relative_path}: banned remote asset reference {banned_import!r}")
-
-    for match in URL_PATTERN.finditer(text):
-        url = match.group(0)
-        hostname = urlsplit(url).hostname
-        if hostname not in ALLOWED_URL_HOSTS:
-            errors.append(f"{relative_path}: non-local URL {url!r}")
-
-    return errors
 
 
 def main() -> int:
-    errors = [error for path in source_files() for error in verify_file(path)]
-    if errors:
-        print("Offline source verification failed:")
-        for error in errors:
-            print(f"- {error}")
+    parser = argparse.ArgumentParser(
+        description="Verify LocalLife OS offline and loopback runtime contracts."
+    )
+    parser.add_argument(
+        "--runtime-url",
+        help="Optionally inspect the running web app on a loopback URL.",
+    )
+    args = parser.parse_args()
+    command = [sys.executable, str(REPOSITORY_ROOT / "scripts" / "check-external-assets.py")]
+    if args.runtime_url:
+        command.extend(["--runtime-url", args.runtime_url])
+    external_check = subprocess.run(command, cwd=REPOSITORY_ROOT, check=False)
+    if external_check.returncode != 0:
+        return external_check.returncode
+
+    compose = (REPOSITORY_ROOT / "docker-compose.yml").read_text(encoding="utf-8")
+    required_mappings = ('"127.0.0.1:3000:3000"', '"127.0.0.1:8000:8000"')
+    for mapping in required_mappings:
+        if mapping not in compose:
+            print(f"Offline verification failed: missing loopback mapping {mapping}")
+            return 1
+    if 'LOCALLIFE_CONTAINER_MODE: "true"' not in compose:
+        print("Offline verification failed: container public bind was not explicitly scoped.")
         return 1
 
-    compose_file = (REPOSITORY_ROOT / "docker-compose.yml").read_text(encoding="utf-8")
-    for mapping in ('"127.0.0.1:3000:3000"', '"127.0.0.1:8000:8000"'):
-        if mapping not in compose_file:
-            print(f"Offline source verification failed: missing loopback mapping {mapping}")
+    outbound_guard = REPOSITORY_ROOT / "apps" / "api" / "app" / "core" / "network.py"
+    if not outbound_guard.is_file():
+        print("Offline verification failed: outbound network guard is missing.")
+        return 1
+    guard_text = outbound_guard.read_text(encoding="utf-8")
+    if "configure_outbound_network_guard" not in guard_text or "socket.connect" not in guard_text:
+        print("Offline verification failed: outbound network guard is incomplete.")
+        return 1
+
+    web_package = (REPOSITORY_ROOT / "apps" / "web" / "package.json").read_text(encoding="utf-8")
+    for native_script in (
+        '"dev": "next dev --hostname 127.0.0.1',
+        '"start": "next start --hostname 127.0.0.1',
+    ):
+        if native_script not in web_package:
+            print("Offline verification failed: native frontend command is not loopback-only.")
             return 1
 
-    print("Offline source verification passed: no remote frontend assets or non-loopback ports.")
+    service_worker = REPOSITORY_ROOT / "apps" / "web" / "public" / "sw.js"
+    if not service_worker.is_file():
+        print("Offline verification failed: service worker is missing.")
+        return 1
+    worker_text = service_worker.read_text(encoding="utf-8")
+    if "url.origin !== self.location.origin" not in worker_text:
+        print("Offline verification failed: service worker lacks cross-origin cache exclusion.")
+        return 1
+    if 'url.pathname.startsWith("/api/")' not in worker_text:
+        print("Offline verification failed: service worker lacks API cache exclusion.")
+        return 1
+
+    print(
+        "Offline verification passed: loopback ports, local assets, outbound boundaries, "
+        "and network-only API caching are configured."
+    )
     return 0
 
 

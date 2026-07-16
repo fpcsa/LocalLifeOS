@@ -3,10 +3,6 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 import pytest
-from pydantic import ValidationError
-from sqlalchemy.exc import IntegrityError, StatementError
-from sqlmodel import Session, select
-
 from app.core.exceptions import DomainConflictError, DomainValidationError
 from app.db.transactions import transaction
 from app.models import (
@@ -24,6 +20,9 @@ from app.schemas.domain import CommitmentLinkCreate, TransactionCreate
 from app.services.commitments import add_commitment_link, remove_commitment_link
 from app.services.finance import create_transaction
 from app.services.seed import DEFAULT_WORKSPACE_ID
+from pydantic import ValidationError
+from sqlalchemy.exc import IntegrityError, StatementError
+from sqlmodel import Session, select
 
 
 def test_database_prevents_negative_durations_and_self_dependencies(

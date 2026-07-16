@@ -24,5 +24,7 @@ def system_info(session: SessionDependency) -> SystemInfoResponse:
         storage="sqlite",
         timezone=timezone,
         telemetry_enabled=False,
-        external_requests_enabled=False,
+        external_requests_enabled=settings.external_requests_enabled,
+        network_mode="loopback-only",
+        data_directory=settings.data_dir,
     )

@@ -1,4 +1,5 @@
 import type { ButtonHTMLAttributes } from "react";
+import { forwardRef } from "react";
 
 import { cn } from "@/lib/cn";
 
@@ -24,15 +25,18 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   loading?: boolean;
 }
 
-export function Button({
-  className,
-  variant = "primary",
-  size = "md",
-  loading = false,
-  disabled,
-  children,
-  ...props
-}: ButtonProps) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    className,
+    variant = "primary",
+    size = "md",
+    loading = false,
+    disabled,
+    children,
+    ...props
+  },
+  ref,
+) {
   return (
     <button
       aria-busy={loading || undefined}
@@ -43,10 +47,11 @@ export function Button({
         className,
       )}
       disabled={disabled || loading}
+      ref={ref}
       {...props}
     >
       {loading ? <span aria-hidden="true" className="h-4 w-4 animate-pulse rounded-full bg-current opacity-40" /> : null}
       {children}
     </button>
   );
-}
+});

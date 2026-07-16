@@ -4,8 +4,6 @@ from datetime import UTC, date, datetime, timedelta
 from uuid import uuid4
 
 import pytest
-from pydantic import ValidationError
-
 from app.models import RecurrenceFrequency, ScenarioOperation, TransactionType
 from app.schemas.common import MoneyAmount
 from app.schemas.domain import (
@@ -18,6 +16,7 @@ from app.schemas.domain import (
     TaskDependencyCreate,
     TransactionCreate,
 )
+from pydantic import ValidationError
 
 NOW = datetime(2026, 7, 15, 10, 0, tzinfo=UTC)
 

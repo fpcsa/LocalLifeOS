@@ -4,11 +4,6 @@ from datetime import UTC, timedelta
 from typing import Any
 from uuid import UUID
 
-from apscheduler.schedulers.background import BackgroundScheduler
-from fastapi.testclient import TestClient
-from httpx import Response
-from sqlmodel import Session
-
 from app.db.session import get_engine
 from app.models import AutomationRule, AutomationTriggerType
 from app.models.common import utc_now
@@ -16,6 +11,10 @@ from app.repositories.automation import AutomationRuleRepository
 from app.services.automation import dispatch_automation_event
 from app.services.automation_scheduler import RULE_JOB_PREFIX, reconcile_scheduler
 from app.services.seed import DEFAULT_WORKSPACE_ID
+from apscheduler.schedulers.background import BackgroundScheduler
+from fastapi.testclient import TestClient
+from httpx import Response
+from sqlmodel import Session
 
 
 def _data(response: Response, expected_status: int = 200) -> Any:

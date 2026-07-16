@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import pytest
-from sqlmodel import Session
-
 from app.core.exceptions import RevisionConflictError
 from app.db.session import get_engine
 from app.db.transactions import transaction
 from app.repositories import WorkspaceRepository
+from sqlmodel import Session
 
 
 def test_atomic_revision_check_rejects_stale_updates(db_session: Session) -> None:

@@ -4,7 +4,6 @@ import json
 import sys
 from pathlib import Path
 
-
 REPOSITORY_ROOT = Path(__file__).resolve().parents[1]
 API_ROOT = REPOSITORY_ROOT / "apps" / "api"
 OPENAPI_OUTPUT = REPOSITORY_ROOT / "packages" / "shared-types" / "src" / "openapi.json"
@@ -22,7 +21,8 @@ def main() -> int:
     )
     print(
         f"Exported {len(schema['paths'])} paths and "
-        f"{len(schema['components']['schemas'])} schemas to {OPENAPI_OUTPUT.relative_to(REPOSITORY_ROOT)}"
+        f"{len(schema['components']['schemas'])} schemas to "
+        f"{OPENAPI_OUTPUT.relative_to(REPOSITORY_ROOT)}"
     )
     return 0
 

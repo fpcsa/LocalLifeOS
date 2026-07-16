@@ -3,13 +3,12 @@ from __future__ import annotations
 from uuid import uuid4
 
 import pytest
-from sqlalchemy import func
-from sqlmodel import Session, select
-
 from app.db.transactions import transaction
 from app.models import Tag
 from app.repositories import TagRepository
 from app.services.seed import DEFAULT_WORKSPACE_ID
+from sqlalchemy import func
+from sqlmodel import Session, select
 
 
 def test_tag_repository_crud_and_pagination(db_session: Session) -> None:

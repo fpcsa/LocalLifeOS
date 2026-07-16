@@ -35,6 +35,7 @@ class PreferencesResponse(ApiModel):
     currency_code: str
     week_starts_on: int
     theme: ThemeMode
+    session_timeout_minutes: int
     revision: int
     created_at: datetime
     updated_at: datetime
@@ -46,6 +47,7 @@ class PreferencesUpdate(ApiModel):
     currency_code: CurrencyCode | None = None
     week_starts_on: int | None = Field(default=None, ge=0, le=6)
     theme: ThemeMode | None = None
+    session_timeout_minutes: int | None = Field(default=None, ge=1, le=1_440)
     revision: int = Field(ge=1)
 
 

@@ -963,6 +963,226 @@
         "title": "AvailabilityWindowInput",
         "type": "object"
       },
+      "BackupCreateRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "password": {
+            "anyOf": [
+              {
+                "format": "password",
+                "type": "string",
+                "writeOnly": true
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password"
+          }
+        },
+        "title": "BackupCreateRequest",
+        "type": "object"
+      },
+      "BackupCreateResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "backup": {
+            "$ref": "#/components/schemas/BackupSummary"
+          },
+          "manifest": {
+            "$ref": "#/components/schemas/BackupManifest"
+          }
+        },
+        "required": [
+          "backup",
+          "manifest"
+        ],
+        "title": "BackupCreateResponse",
+        "type": "object"
+      },
+      "BackupFileEntry": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "attachment",
+              "database",
+              "preferences"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "path": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Path",
+            "type": "string"
+          },
+          "sha256": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size_bytes": {
+            "minimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "path",
+          "kind",
+          "size_bytes",
+          "sha256"
+        ],
+        "title": "BackupFileEntry",
+        "type": "object"
+      },
+      "BackupManifest": {
+        "additionalProperties": false,
+        "properties": {
+          "app_version": {
+            "title": "App Version",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "database_path": {
+            "const": "database/locallife.db",
+            "default": "database/locallife.db",
+            "title": "Database Path",
+            "type": "string"
+          },
+          "encrypted": {
+            "title": "Encrypted",
+            "type": "boolean"
+          },
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/BackupFileEntry"
+            },
+            "title": "Files",
+            "type": "array"
+          },
+          "format": {
+            "const": "locallife-backup",
+            "default": "locallife-backup",
+            "title": "Format",
+            "type": "string"
+          },
+          "format_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Format Version",
+            "type": "integer"
+          },
+          "preference_metadata": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Preference Metadata",
+            "type": "object"
+          },
+          "preferences_path": {
+            "const": "preferences.json",
+            "default": "preferences.json",
+            "title": "Preferences Path",
+            "type": "string"
+          },
+          "schema_revision": {
+            "title": "Schema Revision",
+            "type": "string"
+          },
+          "workspace_metadata": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Workspace Metadata",
+            "type": "object"
+          }
+        },
+        "required": [
+          "app_version",
+          "created_at",
+          "schema_revision",
+          "encrypted",
+          "workspace_metadata",
+          "preference_metadata",
+          "files"
+        ],
+        "title": "BackupManifest",
+        "type": "object"
+      },
+      "BackupSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "encrypted": {
+            "title": "Encrypted",
+            "type": "boolean"
+          },
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "integrity_verified": {
+            "title": "Integrity Verified",
+            "type": "boolean"
+          },
+          "path": {
+            "format": "path",
+            "title": "Path",
+            "type": "string"
+          },
+          "schema_revision": {
+            "title": "Schema Revision",
+            "type": "string"
+          },
+          "size_bytes": {
+            "minimum": 0.0,
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "filename",
+          "path",
+          "created_at",
+          "schema_revision",
+          "encrypted",
+          "size_bytes",
+          "integrity_verified"
+        ],
+        "title": "BackupSummary",
+        "type": "object"
+      },
       "Body_post_attachment_api_v1_attachments_post": {
         "properties": {
           "entity_id": {
@@ -4192,6 +4412,19 @@
         "title": "DataEnvelope[AutomationRuleResponse]",
         "type": "object"
       },
+      "DataEnvelope_BackupCreateResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/BackupCreateResponse"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[BackupCreateResponse]",
+        "type": "object"
+      },
       "DataEnvelope_BudgetConsumptionResponse_": {
         "additionalProperties": false,
         "properties": {
@@ -4348,6 +4581,19 @@
         "title": "DataEnvelope[CsvMappingProfileResponse]",
         "type": "object"
       },
+      "DataEnvelope_DeleteAllLocalDataResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DeleteAllLocalDataResponse"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[DeleteAllLocalDataResponse]",
+        "type": "object"
+      },
       "DataEnvelope_DeletedResource_": {
         "additionalProperties": false,
         "properties": {
@@ -4502,6 +4748,19 @@
           "data"
         ],
         "title": "DataEnvelope[PreferencesResponse]",
+        "type": "object"
+      },
+      "DataEnvelope_PrivacyStatusResponse_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/PrivacyStatusResponse"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[PrivacyStatusResponse]",
         "type": "object"
       },
       "DataEnvelope_ProjectResponse_": {
@@ -5075,6 +5334,60 @@
         ],
         "title": "DeadlineRiskLevel",
         "type": "string"
+      },
+      "DeleteAllLocalDataRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "confirmation": {
+            "const": "DELETE ALL LOCAL DATA",
+            "title": "Confirmation",
+            "type": "string"
+          },
+          "include_backups": {
+            "default": false,
+            "title": "Include Backups",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "confirmation"
+        ],
+        "title": "DeleteAllLocalDataRequest",
+        "type": "object"
+      },
+      "DeleteAllLocalDataResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "deleted_attachment_files": {
+            "title": "Deleted Attachment Files",
+            "type": "integer"
+          },
+          "deleted_backup_files": {
+            "title": "Deleted Backup Files",
+            "type": "integer"
+          },
+          "deleted_database_records": {
+            "title": "Deleted Database Records",
+            "type": "integer"
+          },
+          "deleted_import_files": {
+            "title": "Deleted Import Files",
+            "type": "integer"
+          },
+          "preserved_backups": {
+            "title": "Preserved Backups",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "deleted_database_records",
+          "deleted_attachment_files",
+          "deleted_import_files",
+          "deleted_backup_files",
+          "preserved_backups"
+        ],
+        "title": "DeleteAllLocalDataResponse",
+        "type": "object"
       },
       "DeletedResource": {
         "additionalProperties": false,
@@ -7467,6 +7780,10 @@
             "title": "Revision",
             "type": "integer"
           },
+          "session_timeout_minutes": {
+            "title": "Session Timeout Minutes",
+            "type": "integer"
+          },
           "theme": {
             "$ref": "#/components/schemas/ThemeMode"
           },
@@ -7497,6 +7814,7 @@
           "currency_code",
           "week_starts_on",
           "theme",
+          "session_timeout_minutes",
           "revision",
           "created_at",
           "updated_at"
@@ -7537,6 +7855,19 @@
             "minimum": 1.0,
             "title": "Revision",
             "type": "integer"
+          },
+          "session_timeout_minutes": {
+            "anyOf": [
+              {
+                "maximum": 1440.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Timeout Minutes"
           },
           "theme": {
             "anyOf": [
@@ -7590,6 +7921,104 @@
         ],
         "title": "PreferredTimeOfDay",
         "type": "string"
+      },
+      "PrivacyStatusResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "attachments_directory": {
+            "format": "path",
+            "title": "Attachments Directory",
+            "type": "string"
+          },
+          "backups_directory": {
+            "format": "path",
+            "title": "Backups Directory",
+            "type": "string"
+          },
+          "data_directory": {
+            "format": "path",
+            "title": "Data Directory",
+            "type": "string"
+          },
+          "database_path": {
+            "format": "path",
+            "title": "Database Path",
+            "type": "string"
+          },
+          "external_requests_enabled": {
+            "title": "External Requests Enabled",
+            "type": "boolean"
+          },
+          "imports_directory": {
+            "format": "path",
+            "title": "Imports Directory",
+            "type": "string"
+          },
+          "last_backup": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BackupSummary"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "max_attachment_bytes": {
+            "title": "Max Attachment Bytes",
+            "type": "integer"
+          },
+          "max_backup_bytes": {
+            "title": "Max Backup Bytes",
+            "type": "integer"
+          },
+          "max_import_bytes": {
+            "title": "Max Import Bytes",
+            "type": "integer"
+          },
+          "network_mode": {
+            "const": "loopback-only",
+            "title": "Network Mode",
+            "type": "string"
+          },
+          "outbound_guard_active": {
+            "title": "Outbound Guard Active",
+            "type": "boolean"
+          },
+          "privacy_lock_scope": {
+            "const": "casual-screen-privacy",
+            "title": "Privacy Lock Scope",
+            "type": "string"
+          },
+          "session_timeout_minutes": {
+            "title": "Session Timeout Minutes",
+            "type": "integer"
+          },
+          "telemetry_enabled": {
+            "const": false,
+            "title": "Telemetry Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "data_directory",
+          "database_path",
+          "attachments_directory",
+          "backups_directory",
+          "imports_directory",
+          "network_mode",
+          "telemetry_enabled",
+          "external_requests_enabled",
+          "outbound_guard_active",
+          "max_attachment_bytes",
+          "max_import_bytes",
+          "max_backup_bytes",
+          "session_timeout_minutes",
+          "privacy_lock_scope",
+          "last_backup"
+        ],
+        "title": "PrivacyStatusResponse",
+        "type": "object"
       },
       "ProjectCreateRequest": {
         "additionalProperties": false,
@@ -10651,14 +11080,23 @@
             "title": "Application",
             "type": "string"
           },
+          "data_directory": {
+            "format": "path",
+            "title": "Data Directory",
+            "type": "string"
+          },
           "environment": {
             "title": "Environment",
             "type": "string"
           },
           "external_requests_enabled": {
-            "const": false,
             "title": "External Requests Enabled",
             "type": "boolean"
+          },
+          "network_mode": {
+            "const": "loopback-only",
+            "title": "Network Mode",
+            "type": "string"
           },
           "storage": {
             "const": "sqlite",
@@ -10686,7 +11124,9 @@
           "storage",
           "timezone",
           "telemetry_enabled",
-          "external_requests_enabled"
+          "external_requests_enabled",
+          "network_mode",
+          "data_directory"
         ],
         "title": "SystemInfoResponse",
         "type": "object"
@@ -19177,6 +19617,109 @@
         "summary": "Patch Preferences",
         "tags": [
           "workspace"
+        ]
+      }
+    },
+    "/api/v1/privacy/backups": {
+      "post": {
+        "operationId": "post_backup_api_v1_privacy_backups_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BackupCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_BackupCreateResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Backup",
+        "tags": [
+          "privacy"
+        ]
+      }
+    },
+    "/api/v1/privacy/delete-all": {
+      "post": {
+        "operationId": "post_delete_all_api_v1_privacy_delete_all_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteAllLocalDataRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_DeleteAllLocalDataResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Delete All",
+        "tags": [
+          "privacy"
+        ]
+      }
+    },
+    "/api/v1/privacy/status": {
+      "get": {
+        "operationId": "read_privacy_status_api_v1_privacy_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_PrivacyStatusResponse_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Read Privacy Status",
+        "tags": [
+          "privacy"
         ]
       }
     },

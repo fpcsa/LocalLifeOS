@@ -4,7 +4,6 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 import pytest
-
 from app.utils.recurrence import canonicalize_rrule, expand_recurrence
 
 

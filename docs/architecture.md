@@ -4,8 +4,8 @@
 
 This document describes the runnable repository foundation, local productivity and finance domains,
 commitment and capacity engines, isolated scenario planning, unified timeline, and their connected
-desktop-first frontend through Prompt 9. Imports, automation execution, service-worker caching, and
-encrypted backups remain future work.
+desktop-first frontend, imports and automation, offline shell, privacy controls, backup/restore,
+and native launcher through Prompt 11.
 
 ## Runtime boundary
 
@@ -66,8 +66,15 @@ The API is mounted under `/api/v1`.
 | `/api/v1/scheduling` | Non-mutating CP-SAT previews, atomic apply, capacity, and explanations |
 | `/api/v1/imports` | ICS/CSV preview, mapping, selection, apply, export, profiles, and history |
 | `/api/v1/automation` | Structured rule CRUD, dry-run previews, execution logs, notifications, and scheduler state |
+| `GET /api/v1/privacy/status` | Resolved paths, network/privacy controls, limits, timeout, and last backup |
+| `POST /api/v1/privacy/backups` | Create and verify a complete optionally encrypted local backup |
+| `POST /api/v1/privacy/delete-all` | Exact-confirmation workspace reset with staged file rollback |
 
-Every response receives an `X-Request-ID`. HTTP, validation, and unexpected errors use one structured `error` envelope. Settings are loaded with Pydantic Settings and reject remote database URLs, non-loopback CORS origins, telemetry, and external-request enablement.
+Every response receives an `X-Request-ID`. HTTP, validation, and unexpected errors use one
+structured `error` envelope. Settings reject remote database URLs, non-loopback CORS origins,
+telemetry, and native public binds. Trusted Host, explicit Origin, security-header, and outbound
+socket guard layers protect the loopback boundary; an explicit development override can disable
+the outbound guard.
 
 Application startup creates the permitted data directories, runs `alembic upgrade head`, and
 idempotently seeds the default workspace, preferences, categories, and `user.timezone` setting.
@@ -132,7 +139,14 @@ Import screens provide file-local preview, row selection, normalized CSV mapping
 history, and calendar export. Automation screens provide a typed builder, enable/disable lifecycle,
 write-free test previews, scheduler state, notifications, and execution history.
 
-The interface uses Tailwind tokens and a system font stack. It includes light and dark color schemes, visible focus states, semantic elements, minimum interaction targets, a reduced-motion fallback, and loading/success/error health states. No asset refers to a remote host.
+Settings shows resolved paths, network/telemetry state, limits, session timeout, backup
+status/creation, and an exact-confirmation data reset. A UI-wide inactivity shield provides casual
+screen privacy without claiming authentication. The service worker caches only shell routes and
+local static assets; API calls remain network-only with `no-store`.
+
+The interface uses Tailwind tokens and a system font stack. It includes light and dark color
+schemes, visible focus states, semantic elements, minimum interaction targets, a reduced-motion
+fallback, and loading/success/error health states. No asset refers to a remote host.
 
 ## Containers and persistence
 
@@ -140,10 +154,12 @@ The API and web images install from pinned Python requirements and `package-lock
 
 Source bind mounts are intentionally omitted from the default Compose file to make the judging path reproducible across host operating systems. Native development commands provide hot reload.
 
-## Deferred security work
+## Security boundary
 
-The foundation includes loopback binding, path confinement, upload size/filename checks, local-only
-CORS, request IDs, structured error handling, typed persistence validation, and foreign-key
-enforcement. Encryption, authentication, CSRF policy for browser mutations, attachment malware or
-content scanning, backup verification, service-worker caching, and a full threat model are not
-implemented in this goal and must not be represented as complete.
+The application includes loopback binding, host/origin/CORS enforcement, CSP and security headers,
+path confinement, size/filename/archive limits, request IDs, redacted logging, service-worker API
+cache exclusion, backup checksums, optional Argon2id/AES-GCM backup encryption, verified restore,
+and rollback. It does not implement multi-user authentication, live-database encryption, malware
+scanning, parser sandboxing, OS keychain integration, forensic erase, or protection from same-user
+malware. Exact claims and recovery behavior are in [privacy.md](privacy.md),
+[threat-model.md](threat-model.md), and [backup-format.md](backup-format.md).

@@ -11,6 +11,10 @@ foundation for current and future domain endpoints.
   and attachment download returns the stored media type as a file response.
 - Every response includes `X-Request-ID`. A valid incoming `X-Request-ID` is preserved;
   otherwise the API creates one.
+- API responses use `Cache-Control: no-store`; the service worker never caches `/api/` or
+  cross-origin traffic.
+- Browser requests with an `Origin` must match the exact loopback allowlist. Host values must match
+  the trusted loopback set. CLI requests without an Origin remain supported.
 - Request bodies reject unknown fields.
 
 ## Successful responses
@@ -362,3 +366,17 @@ Action success and its execution log share one transaction.
 Detailed format, mapping, duplicate, spreadsheet-safety, scheduler, restart, and security behavior
 is documented in [imports.md](imports.md), [automation.md](automation.md), and
 [security.md](security.md).
+
+## Privacy and backup actions
+
+| Method and path | Purpose |
+| --- | --- |
+| `GET /api/v1/privacy/status` | Local directories, network/privacy state, limits, timeout, and last backup |
+| `POST /api/v1/privacy/backups` | Create and fully verify a complete backup; optional password stays in the request body |
+| `POST /api/v1/privacy/delete-all` | Require the literal confirmation phrase and an explicit backup choice |
+
+Backup passwords use Pydantic `SecretStr`, never appear in a URL, response, manifest, launcher
+state, or log, and are discarded after the synchronous operation. Restore is a stopped-process
+native CLI operation because replacing an open SQLite database is unsafe on Windows. The container,
+schema compatibility, safety backup, rollback, and recovery contracts are defined in
+[backup-format.md](backup-format.md).

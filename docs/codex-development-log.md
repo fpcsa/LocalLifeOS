@@ -1196,3 +1196,214 @@ git -c safe.directory=C:/Python/fpcsa/LocalLifeOS diff --check
   the user's Docker configuration and succeeded after approved access; the first live browser run
   intentionally exposed a stale production bundle after an API-envelope correction, then passed
   after rebuilding. Neither failure remained in final verification.
+
+## 2026-07-15 — Prompt 11: offline hardening, privacy, backup/restore, and native launcher
+
+### Scope
+
+Completed the offline-first runtime boundary and operational safety layer for LocalLife OS: a
+shell-only service worker, loopback/CORS/Host/CSP/outbound controls, redacted logging and safer file
+writes, an honest inactivity privacy screen, versioned verified backups with optional authenticated
+encryption, staged restore with safety backup and rollback, destructive reset confirmation, and a
+cross-platform Typer launcher. No runtime AI, telemetry, public service, remote asset, API key, or
+cloud dependency was introduced.
+
+### Important decisions
+
+- Kept native services fixed to `127.0.0.1`. Container services may listen on `0.0.0.0` only behind
+  explicit `container_mode=true`, while Compose publishes both ports on host loopback.
+- Added exact browser Origin/CORS and trusted Host enforcement, strict security headers, a
+  default-deny process-level Python socket audit guard, and source/live external-URL checks. The
+  outbound override is explicit and development-only.
+- Cached versioned shell routes and same-origin static resources only. Cross-origin traffic,
+  non-GET requests, and API paths bypass the service worker; the API client and API responses also
+  use `no-store`.
+- Treated the privacy lock as a casual screen shield, not authentication. It records only activity
+  timing in local storage and explains that same-user callers and plaintext files remain outside its
+  protection.
+- Chose a ZIP-based v1 inner container with an exact manifest, schema revision, consistent SQLite
+  snapshot, preferences metadata, attachment inventory, sizes, and SHA-256 checksums. Archive
+  validation rejects unexpected/duplicate members, symlinks, traversal, oversized expansion, and
+  checksum mismatches without using `extractall`.
+- Used maintained `argon2-cffi` Argon2id and `cryptography` AES-256-GCM for optional backup password
+  protection. The random salt/nonce and KDF parameters are in an authenticated outer header; no
+  custom primitive, password storage, recovery mechanism, or sensitive logging was added.
+- Required full integrity and exact Alembic-head compatibility before restore preview/confirmation.
+  Restore creates a verified safety backup, stages database and attachments, swaps confined paths,
+  rolls back on activation failure, and documents manual recovery for power-loss edge cases.
+- Made attachment/import temporary writes exclusive, confined, bounded, flushed, atomically moved,
+  and cleaned on every handled failure. A shared storage lock coordinates backups with attachment
+  changes.
+- Implemented `locallife start|stop|status|backup|restore|doctor` with PowerShell/POSIX wrappers.
+  The launcher checks occupied ports, exposes paths and loopback status, opens a browser only by
+  request, tracks process trees, authenticates restore before preview, and preserves state if stop
+  cannot terminate a process.
+- Kept delete-all separate from restore and backup. It requires the exact phrase
+  `DELETE ALL LOCAL DATA`, preserves backups by default, stages file directories, and rolls back
+  staged paths if the database reset fails.
+- Pinned Docker base images by digest. The web runtime uses UID 1000; the API entrypoint performs a
+  one-time named-volume ownership migration and then launches Uvicorn under an unprivileged system
+  UID, preserving compatibility with volumes created by earlier root-running images.
+- Applied the frontend design guidance to Settings and privacy interactions: complete labels and
+  inline validation, password reveal controls, honest state/copy, keyboard focus containment,
+  semantic status feedback, and the existing neutral responsive token system.
+- Ran the infrastructure-first CSO review. Current npm/Python advisory scans and secrets archaeology
+  were clean. The saved comprehensive report records one low defense-in-depth CSP limitation and
+  four explicit informational local-trust boundaries.
+
+### Files created or materially changed
+
+Configuration, containers, and persistence:
+
+- `.env.example`
+- `apps/api/Dockerfile`
+- `apps/api/docker-entrypoint.sh`
+- `apps/api/requirements.txt`
+- `apps/api/pyproject.toml`
+- `apps/api/alembic/versions/20260716_0011_offline_privacy.py`
+- `apps/api/app/core/config.py`
+- `apps/api/app/db/session.py`
+- `apps/api/app/main.py`
+- `apps/api/app/models/core.py`
+- `apps/api/app/schemas/resources.py`
+- `docker-compose.yml`
+
+Backend hardening, privacy, backup, restore, launcher, and tests:
+
+- `apps/api/app/core/errors.py`
+- `apps/api/app/core/logging.py`
+- `apps/api/app/core/middleware.py`
+- `apps/api/app/core/network.py`
+- `apps/api/app/launcher.py`
+- `apps/api/app/api/v1/router.py`
+- `apps/api/app/api/v1/routes/privacy.py`
+- `apps/api/app/api/v1/routes/system.py`
+- `apps/api/app/schemas/privacy.py`
+- `apps/api/app/schemas/system.py`
+- `apps/api/app/services/attachments.py`
+- `apps/api/app/services/backups.py`
+- `apps/api/app/services/import_files.py`
+- `apps/api/app/services/privacy.py`
+- `apps/api/app/services/storage_lock.py`
+- `apps/api/tests/conftest.py`
+- `apps/api/tests/test_launcher.py`
+- `apps/api/tests/test_migrations.py`
+- `apps/api/tests/test_privacy_backups.py`
+- `apps/api/tests/test_system.py`
+
+Frontend, generated contracts, and live browser coverage:
+
+- `apps/web/Dockerfile`
+- `apps/web/app/manifest.ts`
+- `apps/web/app/offline/page.tsx`
+- `apps/web/public/sw.js`
+- `apps/web/components/app-shell.tsx`
+- `apps/web/components/offline-banner.tsx`
+- `apps/web/components/privacy-lock.tsx`
+- `apps/web/components/privacy-lock.test.tsx`
+- `apps/web/components/providers.tsx`
+- `apps/web/components/service-worker-registration.tsx`
+- `apps/web/components/service-worker.test.ts`
+- `apps/web/components/ui/button.tsx`
+- `apps/web/features/settings/settings-workspace.tsx`
+- `apps/web/lib/api/privacy.ts`
+- `apps/web/lib/api/query-keys.ts`
+- `apps/web/next.config.ts`
+- `apps/web/stores/ui-store.ts`
+- `packages/shared-types/src/openapi.json`
+- `packages/shared-types/src/openapi.ts`
+- `tests/e2e/frontend-smoke.mjs`
+
+Scripts, documentation, and audit record:
+
+- `scripts/backup-smoke-test.py`
+- `scripts/check-external-assets.py`
+- `scripts/export-openapi.py`
+- `scripts/locallife.ps1`
+- `scripts/locallife.sh`
+- `scripts/restore-smoke-test.py`
+- `scripts/verify-offline-mode.py`
+- `README.md`
+- `docs/api-conventions.md`
+- `docs/architecture.md`
+- `docs/backup-format.md`
+- `docs/frontend-architecture.md`
+- `docs/implementation-status.md`
+- `docs/native-launcher.md`
+- `docs/privacy.md`
+- `docs/security.md`
+- `docs/threat-model.md`
+- `.superstack/security-reports/LocalLifeOS-2026-07-15.md`
+- `.superstack/security-reports/history.md`
+
+Ruff also normalized import ordering in existing Alembic revisions and backend tests; those changes
+are mechanical and do not change runtime or test behavior.
+
+### Verification record
+
+Final acceptance commands run from the repository root unless noted:
+
+```text
+.\apps\api\.venv\Scripts\python.exe -m ruff format --config apps/api/pyproject.toml --check apps/api scripts
+.\apps\api\.venv\Scripts\python.exe -m ruff check --config apps/api/pyproject.toml apps/api scripts
+.\apps\api\.venv\Scripts\python.exe -m mypy --config-file apps/api/pyproject.toml apps/api/app
+.\apps\api\.venv\Scripts\python.exe -m pytest apps/api/tests -q
+.\apps\api\.venv\Scripts\python.exe -m pytest apps/api/tests/test_migrations.py -q
+.\apps\api\.venv\Scripts\python.exe scripts/export-openapi.py
+npm run generate:api-types
+npm run typecheck:web
+npm run lint:web
+npm run test:web
+npm run build:web
+npm run test:e2e:web
+.\apps\api\.venv\Scripts\python.exe scripts/check-external-assets.py
+.\apps\api\.venv\Scripts\python.exe scripts/verify-offline-mode.py
+.\apps\api\.venv\Scripts\python.exe scripts/backup-smoke-test.py
+.\apps\api\.venv\Scripts\python.exe scripts/restore-smoke-test.py
+node --check tests/e2e/frontend-smoke.mjs
+npm audit --omit=dev
+npm audit
+.\apps\api\.venv\Scripts\python.exe -m pip_audit -r apps/api/requirements.txt
+.\apps\api\.venv\Scripts\python.exe -m pip check
+docker compose config --quiet
+docker compose build
+docker compose up -d --build
+docker compose ps
+docker compose top api
+docker compose top web
+docker compose down
+.\scripts\locallife.ps1 start
+.\scripts\locallife.ps1 status --json
+.\scripts\locallife.ps1 stop
+git -c safe.directory=C:/Python/fpcsa/LocalLifeOS diff --check
+```
+
+- Backend: 78 tests passed. Ruff found all 176 files already formatted and reported no lint issues;
+  strict mypy reported no issues in 133 source files. The targeted clean migration test upgraded an
+  empty SQLite database through `20260716_0011`. The known SQLite implicit-constraint warning from
+  an older migration remains non-fatal.
+- OpenAPI: exported 109 paths and 307 schemas; generated TypeScript refreshed successfully.
+- Frontend: 10 Vitest files and 14 tests passed; strict TypeScript and ESLint passed; the production
+  build compiled and generated 18 route entries, including `/offline` and the PWA manifest.
+- Live Chrome: all 13 application routes passed at 1280, 768, and 375 pixels (39 route checks), plus
+  signature, mutation/search/calendar, labelled-control, and service-worker offline reload flows.
+  No unexpected console error, external request, route failure, or horizontal overflow remained.
+- Required scripts: source/live external-asset and offline checks passed; encrypted backup smoke
+  verified three payload entries; restore smoke verified integrity/schema, created a safety backup,
+  and restored the workspace.
+- Launcher: Windows start/status/stop passed against an isolated data directory. Status reported
+  only loopback URLs and the exact data path; both process trees were detected; stop removed them;
+  the isolated data directory was deleted after verification.
+- Dependencies/security: both npm audits reported zero vulnerabilities; pip-audit reported no known
+  vulnerabilities; pip check reported no broken requirements; working-tree/history secret scans
+  found no high-confidence credential or private-key material.
+- Containers: digest-pinned API/web images built. Compose reported both services healthy on
+  `127.0.0.1`; `docker compose top` showed the Uvicorn application under the unprivileged system UID
+  and the Next.js runtime under UID 1000. Compose was stopped while preserving its named data volume.
+- Shell syntax could not be checked with local `sh -n` because this Windows environment has no
+  `sh` executable. The API POSIX entrypoint nevertheless executed successfully in its Debian
+  container, and the PowerShell launcher was exercised live. JavaScript syntax passed.
+- Diagnostics resolved during implementation: a stale npm script name was corrected to the declared
+  `generate:api-types`; Windows `os.kill(pid, 0)` liveness was replaced with the Win32 process API;
+  intentional offline console failures were scoped in the E2E test; the local embedded calendar font
+  was allowed by CSP; and legacy Docker-volume ownership was migrated before privilege drop.

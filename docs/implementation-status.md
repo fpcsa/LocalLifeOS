@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 2026-07-15
+Last updated: 2026-07-16
 
 ## Prompt 1 — Repository foundation
 
@@ -241,8 +241,36 @@ Last updated: 2026-07-15
 - [x] Automation user interface
 - [x] Scenario projections, comparison, and acceptance workflow
 - [x] `.ics` and CSV imports plus deterministic local automation
-- [ ] Service worker, offline workflow verification, backup/restore, and security hardening
+- [x] Service worker, offline workflow verification, backup/restore, and security hardening
 - [x] Build Week, Berlin conference, and Laptop purchase demo data plus signature-flow E2E coverage
 - [ ] Broader repository-level E2E coverage and submission readiness
 
-Encryption is deferred. No current checklist item should be interpreted as encrypted storage or encrypted backups.
+## Prompt 11 — Offline hardening, privacy, backup/restore, and native launcher
+
+- [x] Versioned service-worker shell/static caching with network-first navigation fallback
+- [x] Explicit cross-origin, non-GET, and `/api/` cache exclusion plus API `no-store`
+- [x] Offline indicator, offline route, PWA manifest, and live browser offline-shell smoke flow
+- [x] Repository/live-runtime external URL, asset, CSP, and redirect verification script
+- [x] Native loopback validation, container-mode scoping, strict CORS, Origin, and Host checks
+- [x] Digest-pinned container bases, one-time named-volume ownership migration, and unprivileged
+  API/web application processes
+- [x] CSP, security headers, no access log, sensitive-value/query redaction, and safe exceptions
+- [x] Default-deny Python outbound socket guard with explicit development override
+- [x] Confined exclusive attachment/import writes, limits, fsync, and temporary cleanup
+- [x] Casual privacy-screen lock, configurable inactivity timeout, and honest limitations
+- [x] Settings paths, network mode, telemetry-off state, limits, backup status, and last backup
+- [x] Exact-confirmation delete-all workflow with backup-preservation choice and staged file rollback
+- [x] Backup v1 database/attachment/preference/schema/manifest/checksum container
+- [x] Optional Argon2id plus AES-256-GCM authenticated password protection using mature libraries
+- [x] Backup self-verification before success, wrong-password and tamper rejection
+- [x] Restore inspection/preview, exact schema compatibility, automatic safety backup, staged swap,
+  integrity check, rollback, and documented manual recovery
+- [x] Typer `start`, `stop`, `status`, `backup`, `restore`, and `doctor` commands
+- [x] PowerShell and POSIX entry points, occupied-port checks, PID/status paths, opt-in browser open
+- [x] Required offline, external-asset, backup, and restore verification scripts
+- [x] Threat model for assets, boundaries, local attackers, imports, traversal, CSV, tampering,
+  database theft, limitations, and non-goals
+- [x] Backend, launcher, service-worker, frontend session, smoke, and adversarial tests
+
+The live SQLite database and ordinary data directories remain plaintext. Only backups created with
+an explicit password are encrypted; the privacy screen is not authentication.

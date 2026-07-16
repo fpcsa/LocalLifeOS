@@ -4,12 +4,11 @@ from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlmodel import Session
-
 from app.core.config import get_settings
 from app.db.session import get_engine, initialize_database
 from app.main import create_app
+from fastapi.testclient import TestClient
+from sqlmodel import Session
 
 
 @pytest.fixture
@@ -21,6 +20,9 @@ def database_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Iterator[P
     monkeypatch.setenv("LOCALLIFE_TELEMETRY_ENABLED", "false")
     monkeypatch.setenv("LOCALLIFE_EXTERNAL_REQUESTS_ENABLED", "false")
     monkeypatch.setenv("LOCALLIFE_AUTOMATION_SCHEDULER_ENABLED", "false")
+    monkeypatch.setenv("LOCALLIFE_BACKUP_ARGON2_MEMORY_KIB", "8192")
+    monkeypatch.setenv("LOCALLIFE_BACKUP_ARGON2_TIME_COST", "1")
+    monkeypatch.setenv("LOCALLIFE_BACKUP_ARGON2_PARALLELISM", "1")
     monkeypatch.setenv(
         "LOCALLIFE_DATABASE_URL",
         f"sqlite:///{database_path.as_posix()}",

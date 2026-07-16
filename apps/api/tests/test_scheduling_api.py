@@ -6,10 +6,9 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from app.repositories import TaskRepository
 from fastapi.testclient import TestClient
 from ortools.sat.python import cp_model
-
-from app.repositories import TaskRepository
 
 
 def _data(response: Any, expected_status: int = 200) -> Any:

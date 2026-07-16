@@ -30,8 +30,16 @@ try {
     const page = await context.newPage();
     const runtimeErrors = [];
     const externalRequests = [];
+    let expectOfflineNetworkErrors = false;
     page.on("pageerror", (error) => runtimeErrors.push(`${page.url()}: ${error.message}`));
-    page.on("console", (message) => { if (message.type() === "error") runtimeErrors.push(`${page.url()}: ${message.text()}`); });
+    page.on("console", (message) => {
+      if (
+        message.type() === "error" &&
+        !(expectOfflineNetworkErrors && message.text().includes("ERR_INTERNET_DISCONNECTED"))
+      ) {
+        runtimeErrors.push(`${page.url()}: ${message.text()}`);
+      }
+    });
     page.on("request", (request) => {
       const url = new URL(request.url());
       if (["http:", "https:"].includes(url.protocol) && !["127.0.0.1", "localhost", "::1"].includes(url.hostname)) externalRequests.push(request.url());
@@ -136,6 +144,24 @@ try {
       await page.getByRole("button", { name: taskName }).waitFor();
       await page.keyboard.press("Escape");
       report.push("desktop mutations/search/calendar: ok");
+
+      await page.goto(baseUrl, { waitUntil: "networkidle" });
+      await page.evaluate(async () => {
+        const registration = await navigator.serviceWorker.ready;
+        if (!registration.active) throw new Error("Service worker did not activate");
+        if (!navigator.serviceWorker.controller) {
+          await new Promise((resolve) => navigator.serviceWorker.addEventListener("controllerchange", resolve, { once: true }));
+        }
+      });
+      await page.reload({ waitUntil: "networkidle" });
+      expectOfflineNetworkErrors = true;
+      await context.setOffline(true);
+      await page.reload({ waitUntil: "domcontentloaded" });
+      await page.locator("main").waitFor();
+      await page.getByText(/Local connection is offline/).waitFor();
+      await context.setOffline(false);
+      expectOfflineNetworkErrors = false;
+      report.push("desktop service-worker offline shell: ok");
     }
 
     await page.goto(baseUrl, { waitUntil: "networkidle" });

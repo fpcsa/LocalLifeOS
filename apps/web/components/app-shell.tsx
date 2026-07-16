@@ -11,6 +11,7 @@ import {
   FlaskConical,
   Goal,
   Layers3,
+  LockKeyhole,
   Upload,
   Workflow,
   PanelLeftClose,
@@ -110,6 +111,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   const toggleSidebar = useUiStore((state) => state.toggleSidebar);
   const setCommandOpen = useUiStore((state) => state.setCommandPaletteOpen);
   const openQuickCreate = useUiStore((state) => state.openQuickCreate);
+  const lockPrivacy = useUiStore((state) => state.lockPrivacy);
   const pathname = usePathname();
 
   return (
@@ -128,6 +130,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <kbd className="rounded border border-border bg-muted px-1.5 py-0.5 text-xs">Ctrl K</kbd>
         </button>
         <Button aria-label="Search" className="lg:hidden" onClick={() => setCommandOpen(true)} size="icon" type="button" variant="ghost"><Search aria-hidden="true" className="h-5 w-5" /></Button>
+        <Button aria-label="Lock privacy screen" onClick={lockPrivacy} size="icon" type="button" variant="ghost"><LockKeyhole aria-hidden="true" className="h-5 w-5" /></Button>
         <Button onClick={() => openQuickCreate()} type="button"><Plus aria-hidden="true" className="h-4 w-4" /><span className="hidden sm:inline">Quick create</span></Button>
         <SystemStatus />
       </header>

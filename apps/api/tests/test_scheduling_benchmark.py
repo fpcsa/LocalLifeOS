@@ -5,12 +5,11 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from time import perf_counter
 
-from sqlmodel import Session
-
 from app.models import CalendarEvent, Task, TaskPriority
 from app.schemas.scheduling import SchedulingPreviewRequest
 from app.services.scheduling import create_scheduling_preview
 from app.services.workspace import get_current_workspace
+from sqlmodel import Session
 
 
 def test_bounded_maximum_scheduling_fixture_completes_within_solver_limit(

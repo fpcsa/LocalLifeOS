@@ -1361,6 +1361,57 @@ export interface paths {
         patch: operations["patch_preferences_api_v1_preferences_patch"];
         trace?: never;
     };
+    "/api/v1/privacy/backups": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Backup */
+        post: operations["post_backup_api_v1_privacy_backups_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/privacy/delete-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Delete All */
+        post: operations["post_delete_all_api_v1_privacy_delete_all_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/privacy/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Read Privacy Status */
+        get: operations["read_privacy_status_api_v1_privacy_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/projects": {
         parameters: {
             query?: never;
@@ -2192,6 +2243,103 @@ export interface components {
              * Format: date-time
              */
             starts_at: string;
+        };
+        /** BackupCreateRequest */
+        BackupCreateRequest: {
+            /** Label */
+            label?: string | null;
+            /** Password */
+            password?: string | null;
+        };
+        /** BackupCreateResponse */
+        BackupCreateResponse: {
+            backup: components["schemas"]["BackupSummary"];
+            manifest: components["schemas"]["BackupManifest"];
+        };
+        /** BackupFileEntry */
+        BackupFileEntry: {
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "attachment" | "database" | "preferences";
+            /** Path */
+            path: string;
+            /** Sha256 */
+            sha256: string;
+            /** Size Bytes */
+            size_bytes: number;
+        };
+        /** BackupManifest */
+        BackupManifest: {
+            /** App Version */
+            app_version: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Database Path
+             * @default database/locallife.db
+             * @constant
+             */
+            database_path: "database/locallife.db";
+            /** Encrypted */
+            encrypted: boolean;
+            /** Files */
+            files: components["schemas"]["BackupFileEntry"][];
+            /**
+             * Format
+             * @default locallife-backup
+             * @constant
+             */
+            format: "locallife-backup";
+            /**
+             * Format Version
+             * @default 1
+             * @constant
+             */
+            format_version: 1;
+            /** Preference Metadata */
+            preference_metadata: {
+                [key: string]: string | number;
+            };
+            /**
+             * Preferences Path
+             * @default preferences.json
+             * @constant
+             */
+            preferences_path: "preferences.json";
+            /** Schema Revision */
+            schema_revision: string;
+            /** Workspace Metadata */
+            workspace_metadata: {
+                [key: string]: string;
+            };
+        };
+        /** BackupSummary */
+        BackupSummary: {
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Encrypted */
+            encrypted: boolean;
+            /** Filename */
+            filename: string;
+            /** Integrity Verified */
+            integrity_verified: boolean;
+            /**
+             * Path
+             * Format: path
+             */
+            path: string;
+            /** Schema Revision */
+            schema_revision: string;
+            /** Size Bytes */
+            size_bytes: number;
         };
         /** Body_post_attachment_api_v1_attachments_post */
         Body_post_attachment_api_v1_attachments_post: {
@@ -3240,6 +3388,10 @@ export interface components {
         DataEnvelope_AutomationRuleResponse_: {
             data: components["schemas"]["AutomationRuleResponse"];
         };
+        /** DataEnvelope[BackupCreateResponse] */
+        DataEnvelope_BackupCreateResponse_: {
+            data: components["schemas"]["BackupCreateResponse"];
+        };
         /** DataEnvelope[BudgetConsumptionResponse] */
         DataEnvelope_BudgetConsumptionResponse_: {
             data: components["schemas"]["BudgetConsumptionResponse"];
@@ -3288,6 +3440,10 @@ export interface components {
         DataEnvelope_CsvMappingProfileResponse_: {
             data: components["schemas"]["CsvMappingProfileResponse"];
         };
+        /** DataEnvelope[DeleteAllLocalDataResponse] */
+        DataEnvelope_DeleteAllLocalDataResponse_: {
+            data: components["schemas"]["DeleteAllLocalDataResponse"];
+        };
         /** DataEnvelope[DeletedResource] */
         DataEnvelope_DeletedResource_: {
             data: components["schemas"]["DeletedResource"];
@@ -3335,6 +3491,10 @@ export interface components {
         /** DataEnvelope[PreferencesResponse] */
         DataEnvelope_PreferencesResponse_: {
             data: components["schemas"]["PreferencesResponse"];
+        };
+        /** DataEnvelope[PrivacyStatusResponse] */
+        DataEnvelope_PrivacyStatusResponse_: {
+            data: components["schemas"]["PrivacyStatusResponse"];
         };
         /** DataEnvelope[ProjectResponse] */
         DataEnvelope_ProjectResponse_: {
@@ -3503,6 +3663,32 @@ export interface components {
          * @enum {string}
          */
         DeadlineRiskLevel: "on_track" | "at_risk" | "missed" | "unscheduled" | "not_applicable";
+        /** DeleteAllLocalDataRequest */
+        DeleteAllLocalDataRequest: {
+            /**
+             * Confirmation
+             * @constant
+             */
+            confirmation: "DELETE ALL LOCAL DATA";
+            /**
+             * Include Backups
+             * @default false
+             */
+            include_backups: boolean;
+        };
+        /** DeleteAllLocalDataResponse */
+        DeleteAllLocalDataResponse: {
+            /** Deleted Attachment Files */
+            deleted_attachment_files: number;
+            /** Deleted Backup Files */
+            deleted_backup_files: number;
+            /** Deleted Database Records */
+            deleted_database_records: number;
+            /** Deleted Import Files */
+            deleted_import_files: number;
+            /** Preserved Backups */
+            preserved_backups: boolean;
+        };
         /** DeletedResource */
         DeletedResource: {
             /**
@@ -4320,6 +4506,8 @@ export interface components {
             locale: string;
             /** Revision */
             revision: number;
+            /** Session Timeout Minutes */
+            session_timeout_minutes: number;
             theme: components["schemas"]["ThemeMode"];
             /** Timezone */
             timezone: string;
@@ -4344,6 +4532,8 @@ export interface components {
             locale?: string | null;
             /** Revision */
             revision: number;
+            /** Session Timeout Minutes */
+            session_timeout_minutes?: number | null;
             theme?: components["schemas"]["ThemeMode"] | null;
             /** Timezone */
             timezone?: string | null;
@@ -4355,6 +4545,62 @@ export interface components {
          * @enum {string}
          */
         PreferredTimeOfDay: "any" | "morning" | "afternoon" | "evening";
+        /** PrivacyStatusResponse */
+        PrivacyStatusResponse: {
+            /**
+             * Attachments Directory
+             * Format: path
+             */
+            attachments_directory: string;
+            /**
+             * Backups Directory
+             * Format: path
+             */
+            backups_directory: string;
+            /**
+             * Data Directory
+             * Format: path
+             */
+            data_directory: string;
+            /**
+             * Database Path
+             * Format: path
+             */
+            database_path: string;
+            /** External Requests Enabled */
+            external_requests_enabled: boolean;
+            /**
+             * Imports Directory
+             * Format: path
+             */
+            imports_directory: string;
+            last_backup: components["schemas"]["BackupSummary"] | null;
+            /** Max Attachment Bytes */
+            max_attachment_bytes: number;
+            /** Max Backup Bytes */
+            max_backup_bytes: number;
+            /** Max Import Bytes */
+            max_import_bytes: number;
+            /**
+             * Network Mode
+             * @constant
+             */
+            network_mode: "loopback-only";
+            /** Outbound Guard Active */
+            outbound_guard_active: boolean;
+            /**
+             * Privacy Lock Scope
+             * @constant
+             */
+            privacy_lock_scope: "casual-screen-privacy";
+            /** Session Timeout Minutes */
+            session_timeout_minutes: number;
+            /**
+             * Telemetry Enabled
+             * @constant
+             */
+            telemetry_enabled: false;
+        };
         /** ProjectCreateRequest */
         ProjectCreateRequest: {
             /** Description Markdown */
@@ -5459,13 +5705,20 @@ export interface components {
         SystemInfoResponse: {
             /** Application */
             application: string;
+            /**
+             * Data Directory
+             * Format: path
+             */
+            data_directory: string;
             /** Environment */
             environment: string;
+            /** External Requests Enabled */
+            external_requests_enabled: boolean;
             /**
-             * External Requests Enabled
+             * Network Mode
              * @constant
              */
-            external_requests_enabled: false;
+            network_mode: "loopback-only";
             /**
              * Storage
              * @constant
@@ -10053,6 +10306,92 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_backup_api_v1_privacy_backups_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BackupCreateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_BackupCreateResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_delete_all_api_v1_privacy_delete_all_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DeleteAllLocalDataRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_DeleteAllLocalDataResponse_"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    read_privacy_status_api_v1_privacy_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_PrivacyStatusResponse_"];
                 };
             };
         };

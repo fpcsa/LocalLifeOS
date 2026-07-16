@@ -16,6 +16,7 @@ from app.api.v1.routes import (
     imports,
     meta,
     notes,
+    privacy,
     projects,
     scenarios,
     scheduling,
@@ -30,6 +31,7 @@ api_router = APIRouter()
 api_router.include_router(automation.router)
 api_router.include_router(health.router)
 api_router.include_router(system.router)
+api_router.include_router(privacy.router)
 api_router.include_router(workspaces.router)
 api_router.include_router(tags.router)
 api_router.include_router(timeline.router)
