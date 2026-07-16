@@ -5,6 +5,7 @@ from app.api.v1.routes import (
     automation,
     calendar,
     commitments,
+    demo,
     finance_accounts,
     finance_budgets,
     finance_planning,
@@ -31,6 +32,7 @@ api_router = APIRouter()
 api_router.include_router(automation.router)
 api_router.include_router(health.router)
 api_router.include_router(system.router)
+api_router.include_router(demo.router)
 api_router.include_router(privacy.router)
 api_router.include_router(workspaces.router)
 api_router.include_router(tags.router)

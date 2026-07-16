@@ -243,7 +243,7 @@ Last updated: 2026-07-16
 - [x] `.ics` and CSV imports plus deterministic local automation
 - [x] Service worker, offline workflow verification, backup/restore, and security hardening
 - [x] Build Week, Berlin conference, and Laptop purchase demo data plus signature-flow E2E coverage
-- [ ] Broader repository-level E2E coverage and submission readiness
+- [x] Broader repository-level E2E coverage and submission readiness
 
 ## Prompt 11 — Offline hardening, privacy, backup/restore, and native launcher
 
@@ -274,3 +274,63 @@ Last updated: 2026-07-16
 
 The live SQLite database and ordinary data directories remain plaintext. Only backups created with
 an explicit password are encrypted; the privacy screen is not authentication.
+
+## Prompt 12 — Demo data, complete testing, performance, accessibility, and submission readiness
+
+- [x] Canonical `2026.07` synthetic dataset with reserved deterministic UUIDs and a fixed date anchor
+- [x] Salary and recurring income, household spending, subscriptions, savings, projects, tasks,
+  notes, commitments, links, attachments, automation rules, scenarios, conflicts, and shortfall
+- [x] Safe idempotent load/reset service, local API endpoints, native scripts, and one-click UI action
+- [x] Physical/remote/skip Berlin scenarios and August/October laptop scenarios
+- [x] Real service assertions for two buffer-aware conflicts and one budget-category shortfall
+- [x] Integrated 18-step judge workflow from empty workspace through imports, schedule/scenario
+  application, encrypted backup, clean reset, restore, and loopback/offline state
+- [x] Delete-all child-before-parent ordering fix discovered by the integrated workflow
+- [x] Bounded per-source unified timeline queries with database counts, source limits, stable global
+  paging, and page-only commitment-link hydration
+- [x] Browser-cancellable scheduling request plus existing one-second maximum solver benchmark
+- [x] Temporary-database performance smoke for health, conflicts, timeline, and scenario comparison
+- [x] Browser first-contentful-paint threshold, single canonical demo-load request, keyboard/modal
+  focus-return check, form-label checks, reduced motion, chart/calendar text, viewports, and offline
+- [x] Current factual README with judge quick-start, exact demo commands, privacy, limits, supported
+  platforms, troubleshooting, screenshots placeholders, test commands, API docs, and MIT license
+- [x] Timestamped sub-three-minute demo script and exact-field hackathon submission draft
+- [x] Updated deterministic OpenAPI document and generated TypeScript contracts
+- [x] Backend integration/unit/migration/import/backup/offline/security/performance and frontend
+  component/type/lint/build/browser verification plan
+- [ ] Automated Axe scan (official dependency download was blocked by the development environment’s
+  usage-limit gate; no bypass was attempted). Existing semantic, label, focus, keyboard, reduced
+  motion, text-alternative, and manual review checks remain active.
+
+The current verified platform matrix is Windows native plus Linux containers on Docker Desktop.
+Native Linux/macOS and full Firefox/WebKit/screen-reader matrices remain honest release limitations.
+
+### Prompt 12 final verification evidence
+
+- [x] Full backend suite: 82 tests passed, including the complete judge workflow and launcher
+  regressions; the only warnings are the documented historical Alembic/SQLite constraint warning.
+- [x] Backend quality: Ruff format covered 184 files, Ruff lint passed, and strict mypy passed across
+  136 source files.
+- [x] Frontend quality: strict TypeScript and zero-warning ESLint passed; 10 Vitest files and 14
+  tests passed; the production build emitted 18 route entries.
+- [x] Empty SQLite migration reached `20260716_0011`; OpenAPI export produced 111 paths and 311
+  schemas and regenerated the TypeScript client contract.
+- [x] Performance smoke passed: health 7.6 ms, conflicts 153.5 ms, paged timeline 54.2 ms, and
+  three-way scenario comparison 120.5 ms against 250/1,000/1,000/2,000 ms bounds.
+- [x] Offline/source asset verification, encrypted backup verification, restore with safety backup,
+  `pip check`, high-confidence working-tree secret scan, JavaScript syntax, Compose configuration,
+  and Git whitespace checks passed.
+- [x] Isolated demo load/reset/load verified synthetic version `2026.07`, fixed anchor
+  `2026-07-16`, two conflict pairs, one shortfall, five scenarios, two attachments, and idempotence.
+- [x] Isolated native startup returned API health `ok`, web HTTP 200, and loopback-only status. The
+  managed shell did not permit its stop command to confirm process-tree termination; no listeners
+  remained after the verification shell exited.
+- [ ] Fresh Prompt 12 `docker compose up --build`: the environment rejected required Docker-engine
+  access at its usage-limit/approval gate before execution. `docker compose config --quiet` passed,
+  and the Prompt 11 container baseline was previously healthy; the new demo-asset image layer still
+  needs one fresh build/up on a Docker-capable host.
+- [ ] Final extended three-viewport Chrome marker: the isolated run completed all 13 desktop route
+  navigations and the mutation, calendar, scenario, commitment, timeline, accessibility, offline,
+  and screenshot actions. Its final console result was truncated, and the environment rejected the
+  bounded rerun before execution. The previous baseline passed desktop/tablet/compact; the extended
+  Prompt 12 script should be rerun once on a host without that gate.

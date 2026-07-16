@@ -9,6 +9,7 @@ from typing import Any, cast
 from uuid import UUID
 
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy import func
 from sqlmodel import Session, col, select
 
 from app.core.exceptions import (
@@ -544,14 +545,25 @@ def _snapshot(session: Session, workspace_id: UUID) -> dict[DomainEntityType, li
             )
         ).all()
     ]
+    transaction_totals = session.exec(
+        select(
+            Transaction.currency_code,
+            Transaction.transaction_type,
+            func.sum(Transaction.amount_minor),
+        )
+        .where(
+            col(Transaction.workspace_id) == workspace_id,
+            col(Transaction.deleted_at).is_(None),
+        )
+        .group_by(Transaction.currency_code, Transaction.transaction_type)
+    ).all()
     snapshot[DomainEntityType.TRANSACTION] = [
-        _json_record(item)
-        for item in session.exec(
-            select(Transaction).where(
-                col(Transaction.workspace_id) == workspace_id,
-                col(Transaction.deleted_at).is_(None),
-            )
-        ).all()
+        {
+            "currency_code": currency_code,
+            "transaction_type": str(transaction_type),
+            "amount_minor": int(amount_minor),
+        }
+        for currency_code, transaction_type, amount_minor in transaction_totals
     ]
     return snapshot
 

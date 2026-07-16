@@ -10,7 +10,7 @@ from sqlmodel import Session, col, select
 
 from app.core.config import get_settings
 from app.db.transactions import transaction
-from app.models import SystemSetting, Workspace
+from app.models import SystemSetting
 from app.schemas.privacy import DeleteAllLocalDataResponse, PrivacyStatusResponse
 from app.services.backups import database_path, list_backup_summaries
 from app.services.seed import seed_default_data
@@ -72,6 +72,53 @@ def _database_record_count(session: Session) -> int:
     return total
 
 
+def _workspace_delete_order(session: Session) -> list[str]:
+    table_names = {
+        str(name)
+        for name in session.execute(
+            text("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'")
+        )
+        .scalars()
+        .all()
+        if str(name).replace("_", "").isalnum()
+    }
+    scoped = {"workspaces"}
+    for table_name in table_names:
+        columns = session.execute(text(f'PRAGMA table_info("{table_name}")')).all()
+        if any(str(column[1]) == "workspace_id" for column in columns):
+            scoped.add(table_name)
+
+    edges: dict[str, set[str]] = {table_name: set() for table_name in scoped}
+    incoming = {table_name: 0 for table_name in scoped}
+    for child in scoped:
+        foreign_keys = session.execute(text(f'PRAGMA foreign_key_list("{child}")')).all()
+        for foreign_key in foreign_keys:
+            parent = str(foreign_key[2])
+            if parent in scoped and parent != child and parent not in edges[child]:
+                edges[child].add(parent)
+                incoming[parent] += 1
+
+    ready = sorted(table_name for table_name, count in incoming.items() if count == 0)
+    ordered: list[str] = []
+    while ready:
+        child = ready.pop(0)
+        ordered.append(child)
+        for parent in sorted(edges[child]):
+            incoming[parent] -= 1
+            if incoming[parent] == 0:
+                ready.append(parent)
+                ready.sort()
+    if len(ordered) != len(scoped) or ordered[-1:] != ["workspaces"]:
+        raise RuntimeError("workspace table dependencies could not be ordered safely")
+    return ordered
+
+
+def _delete_workspace_records(session: Session) -> None:
+    for table_name in _workspace_delete_order(session):
+        session.execute(text(f'DELETE FROM "{table_name}"'))
+    session.expire_all()
+
+
 def _stage_directory(root: Path, identifier: str) -> tuple[Path | None, int]:
     count = _file_count(root)
     if not root.exists():
@@ -120,10 +167,7 @@ def delete_all_local_data(
                 staged.append((settings.backups_dir, backup_stage))
             record_count = _database_record_count(session)
             with transaction(session):
-                workspaces = list(session.exec(select(Workspace)).all())
-                for workspace in workspaces:
-                    session.delete(workspace)
-                session.flush()
+                _delete_workspace_records(session)
                 timezone_setting = session.exec(
                     select(SystemSetting).where(col(SystemSetting.key) == "user.timezone")
                 ).first()

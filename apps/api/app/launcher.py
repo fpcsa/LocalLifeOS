@@ -157,14 +157,17 @@ def _terminate_pid(pid: int) -> bool:
     if not _pid_alive(pid):
         return True
     if os.name == "nt":
-        result = subprocess.run(
+        subprocess.run(
             ["taskkill", "/PID", str(pid), "/T", "/F"],
             check=False,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.DEVNULL,
             creationflags=subprocess.CREATE_NO_WINDOW,
         )
-        return result.returncode == 0
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline and _pid_alive(pid):
+            time.sleep(0.1)
+        return not _pid_alive(pid)
     try:
         os.kill(pid, signal.SIGTERM)
     except OSError:
@@ -322,15 +325,8 @@ def stop() -> None:
     if not state:
         typer.echo("No native launcher state was found.")
         return
-    web_stopped = _terminate_pid(int(state.get("web_pid", 0) or 0))
-    api_stopped = _terminate_pid(int(state.get("api_pid", 0) or 0))
-    if not web_stopped or not api_stopped:
-        typer.secho(
-            "LocalLife OS could not stop every tracked process; launcher state was preserved.",
-            fg=typer.colors.RED,
-            err=True,
-        )
-        raise typer.Exit(code=1)
+    _terminate_pid(int(state.get("web_pid", 0) or 0))
+    _terminate_pid(int(state.get("api_pid", 0) or 0))
     deadline = time.monotonic() + 5
     api_port = int(state.get("api_port", settings.port) or settings.port)
     web_port = int(state.get("web_port", 3000) or 3000)
@@ -338,7 +334,7 @@ def stop() -> None:
         time.sleep(0.1)
     if _port_open(api_port) or _port_open(web_port):
         typer.secho(
-            "Tracked processes exited, but a LocalLife OS port remains occupied; "
+            "A LocalLife OS listener remains occupied after process-tree termination; "
             "launcher state was preserved.",
             fg=typer.colors.RED,
             err=True,

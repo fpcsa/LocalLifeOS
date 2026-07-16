@@ -1407,3 +1407,146 @@ git -c safe.directory=C:/Python/fpcsa/LocalLifeOS diff --check
   `generate:api-types`; Windows `os.kill(pid, 0)` liveness was replaced with the Win32 process API;
   intentional offline console failures were scoped in the E2E test; the local embedded calendar font
   was allowed by CSP; and legacy Docker-volume ownership was migrated before privilege drop.
+
+## 2026-07-16 — Prompt 12: deterministic demo and submission readiness
+
+### Goals completed
+
+- Added the fixed `2026.07` synthetic judge workspace and native load/reset commands.
+- Covered the required calendar, income, spending, subscriptions, savings, productivity, notes,
+  attachments, three commitments, two conflict pairs, budget shortfall, five scenarios, and rules.
+- Replaced the frontend’s date-dependent multi-request demo constructor with one idempotent local API
+  load followed by a bounded scenario list/compare refresh.
+- Added the complete judge workflow integration test and local API/browser performance checks.
+- Made scheduling preview requests user-cancellable while retaining the server solver time bound.
+- Reworked unified timeline paging so it no longer loads every task, event, note, transaction,
+  planned transaction, goal, and relationship before slicing one page.
+- Rewrote the README around implemented behavior and added the submission and demo-script documents.
+
+### Major architecture decisions
+
+1. **Reserved demo identity, not title matching.** Domain demo IDs begin with `12000000` and are
+   replaced explicitly. Reload is deterministic and cannot delete unrelated records. Human-readable
+   labels remain stable for UI and E2E selection.
+2. **Canonical server loader.** The loader uses the real models and SQLite constraints, copies only
+   bundled safe attachments into the confined store, and returns an OpenAPI-documented invariant
+   summary. Native scripts and the UI call the same service boundary.
+3. **Concrete invariant tests.** The summary’s conflict/shortfall counts are also checked through the
+   production conflict and budget services; they are not fixture claims alone.
+4. **Bounded timeline merge.** Each timeline source is counted and queried with date/entity/scope
+   filters plus a per-source `page * page_size` bound. The bounded candidates are globally ordered,
+   sliced, and only that page receives commitment relationship hydration.
+   Scenario baselines likewise use SQLite transaction totals grouped by currency/type rather than
+   materializing the posted ledger; posted transactions are not scenario change targets.
+5. **Safe whole-workspace deletion.** SQLite `RESTRICT` cross-links can make a direct parent cascade
+   fail. Delete-all now introspects workspace tables and foreign keys, derives a deterministic
+   child-before-parent order, deletes within the existing transaction, and then reseeds defaults.
+6. **Performance thresholds are reproducible, not universal promises.** The smoke uses a temporary
+   demo database and explicit local thresholds. Browser paint retains a generous four-second gate;
+   API thresholds are 250 ms for health, one second for conflict/timeline, and two seconds for
+   three-way scenario comparison.
+
+### Where Codex and GPT-5.6 accelerated development
+
+Codex/GPT-5.6 mapped the submission prompt to repository evidence, located unbounded data paths and
+the dynamic demo waterfall, composed the fixed cross-domain dataset, generated public-API workflow
+tests, and iterated against real failures. The integrated restore test exposed the foreign-key
+ordering defect; the fix and its regression coverage came from that test-driven loop. Codex also
+kept the generated OpenAPI/TypeScript contracts, Docker assets, scripts, README, demo narration, and
+submission fields synchronized.
+
+### Important human-reviewed decisions
+
+- Preserve the no-runtime-AI product boundary even though AI accelerated development.
+- Keep live-storage encryption explicitly out of scope and repeat the plaintext limitation.
+- Make demo reload reserve-ID scoped instead of treating every workspace as disposable.
+- Use explainable component states and exact-plan acceptance, never an opaque feasibility score.
+- Keep currency calculations separated and avoid exchange-rate assumptions.
+- Report native Linux/macOS, non-Chromium, screen-reader, and automated-scanner gaps honestly.
+- Do not bypass the environment gate that rejected the official Axe dependency download.
+
+### Test and security work
+
+- Added `test_demo_data.py` for idempotence, OpenAPI, concrete conflicts/shortfall, scenarios,
+  automation, attachment cleanup, and preservation of unrelated records.
+- Added `test_judge_workflow.py` covering empty state, ICS/CSV imports, project/task, note/backlink,
+  ledger income/expense, commitment links/assessment, conflict/impact, schedule preview/apply,
+  scenario compare/accept, encrypted backup, exact-confirmation deletion, clean restore, and local
+  network state.
+- Kept the standalone migration, import-security, backup/tamper/rollback, offline cache, external
+  asset, secret, dependency, and scheduling maximum-benchmark checks in the final matrix.
+- Extended live Chrome checks with first-contentful paint, one canonical demo-loader request,
+  physical/remote/skip evidence, keyboard-opened dialog focus, Escape focus return, labels, reduced
+  motion, text alternatives, responsive overflow, no remote requests, and offline reload.
+- Attempted to install Deque’s official `@axe-core/playwright` scanner. The environment rejected the
+  download at its usage-limit gate before package installation; no workaround was used. This remains
+  a documented verification limitation.
+
+### Final `/feedback` session ID
+
+`<PENDING — obtain from the final Codex /feedback action for this session; do not invent a value>`
+
+After the implementation session is complete, the user should run the product’s `/feedback` action
+for this Codex session and replace the placeholder with the returned session ID.
+
+### Verification record
+
+Final commands were run from the repository root unless a working directory is noted:
+
+```text
+.\apps\api\.venv\Scripts\python.exe -m ruff format --config apps\api\pyproject.toml --check apps\api scripts
+.\apps\api\.venv\Scripts\python.exe -m ruff check --config apps\api\pyproject.toml apps\api scripts
+.\apps\api\.venv\Scripts\python.exe -m mypy --config-file apps\api\pyproject.toml apps\api\app
+.\.venv\Scripts\python.exe -m pytest -q                                      # apps/api
+.\apps\api\.venv\Scripts\python.exe -m pytest apps\api\tests\test_migrations.py -q
+.\apps\api\.venv\Scripts\python.exe scripts\export-openapi.py
+npm run generate:api-types
+npm run typecheck:web
+npm run lint:web
+npm run test:web
+npm run build:web
+.\apps\api\.venv\Scripts\python.exe scripts\performance-smoke-test.py
+.\apps\api\.venv\Scripts\python.exe scripts\backup-smoke-test.py
+.\apps\api\.venv\Scripts\python.exe scripts\restore-smoke-test.py
+.\apps\api\.venv\Scripts\python.exe scripts\check-external-assets.py
+.\apps\api\.venv\Scripts\python.exe scripts\verify-offline-mode.py
+.\apps\api\.venv\Scripts\python.exe scripts\load-demo-data.py              # isolated data dir, twice
+.\apps\api\.venv\Scripts\python.exe scripts\reset-demo-data.py --empty    # isolated data dir
+.\apps\api\.venv\Scripts\python.exe scripts\reset-demo-data.py            # isolated data dir
+.\apps\api\.venv\Scripts\python.exe -m pip check
+node --check tests\e2e\frontend-smoke.mjs
+docker compose config --quiet
+git -c safe.directory=C:/Python/fpcsa/LocalLifeOS diff --check
+```
+
+- Backend: 82 tests passed. Ruff reported 184 files formatted and no lint issues; strict mypy
+  reported no issues in 136 source files. The isolated migration test upgraded an empty database
+  through `20260716_0011`; only the known historical SQLite implicit-constraint warning remains.
+- Contracts/frontend: OpenAPI exported 111 paths and 311 schemas. TypeScript and ESLint passed;
+  10 Vitest files and 14 tests passed; the optimized Next.js build generated 18 route entries.
+- Demo: repeated isolated loads were idempotent. Reset-to-empty and reset-with-reload passed for the
+  synthetic `2026.07` workspace, which reported two conflicts, one budget shortfall, five scenarios,
+  and two bundled attachments.
+- Performance: health 7.6 ms (<250 ms), conflict detection 153.5 ms (<1 s), paged timeline 54.2 ms
+  (<1 s), and three-way scenario comparison 120.5 ms (<2 s). The existing maximum scheduling test
+  also remained green in the complete suite.
+- Safety/operations: source external-asset and offline-boundary checks passed; encrypted backup
+  verified three payload files; restore checked integrity/schema, made a safety backup, and restored
+  the workspace. `pip check`, a high-confidence working-tree credential/private-key scan, JavaScript
+  syntax, Git whitespace, and Compose configuration passed. Telemetry references found by review are
+  exclusively disable/reject/status paths (`false`, `NEXT_TELEMETRY_DISABLED=1`, or validation).
+- Native launch: an isolated run returned API health `ok`, web HTTP 200, and loopback-only status.
+  The managed verification shell would not permit the launcher to confirm task-tree termination;
+  after shell cleanup, ports 3000 and 8000 had no listeners.
+- Browser evidence: the isolated extended Chrome run completed all 13 desktop routes and proceeded
+  through keyboard dialog focus, task/note/account mutation, calendar agenda, canonical demo load,
+  three-way scenario comparison, Berlin graph/timeline, label checks, offline reload, and desktop
+  screenshot creation. Its final output was truncated before a pass/fail marker; only desktop
+  artifacts were present. A bounded rerun was rejected before execution by the environment’s
+  usage-limit gate. The prior Prompt 11 baseline passed all 39 desktop/tablet/compact route checks,
+  but the extended Prompt 12 three-viewport result remains an explicit verification gap.
+- Containers/scanner: `docker compose config --quiet` passed. Fresh `docker compose up --build` and
+  the official Axe Playwright dependency installation were both rejected before execution/download
+  by the environment’s usage-limit/approval gate. No bypass was attempted. Prompt 11 had already
+  verified healthy unprivileged API/web containers; the Prompt 12 image change that copies bundled
+  demo attachments still needs a fresh Docker-capable-host build/up.

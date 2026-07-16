@@ -1,1049 +1,413 @@
 # LocalLife OS
 
-> A fully on-device personal operating system for managing tasks, calendar events, notes, expenses, income, goals, and commitments from one private local workspace.
-
-LocalLife OS is a local-first browser application that helps users understand whether they can realistically afford a new commitment in **time, money, and attention**.
-
-Instead of keeping tasks, appointments, notes, and finances in disconnected applications, LocalLife OS connects them through a shared data model. A conference, purchase, trip, course, project, or personal goal can include tasks, calendar events, notes, planned expenses, income effects, deadlines, and dependencies.
-
-The application runs entirely on the user's computer. It does not require an API key, cloud account, remote database, or runtime AI model.
-
----
-
-## Project status
-
-LocalLife OS is currently in the MVP implementation phase for the **OpenAI Build Week — Apps for Your Life** track.
-
-The initial release will focus on a complete local workflow:
-
-1. Import personal calendar and transaction data.
-2. Manage tasks, notes, events, income, and expenses.
-3. Group related information into commitments.
-4. Preview the time and financial impact of a commitment.
-5. Compare alternative scenarios before making a decision.
-6. Back up and restore the entire workspace locally.
-
----
-
-## Why LocalLife OS
-
-Most personal applications understand only one part of a user's life:
-
-- A calendar knows when the user is busy.
-- A task manager knows what is due.
-- A notes application stores context.
-- A finance tracker knows what has already been spent.
-- A budgeting application estimates what may be affordable.
-
-LocalLife OS connects these areas.
-
-Before the user commits to a new project, trip, course, purchase, or recurring responsibility, the application can show:
-
-- Calendar conflicts
-- Required preparation time
-- Missing prerequisite tasks
-- Planned and recurring costs
-- Impact on savings goals
-- Available focused time
-- Financial and scheduling constraints
-- Alternative scenarios
-
-### Product statement
-
-> Your calendar knows when you are free. Your finance app knows what you spent. Your task manager knows what is due. LocalLife OS helps determine whether you can actually afford to say yes—in time, money, and attention.
-
----
-
-## Core concept: commitments
-
-The central object in LocalLife OS is a **commitment**.
-
-A commitment can connect:
-
-- Tasks and subtasks
-- Calendar events
-- Notes and attachments
-- Planned expenses
-- Expected income
-- Budgets
-- Goals
-- Deadlines
-- Dependencies
-- Recurring obligations
-
-Example:
-
-```text
-Commitment: Attend a technology conference
-
-Calendar
-- Conference: September 12–14
-- Travel: September 11 and 15
-- Preparation: 6 hours
-
-Tasks
-- Buy ticket
-- Reserve hotel
-- Request leave
-- Prepare presentation
-
-Financial impact
-- Ticket: €450
-- Hotel: €420
-- Transport: €160
-- Food estimate: €140
-- Total planned cost: €1,170
-
-Detected constraints
-- Dentist appointment on September 14
-- Project deadline on September 16
-- Savings target falls €370 below plan
-- Only 4 of 6 preparation hours are currently available
-```
-
----
-
-## MVP features
-
-### Unified dashboard
-
-The dashboard provides one operational view of the user's day and near future:
-
-- Tasks due today
-- Upcoming appointments
-- Planned expenses
-- Expected income
-- Overdue commitments
-- Budget warnings
-- Schedule conflicts
-- Goal progress
-- Available time capacity
-
-### Tasks and projects
-
-- Tasks and subtasks
-- Projects
-- Priorities
-- Deadlines
-- Dependencies
-- Recurring tasks
-- Estimated duration
-- Actual duration
-- Completion tracking
-- Links to notes, events, goals, and commitments
-
-### Calendar
-
-- Day, week, month, and agenda views
-- Appointments and events
-- Recurring events
-- Preparation time
-- Travel time
-- Recovery time
-- Conflict detection
-- `.ics` import and export
-- Automatic placement suggestions for eligible tasks
-
-### Notes
-
-- Markdown editor
-- Tags
-- Backlinks
-- Daily notes
-- Search
-- Attachments
-- Links to tasks, events, transactions, goals, and commitments
-
-### Personal finance
-
-- Financial accounts
-- Income and expenses
-- Transfers
-- Categories
-- Budgets
-- Savings goals
-- Planned transactions
-- Recurring transactions
-- Subscription tracking
-- CSV import
-- Monthly cash-flow view
-
-### Commitments
-
-- Group tasks, events, notes, and financial records
-- Track planned cost and actual cost
-- Estimate required time
-- Detect scheduling conflicts
-- Detect missing dependencies
-- Measure effect on budgets and goals
-- Compare commitment alternatives
-
-### Scenario mode
-
-Users can create temporary branches of their current life without modifying real data.
-
-Example scenarios:
-
-- Attend a conference physically or remotely
-- Buy a laptop now or in three months
-- Accept a new job
-- Move to a new home
-- Take a career break
-- Add a recurring course or side project
-
-Each scenario can compare:
-
-- Time requirements
-- Calendar conflicts
-- Planned cash flow
-- Savings impact
-- Goal delays
-- Capacity constraints
-- Risk of dropping below a financial buffer
-
-### Unified timeline
-
-The timeline combines:
-
-- Task activity
-- Calendar events
-- Notes
-- Income
-- Expenses
-- Commitment changes
-- Goal progress
-- Scenario decisions
-
-### Local automation rules
-
-Users can define deterministic local rules.
-
-Example:
-
-```yaml
-when:
-  transaction.category: subscription
-  transaction.amount_change: ">10%"
-
-then:
-  create_task: "Review subscription price increase"
-  due_in_days: 7
-```
-
-Another example:
-
-```yaml
-when:
-  event.category: travel
-
-then:
-  create_tasks:
-    - "Check travel documents"
-    - "Prepare travel budget"
-    - "Confirm accommodation"
-```
-
-### Backup and restore
-
-- Encrypted local backups
-- Manual backup creation
-- Backup verification
-- Restore preview
-- Full workspace export
-- No cloud account required
-
----
-
-## Offline-first principles
-
-LocalLife OS is designed to operate fully on the user's device.
-
-### No runtime AI
-
-The application does not require:
-
-- OpenAI API keys
-- External model providers
-- Local language models
-- Remote inference
-- Cloud-based AI services
-
-GPT-5.6 is used through Codex to design and build the software, not as a runtime dependency.
-
-### No external services
-
-The target application configuration includes:
-
-- Backend bound only to `127.0.0.1`
-- No telemetry
-- No analytics
-- No remote database
-- No CDN assets
-- No remote fonts
-- No external API calls
-- No cloud synchronization
-- No mandatory account registration
-
-### Offline browser experience
-
-The frontend uses a service worker to cache the application shell and local assets. Once installed
-and launched locally, the shell remains available without an Internet connection; current data
-reads and writes still require the loopback API.
-
----
-
-## Technology stack
-
-### Frontend
-
-- **Next.js**
-- **TypeScript**
-- **Tailwind CSS**
-- **FullCalendar**
-- **React Flow**
-- **Recharts**
-- **TanStack Query**
-- **Zustand**
-
-Zustand is selected for lightweight client-side state management. TanStack Query manages backend state, caching, mutations, and invalidation.
-
-### Backend
-
-- **Python**
-- **FastAPI**
-- **Pydantic**
-- **SQLModel**
-- **SQLite**
-- **Alembic**
-- **OR-Tools**
-- **Pandas**
-- **APScheduler**
-- **Typer**
-- **argon2-cffi + cryptography**
-
-### Local execution
-
-- **Docker Compose** for development and judging
-- Native Python launcher for normal local use
-- Backend exposed only on the loopback interface
-- Local SQLite database
-- Local attachment storage
-- Service worker for offline frontend assets
-
----
-
-## Architecture
-
-```text
-┌───────────────────────────────────────────────┐
-│                 Local browser                 │
-│                                               │
-│  Next.js + TypeScript + Tailwind CSS          │
-│  FullCalendar + React Flow + Recharts         │
-│  TanStack Query + Zustand                     │
-└───────────────────────┬───────────────────────┘
-                        │ HTTP on 127.0.0.1
-┌───────────────────────▼───────────────────────┐
-│                 FastAPI backend               │
-│                                               │
-│  API routes                                   │
-│  Commitment engine                            │
-│  Scenario engine                              │
-│  Scheduling engine                            │
-│  Automation rules                             │
-│  Import/export services                       │
-│  Backup and restore                           │
-└───────────────────────┬───────────────────────┘
-                        │
-        ┌───────────────┴────────────────┐
-        │                                │
-┌───────▼────────┐              ┌────────▼────────┐
-│ SQLite database│              │ Local file store │
-│                │              │                  │
-│ SQLModel       │              │ Attachments      │
-│ Alembic        │              │ Backups          │
-│ Local records  │              │ Import files     │
-└────────────────┘              └──────────────────┘
-```
-
----
-
-## Main backend components
-
-### Commitment engine
-
-Calculates the combined effect of linked tasks, events, transactions, goals, and notes.
-
-Responsibilities:
-
-- Planned cost aggregation
-- Actual cost aggregation
-- Time requirement aggregation
-- Dependency validation
-- Conflict detection
-- Goal-impact analysis
-- Commitment status calculation
-
-### Scheduling engine
-
-Uses OR-Tools to evaluate and suggest task placement.
-
-Inputs can include:
-
-- Task duration
-- Deadline
-- Priority
-- Eligible time windows
-- Existing calendar events
-- Work hours
-- Travel and preparation buffers
-- Dependency ordering
-
-The engine must provide transparent results. Scheduling suggestions should include the constraints and assumptions that produced them.
-
-### Scenario engine
-
-Creates isolated scenario branches based on the current workspace state.
-
-A scenario can modify:
-
-- Income
-- Expenses
-- Calendar events
-- Commitments
-- Goals
-- Time availability
-- Financial buffer
-- Recurring obligations
-
-Scenario changes are not applied to the primary workspace unless the user explicitly accepts them.
-
-### Import service
-
-Initial supported imports:
-
-- Calendar files in `.ics` format
-- Bank transactions in `.csv` format
-- LocalLife OS backup archives
-
-CSV column mapping will be configurable to support different bank export formats.
-
-### Automation engine
-
-APScheduler runs local recurring jobs such as:
-
-- Generating recurring tasks
-- Creating recurring transactions
-- Checking upcoming deadlines
-- Recalculating capacity
-- Evaluating local automation rules
-- Creating scheduled backup reminders
-
----
-
-## Proposed data model
-
-Core entities:
-
-```text
-Workspace
-├── UserPreferences
-├── Accounts
-├── Transactions
-├── Budgets
-├── Goals
-├── Tasks
-├── Projects
-├── CalendarEvents
-├── Notes
-├── Commitments
-├── Scenarios
-├── AutomationRules
-├── Attachments
-└── TimelineEvents
-```
-
-Important relationships:
-
-```text
-Commitment
-├── Tasks
-├── CalendarEvents
-├── Notes
-├── PlannedTransactions
-├── Goals
-└── Dependencies
-```
-
-The data model should support many-to-many relationships so that one note, task, or transaction can provide context to more than one object where appropriate.
-
----
-
-## Repository structure
-
-The intended monorepo structure is:
-
-```text
-locallife-os/
-├── apps/
-│   ├── web/                         # Next.js frontend
-│   └── api/                         # FastAPI backend
-│
-├── packages/
-│   ├── shared-types/                # Shared schemas and generated clients
-│   └── ui/                          # Reusable frontend components
-│
-├── data/
-│   ├── demo/                        # Synthetic judge-friendly sample data
-│   ├── imports/                     # Local import workspace
-│   ├── backups/                     # Local backup archives
-│   └── attachments/                 # Local attachment storage
-│
-├── docs/
-│   ├── architecture.md
-│   ├── data-model.md
-│   ├── privacy.md
-│   ├── threat-model.md
-│   ├── scheduling-engine.md
-│   ├── codex-development-log.md
-│   └── implementation-status.md
-│
-├── scripts/
-│   ├── start-local.sh
-│   ├── start-local.ps1
-│   ├── stop-local.sh
-│   ├── stop-local.ps1
-│   ├── load-demo-data.py
-│   └── verify-offline-mode.py
-│
-├── tests/
-│   ├── integration/
-│   ├── e2e/
-│   └── fixtures/
-│
-├── docker-compose.yml
-├── .env.example
-├── LICENSE
-└── README.md
-```
-
----
-
-## Quick start with Docker Compose
-
-### Prerequisites
-
-- Docker
-- Docker Compose
-
-### Start the application
+LocalLife OS is a private, local-first browser application for coordinating tasks, projects,
+calendar events, notes, finances, goals, commitments, schedules, scenarios, imports, and fixed local
+automations. The FastAPI service and Next.js interface run on your device, store ordinary data in
+SQLite and local files, and require no account, API key, remote database, CDN, remote font,
+analytics service, or runtime AI.
+
+The current repository is a tested hackathon MVP. It is not a hosted service and not a substitute
+for professional financial, legal, medical, or security advice.
+
+## Current status
+
+Implemented and exercised as of 2026-07-16:
+
+- responsive Next.js application shell with Today, tasks, calendar, notes, finance, goals,
+  commitments, capacity, scenarios, timeline, imports, automation, settings, and offline routes;
+- FastAPI APIs under `/api/v1`, documented by OpenAPI at
+  [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs);
+- SQLite persistence through SQLModel and 11 Alembic migrations;
+- deterministic commitment assessment, schedule preview/apply, and isolated scenario comparison;
+- ICS and bank CSV preview/apply workflows with local-only automation rules;
+- optional password-protected Argon2id + AES-256-GCM backup containers and transactional restore;
+- service-worker shell caching, loopback network enforcement, telemetry disabled, and no remote
+  runtime assets;
+- deterministic synthetic judge data, a full critical-workflow API test, browser smoke tests,
+  migration/import/backup/offline/security tests, and local performance thresholds.
+
+No demo credentials exist. No API key is required.
+
+## Judge quick-start
+
+Prerequisites: Docker Desktop or another Docker Engine with Compose v2.
 
 ```bash
-git clone <repository-url>
-cd locallife-os
-
 docker compose up --build
 ```
 
-Equivalent repository scripts are available:
-
-Linux or macOS:
-
-```bash
-sh ./scripts/start-local.sh
-```
-
-Windows PowerShell:
-
-```powershell
-.\scripts\start-local.ps1
-```
-
-Open:
-
-```text
-http://127.0.0.1:3000
-```
-
-### Supported native launcher
-
-After installing the Python and npm dependencies above, use the same supported command set on
-Windows, Linux, and macOS.
-
-Windows PowerShell:
-
-```powershell
-.\scripts\locallife.ps1 doctor
-.\scripts\locallife.ps1 start --open-browser
-.\scripts\locallife.ps1 status
-.\scripts\locallife.ps1 backup --encrypt
-.\scripts\locallife.ps1 restore .\data\backups\<backup>.llbackup
-.\scripts\locallife.ps1 stop
-```
-
-Linux or macOS:
+Wait until both health checks are healthy, then open
+[http://127.0.0.1:3000](http://127.0.0.1:3000). Load the canonical demo from the **Scenarios** page
+with **Prepare signature demo**, or call the local endpoint:
 
 ```bash
-./scripts/locallife.sh doctor
-./scripts/locallife.sh start --open-browser
-./scripts/locallife.sh status
-./scripts/locallife.sh backup --encrypt
-./scripts/locallife.sh restore ./data/backups/<backup>.llbackup
-./scripts/locallife.sh stop
+curl -X POST http://127.0.0.1:8000/api/v1/demo/load
 ```
 
-The launcher binds both processes to `127.0.0.1`, checks occupied ports, displays process and data
-status, and opens a browser only with `--open-browser`. See
-[docs/native-launcher.md](docs/native-launcher.md).
+PowerShell equivalent:
 
-The backend API will be available locally at:
-
-```text
-http://127.0.0.1:8000
+```powershell
+Invoke-RestMethod -Method Post -Uri http://127.0.0.1:8000/api/v1/demo/load
 ```
 
-### Stop the application
+Follow [the timestamped demo script](docs/demo-script.md). Stop the services without deleting the
+named data volume:
 
 ```bash
 docker compose down
 ```
 
-### Remove local development volumes
+`docker compose down --volumes` also deletes the Compose data volume. Back up non-demo data first.
 
-```bash
-docker compose down --volumes
+## Deterministic demo data
+
+The `2026.07` dataset is anchored to 2026-07-16 and uses reserved UUIDs beginning with
+`12000000`. Every person, employer, merchant, account, amount, note, and attachment is fictional.
+Loading it again replaces only those reserved demo records and leaves unrelated records untouched.
+
+The dataset contains:
+
+- a July 2026 calendar, timed and all-day events, and two real buffer-aware conflicts;
+- a synthetic salary transaction and monthly recurring salary;
+- rent, groceries, utilities, transport, and two fictional subscriptions;
+- a July household budget whose Food category is over its limit;
+- checking and savings accounts plus an Emergency fund savings goal;
+- Build Week and household projects, tasks, a subtask, and a dependency;
+- daily, Build Week, and Berlin notes with a backlink and two safe attachments;
+- OpenAI Build Week, Berlin conference, and Laptop purchase commitments with typed links;
+- physical, remote, and skip Berlin scenarios;
+- August and October laptop-purchase scenarios;
+- an overdue-task note rule and a weekly local-backup reminder rule.
+
+Native loader and reset commands, run from the repository root:
+
+```powershell
+.\apps\api\.venv\Scripts\python.exe scripts\load-demo-data.py
+.\apps\api\.venv\Scripts\python.exe scripts\reset-demo-data.py
+.\apps\api\.venv\Scripts\python.exe scripts\reset-demo-data.py --empty
 ```
 
-This deletes local development data. Create a backup first when working with non-demo data.
-
----
-
-## Native local development
-
-### Prerequisites
-
-- Python 3.12 or later
-- Node.js 22 or later
-- npm or pnpm
-
-### Backend
+POSIX:
 
 ```bash
-cd apps/api
-
-python -m venv .venv
+./apps/api/.venv/bin/python scripts/load-demo-data.py
+./apps/api/.venv/bin/python scripts/reset-demo-data.py
+./apps/api/.venv/bin/python scripts/reset-demo-data.py --empty
 ```
 
-Activate the virtual environment.
+`reset-demo-data.py` removes and reloads the reserved dataset. `--empty` removes it without
+reloading. The same operations are documented local API endpoints: `POST /api/v1/demo/load` and
+`POST /api/v1/demo/reset`.
 
-Linux or macOS:
+Bundled import fixtures live in `data/demo/`; generated attachment copies remain confined to the
+configured attachment directory.
 
-```bash
-source .venv/bin/activate
+## What the product does
+
+### Plan work and time
+
+Projects derive progress from linked tasks. Tasks support subtasks, priorities, estimates,
+dependencies, recurrence, due dates, filters, bulk operations, and safe status transitions. The
+calendar supports timed/all-day events, recurrence, move/resize, preparation/travel/recovery
+buffers, accessible agenda text, and timezone-aware conflict detection.
+
+The local OR-Tools CP-SAT scheduler treats calendar occupancy, buffers, dependencies, availability,
+deadlines, and task duration as explicit constraints. Preview is non-mutating, capped by a caller
+time limit, cancellable in the browser, and applied only after revision and fingerprint checks.
+
+### Keep notes and evidence
+
+Notes use Markdown, tags, daily dates, SQLite FTS5 search, typed entity links, note links, and
+backlinks. Attachments are size-limited, hash-recorded, streamed into confined local paths, and
+downloaded through the API. Unsafe filenames and traversal attempts are rejected.
+
+### Understand money without pretending currencies are interchangeable
+
+Finance records use integer minor units and ISO 4217 currency codes. Accounts, actual and planned
+transactions, transfers, recurring rules, budgets, savings goals, subscriptions, and price-change
+history remain separated by currency. Reports show explainable ledger, cash-flow, committed-balance,
+spending, budget, and buffer calculations. The application performs no exchange-rate conversion.
+
+### Assess commitments and compare scenarios
+
+A commitment links ordinary tasks, projects, events, notes, transactions, budgets, savings goals,
+and goals. Its assessment reports separate time, finance, dependency, conflict, goal, and deadline
+states with warning codes, contributing records, assumptions, and suggested actions. There is no
+opaque feasibility score.
+
+Scenario mode stores typed overlays, previews exact before/after changes without modifying primary
+records, compares two or three options, and applies an accepted plan atomically only when source
+revisions and the preview fingerprint still match.
+
+### Import and automate locally
+
+ICS and CSV imports use preview-before-apply batches, fingerprints, duplicate/change detection,
+row selection, reusable CSV mappings, limits, and formula-safe review exports. Automation rules use
+an allow-listed trigger/action model; preview is write-free, executions are idempotent, and the
+SQLite database remains authoritative.
+
+## Architecture and data flow
+
+```mermaid
+flowchart LR
+    B[Browser on 127.0.0.1:3000] -->|typed JSON / local uploads| A[FastAPI on 127.0.0.1:8000]
+    A --> S[Domain services]
+    S --> R[Repositories]
+    R --> D[(Local SQLite)]
+    S --> F[Attachments, imports, backups]
+    B --> W[Service-worker shell cache]
+    X[Remote hosts] -. blocked by default .-> A
 ```
+
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant UI as Next.js UI
+    participant API as FastAPI
+    participant DB as SQLite
+    U->>UI: Preview schedule or scenario
+    UI->>API: Typed request with scope
+    API->>DB: Read bounded source records
+    API-->>UI: Explanation + exact plan + fingerprint
+    U->>UI: Review and accept
+    UI->>API: Apply with revision/fingerprint
+    API->>DB: Atomic checked transaction
+    API-->>UI: Applied records or structured conflict
+```
+
+Repository layout:
+
+```text
+apps/web                 Next.js application
+apps/api                 FastAPI application, models, migrations, tests
+packages/shared-types    generated OpenAPI TypeScript contracts
+packages/ui              shared UI package
+data/demo                deterministic import and attachment fixtures
+docs                     architecture, domain, security, demo, submission docs
+scripts                  launcher, seed/reset, verification, backup/restore tools
+tests/e2e                live Playwright browser smoke
+```
+
+More detail: [architecture](docs/architecture.md),
+[frontend architecture](docs/frontend-architecture.md),
+[API conventions](docs/api-conventions.md), and [data model](docs/data-model.md).
+
+## Native development
+
+Verified prerequisites:
+
+- Python 3.12 or later;
+- Node.js 22 or later with npm;
+- Chrome for the live browser smoke test.
 
 Windows PowerShell:
 
 ```powershell
-.venv\Scripts\Activate.ps1
+py -3.12 -m venv apps\api\.venv
+.\apps\api\.venv\Scripts\python.exe -m pip install -r apps\api\requirements-dev.txt
+npm ci
+Push-Location apps\api
+.\.venv\Scripts\python.exe -m alembic upgrade head
+Pop-Location
+.\scripts\locallife.ps1 doctor
+.\scripts\locallife.ps1 start
 ```
 
-Install dependencies and run migrations:
+POSIX:
 
 ```bash
-python -m pip install -r requirements-dev.txt
-python -m alembic upgrade head
+python3.12 -m venv apps/api/.venv
+./apps/api/.venv/bin/python -m pip install -r apps/api/requirements-dev.txt
+npm ci
+(cd apps/api && ./.venv/bin/python -m alembic upgrade head)
+./scripts/locallife.sh doctor
+./scripts/locallife.sh start
 ```
 
-Start the backend:
+Open `http://127.0.0.1:3000`; stop with the matching launcher’s `stop` command. The launcher also
+offers `status`, `backup`, and `restore`; see [native launcher](docs/native-launcher.md).
 
-```bash
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-```
+For separate development servers:
 
-### Frontend
-
-```bash
-cd locallife-os
-npm install
+```powershell
+Push-Location apps\api
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+Pop-Location
 npm run dev:web
 ```
 
-Open:
+The frontend API base defaults to `http://127.0.0.1:8000/api/v1`. `.env.example` lists all supported
+local settings. `LOCALLIFE_TELEMETRY_ENABLED=true` is rejected. Outbound Python sockets are denied
+unless the explicit development-only external-request override is enabled.
 
-```text
-http://127.0.0.1:3000
+## Verification and judge tests
+
+Install native dependencies first. Run from the repository root unless a command changes directory.
+
+Backend, migrations, lint, and types:
+
+```powershell
+.\apps\api\.venv\Scripts\python.exe -m pytest apps\api\tests -q
+.\apps\api\.venv\Scripts\python.exe -m pytest apps\api\tests\test_migrations.py -q
+.\apps\api\.venv\Scripts\python.exe -m ruff format --config apps\api\pyproject.toml --check apps\api scripts
+.\apps\api\.venv\Scripts\python.exe -m ruff check --config apps\api\pyproject.toml apps\api scripts
+.\apps\api\.venv\Scripts\python.exe -m mypy --config-file apps\api\pyproject.toml apps\api\app
 ```
 
----
+Frontend and generated contracts:
 
-## Environment configuration
-
-LocalLife OS should run with minimal configuration.
-
-Example `.env`:
-
-```dotenv
-LOCALLIFE_ENV=development
-LOCALLIFE_HOST=127.0.0.1
-LOCALLIFE_PORT=8000
-LOCALLIFE_CONTAINER_MODE=false
-
-LOCALLIFE_DATA_DIR=./data
-LOCALLIFE_DATABASE_URL=sqlite:///./data/locallife.db
-LOCALLIFE_ATTACHMENTS_DIR=./data/attachments
-LOCALLIFE_BACKUPS_DIR=./data/backups
-LOCALLIFE_IMPORTS_DIR=./data/imports
-LOCALLIFE_RUNTIME_DIR=./data/runtime
-LOCALLIFE_MAX_BACKUP_BYTES=2147483648
-
-LOCALLIFE_CORS_ORIGINS=["http://127.0.0.1:3000","http://localhost:3000"]
-LOCALLIFE_DEFAULT_TIMEZONE=UTC
-LOCALLIFE_TELEMETRY_ENABLED=false
-LOCALLIFE_EXTERNAL_REQUESTS_ENABLED=false
-
-NEXT_PUBLIC_API_BASE_URL=http://127.0.0.1:8000/api/v1
-NEXT_TELEMETRY_DISABLED=1
-```
-
-There are no AI-provider or third-party API keys.
-
----
-
-## Demo data
-
-The repository will include a synthetic workspace for judges.
-
-The demo dataset will contain:
-
-- Tasks and projects
-- Calendar appointments
-- Notes
-- Income and expenses
-- Financial accounts
-- Savings goals
-- A technology-conference commitment
-- A laptop-purchase scenario
-- Scheduling conflicts
-- A planned budget shortfall
-
-Load the demo dataset:
-
-```bash
-python scripts/load-demo-data.py
-```
-
-All names, accounts, transactions, and documents in the demo dataset will be fictional.
-
----
-
-## Testing
-
-### Backend tests
-
-```bash
-cd apps/api
-python -m pytest
-python -m ruff check .
-python -m mypy app
-```
-
-Test coverage should include:
-
-- API validation
-- Commitment calculations
-- Scheduling constraints
-- Scenario isolation
-- CSV import
-- Calendar import
-- Recurring jobs
-- Backup and restore
-- Automation rules
-
-### Frontend tests
-
-```bash
-npm run test:web
-npm run lint:web
+```powershell
+.\apps\api\.venv\Scripts\python.exe scripts\export-openapi.py
+npm run generate:api-types
 npm run typecheck:web
+npm run lint:web
+npm run test:web
 npm run build:web
 ```
 
-### End-to-end tests
+Critical workflow, performance, privacy, and offline checks:
 
-The repository-level browser smoke flow uses the locally installed Chrome executable and exercises
-every route at desktop, tablet, and compact widths. It also covers core mutations, accessible form
-labels, external-request rejection, and an offline service-worker reload.
-
-E2E scenarios should include:
-
-1. Create a commitment.
-2. Attach tasks and calendar events.
-3. Add planned expenses.
-4. Detect a conflict.
-5. Create an alternative scenario.
-6. Resolve the conflict.
-7. Export and restore a backup.
-
-### Offline verification
-
-```bash
-python scripts/verify-offline-mode.py
-python scripts/check-external-assets.py
-python scripts/backup-smoke-test.py
-python scripts/restore-smoke-test.py
+```powershell
+.\apps\api\.venv\Scripts\python.exe -m pytest apps\api\tests\test_judge_workflow.py -q
+.\apps\api\.venv\Scripts\python.exe scripts\performance-smoke-test.py
+.\apps\api\.venv\Scripts\python.exe scripts\backup-smoke-test.py
+.\apps\api\.venv\Scripts\python.exe scripts\restore-smoke-test.py
+.\apps\api\.venv\Scripts\python.exe scripts\check-external-assets.py
+.\apps\api\.venv\Scripts\python.exe scripts\verify-offline-mode.py
+npm run test:e2e:web
 ```
 
-The verification scripts confirm that:
+The browser smoke expects the native API and production frontend to be running and Chrome at its
+normal Windows path, or `CHROME_PATH` set explicitly. It covers all application routes at 1280,
+768, and 375 pixels, keyboard/dialog focus, labels, reduced motion, accessible calendar text,
+synthetic demo load, scenario/commitment/timeline flows, external-request detection, and offline
+service-worker reload.
 
-- The backend binds only to the loopback interface.
-- The application makes no external HTTP requests.
-- No remote assets are referenced.
-- Core workflows function with network access disabled.
-
-The service worker caches only the application shell and same-origin static assets. API requests
-use `no-store` and are never placed in the service-worker cache. A live runtime URL can be checked
-with `python scripts/check-external-assets.py --runtime-url http://127.0.0.1:3000`.
-
----
-
-## Privacy and security
-
-LocalLife OS is designed around local ownership of personal data.
-
-### Privacy principles
-
-- Data remains on the user's computer.
-- No account registration is required.
-- No telemetry is collected.
-- No analytics are collected.
-- No remote requests are required.
-- No personal data is used for model inference.
-- No external model is included at runtime.
-
-### Local security goals
-
-The MVP provides:
-
-- Local session protection
-- Secure backup format
-- Attachment path validation
-- Input-file validation
-- CSV formula-injection protection
-- Strict CORS configuration
-- Loopback-only backend binding
-- Content Security Policy
-- CSRF protection where applicable
-- Safe file upload limits
-- Database migration safeguards
-
-The inactivity lock is a casual privacy screen, not authentication. The live SQLite database and
-ordinary data directories are not application-encrypted; protect the OS account and disk. Optional
-password-protected `.llbackup` files use Argon2id and AES-256-GCM, are checksum-verified before
-success, and are safety-backed up before restore. See [privacy.md](docs/privacy.md),
-[threat-model.md](docs/threat-model.md), and [backup-format.md](docs/backup-format.md) for exact
-claims, limitations, and recovery instructions.
-
----
+The deterministic performance smoke uses a temporary database and enforces 250 ms for health,
+1 second for common conflict/timeline APIs, and 2 seconds for three-way scenario comparison. The
+maximum scheduling benchmark separately covers 100 tasks, 200 events, and a 30-day horizon with a
+one-second solver bound.
 
 ## Accessibility
 
-The application should target:
+The UI uses semantic controls, associated labels, visible focus rings, dialog focus trapping and
+return, live alert/toast regions, textual status labels, reduced-motion styles, chart tables/lists,
+and an agenda-based calendar alternative. The live browser smoke checks keyboard navigation,
+dialog focus, unlabeled form controls, accessible alternatives, and responsive overflow.
 
-- Keyboard navigation
-- Visible focus states
-- Semantic HTML
-- Screen-reader-friendly labels
-- Sufficient contrast
-- Reduced-motion support
-- Scalable text
-- Accessible charts with textual summaries
+Automated Axe integration is not currently installed. It was attempted for submission verification
+but the development environment blocked the package download before installation. Automated checks
+do not replace keyboard and screen-reader testing; a manual assistive-technology pass remains a
+known limitation.
 
----
+## Privacy and security summary
 
-## Hackathon use of GPT-5.6 and Codex
+- API and web ports bind explicitly to `127.0.0.1` outside containers.
+- CORS, Origin, Host, and configured API-base validation allow loopback hosts only.
+- Runtime telemetry is disabled and remote fonts/assets are absent.
+- The Python service has a default-deny outbound socket guard.
+- Service-worker caches exclude API responses, non-GET requests, and cross-origin resources.
+- Attachments, imports, runtime files, and backups are confined under the configured data directory.
+- Imports have filename, extension, byte, row, encoding, formula, and traversal safeguards.
+- Backup manifests include schema metadata and per-file SHA-256 checksums. Password-protected
+  backups use Argon2id key derivation and AES-256-GCM authenticated encryption.
+- Restore verifies authentication, checksums, schema compatibility, and SQLite integrity, creates a
+  safety backup, and rolls back failed activation.
 
-LocalLife OS is being designed and implemented with Codex powered by GPT-5.6.
+Important limitations: the live SQLite database and ordinary attachment/import files are plaintext;
+only explicitly password-protected `.llbackup` files are encrypted. The privacy screen is a casual
+screen lock, not authentication. Anyone with operating-system access to the data directory can read,
+change, copy, or delete local data. Keep the device account and disk protected. See
+[privacy](docs/privacy.md), [security](docs/security.md), and [threat model](docs/threat-model.md).
 
-GPT-5.6 and Codex are used during development for:
+## Supported platforms
 
-- Product scoping
-- Architecture decisions
-- Data-model design
-- Backend implementation
-- Frontend implementation
-- Database migrations
-- Scheduling-engine implementation
-- Test generation
-- Accessibility improvements
-- Security review
-- Documentation
-- Demo-data generation
-- Refactoring and code review
+- Docker Compose: verified with Linux-based API/web images on Docker Desktop for Windows.
+- Native Windows: verified with PowerShell, Python, Node.js, Chrome, and the launcher.
+- Native Linux/macOS: POSIX scripts and commands are provided, but this release was not exercised on
+  a separate Linux or macOS host. The POSIX API entrypoint was exercised inside Debian containers.
+- The browser UI targets current Chromium-based desktop browsers. Firefox, WebKit, mobile devices,
+  and screen readers have not received full release-matrix testing.
 
-The final application does not call GPT-5.6 or any other model at runtime.
+## Known limitations and non-goals
 
-The repository will include:
+- Single local workspace and no multi-user synchronization, remote authentication, or cloud backup.
+- No live bank, calendar-provider, exchange-rate, messaging, or AI integration.
+- No runtime natural-language automation or autonomous advisory agent.
+- No at-rest encryption for the live database or ordinary data directories.
+- Scenario projections use present local records and explicit assumptions; they are not forecasts.
+- The scheduler is bounded optimization, not a promise that every task can or should be scheduled.
+- Import support is intentionally conservative and does not cover every bank export or ICS extension.
+- Automated Axe scanning and a broad non-Chromium/browser assistive-technology matrix remain open.
+- The final Prompt 12 environment blocked a fresh Docker build/up before engine access. Compose
+  configuration passes and the Prompt 11 images were verified healthy, but the new bundled-demo
+  asset layer still needs one fresh Docker-capable-host run.
+- The extended Prompt 12 Chrome run completed the desktop critical flow, but its final output was
+  truncated and the environment blocked the retry. The earlier three-viewport baseline passed; rerun
+  `npm run test:e2e:web` to capture the extended desktop/tablet/compact marker.
 
-```text
-docs/codex-development-log.md
-```
+No unresolved critical `TODO` marker is present in a user-facing runtime path at submission time.
 
-This document will summarize:
+## Screenshots
 
-- Major Codex sessions
-- Key technical decisions
-- Important generated components
-- Human-reviewed changes
-- Testing and verification performed
-- The primary `/feedback` Codex session ID used for the submission
+Submission screenshots are intentionally left as capture placeholders because generated browser-smoke
+artifacts are not committed:
 
----
+1. **Today dashboard** — capture after loading `2026.07` demo data.
+2. **Berlin attendance comparison** — capture the physical/remote/skip three-way view.
+3. **Commitment relationship graph** — capture the Berlin conference graph.
+4. **Offline proof** — capture the cached shell with the offline banner visible.
 
-## Three-minute demo flow
+The E2E command writes fresh local screenshots under `data/browser-smoke-artifacts/`.
 
-The planned demonstration is:
+## Codex and GPT-5.6
 
-1. Start LocalLife OS locally.
-2. Import a synthetic `.ics` calendar.
-3. Import a synthetic bank transaction CSV.
-4. Show the unified Today dashboard.
-5. Create a commitment to attend a conference.
-6. Add tasks, dates, and planned expenses.
-7. Detect a calendar conflict and savings shortfall.
-8. Compare physical and remote attendance scenarios.
-9. Resolve the conflict and improve feasibility.
-10. Disable network access and continue using the application.
-11. Show the Codex session and explain how GPT-5.6 built the project.
+Codex and GPT-5.6 accelerated repository inspection, architecture decomposition, typed API/service
+implementation, migrations, UI composition, adversarial tests, test-data construction, security
+review, and verification scripting. Human-reviewed decisions include the no-runtime-AI boundary,
+local-only network model, explainable commitment outputs, currency separation, preview-before-apply
+mutations, encryption claims, and documented platform limitations. See the
+[development log](docs/codex-development-log.md) and
+[hackathon submission draft](docs/hackathon-submission.md).
 
----
+## Troubleshooting
 
-## MVP roadmap
+**A port is occupied.** Run `scripts/locallife.ps1 doctor` or `scripts/locallife.sh doctor`, stop the
+other process, or keep LocalLife on its documented ports. The launcher refuses to take over an
+unrelated listener.
 
-### Phase 1 — Foundation
+**The UI says the local service is unavailable.** Confirm
+`http://127.0.0.1:8000/api/v1/health`, check `NEXT_PUBLIC_API_BASE_URL`, and keep the hostname on
+`127.0.0.1` or `localhost`.
 
-- Monorepo setup
-- FastAPI service
-- Next.js application
-- SQLite and Alembic
-- Core entities
-- Local launcher
-- Docker Compose
+**Docker data ownership is stale.** Rebuild and restart; the API entrypoint performs its one-time
+named-volume ownership migration before dropping privileges.
 
-### Phase 2 — Core modules
+**A migration warning mentions an implicit SQLite constraint.** One historical migration produces
+an Alembic warning because SQLite cannot add an implicit constraint with ordinary `ALTER`. The
+repository migration and schema-drift tests are authoritative and currently pass.
 
-- Tasks
-- Calendar
-- Notes
-- Financial accounts
-- Transactions
-- Budgets
-- Goals
+**Offline reload fails on first use.** Visit the online application once and wait for the service
+worker to activate before disconnecting. API data is never served from the shell cache.
 
-### Phase 3 — Connected life model
+**Restore is refused.** Use the correct password and the same application schema version. Run
+`inspect`/preview through the launcher and preserve the automatically created safety backup.
 
-- Commitments
-- Entity relationships
-- Unified timeline
-- Conflict detection
-- Capacity calculations
+## Documentation
 
-### Phase 4 — Scenario engine
-
-- Scenario branching
-- Financial projections
-- Scheduling projections
-- Comparison view
-- Scenario acceptance
-
-### Phase 5 — Imports and automation
-
-- `.ics` import
-- Transaction CSV import
-- APScheduler jobs
-- Local automation rules
-
-### Phase 6 — Offline and privacy hardening
-
-- Service worker
-- Local asset verification
-- Backup and restore
-- Security controls
-- Threat model
-- Offline test suite
-
-### Phase 7 — Submission readiness
-
-- Synthetic demo data
-- E2E tests
-- README verification
-- Demo video
-- Architecture documentation
-- Codex development log
-- `/feedback` session ID
-
----
-
-## Non-goals for the MVP
-
-The initial version will not include:
-
-- Mobile applications
-- Cloud synchronization
-- Bank API synchronization
-- Google Calendar integration
-- Email integration
-- Collaboration
-- Receipt OCR
-- Investment trading
-- Tax advice
-- Financial advice
-- Runtime AI
-- Remote inference
-- Browser extensions
-
----
-
-## Contributing
-
-Contribution guidelines will be added once the initial architecture and repository structure are stable.
-
-Until then:
-
-1. Open an issue describing the proposed change.
-2. Keep all runtime features local-first.
-3. Do not introduce telemetry or external network dependencies.
-4. Add tests for new behavior.
-5. Update relevant documentation.
-
----
+- [Three-minute demo](docs/demo-script.md)
+- [Hackathon submission](docs/hackathon-submission.md)
+- [Demo workflow](docs/demo-flow.md)
+- [Architecture](docs/architecture.md)
+- [API conventions](docs/api-conventions.md)
+- [Data model](docs/data-model.md)
+- [Commitment engine](docs/commitment-engine.md)
+- [Scheduling engine](docs/scheduling-engine.md)
+- [Scenario engine](docs/scenario-engine.md)
+- [Imports and automation](docs/imports-and-automation.md)
+- [Backup format](docs/backup-format.md)
+- [Implementation status](docs/implementation-status.md)
 
 ## License
 
-The project is intended to be released under the **MIT License**.
-
-The final repository will include the complete license text in `LICENSE`.
-
----
-
-## Disclaimer
-
-LocalLife OS is a personal organization and simulation tool.
-
-It does not provide financial, legal, medical, tax, or investment advice. Forecasts and scenarios depend on the data and assumptions supplied by the user and may not reflect future outcomes.
-
----
-
-## Name
-
-**LocalLife OS**
-
-Alternative repository slug:
-
-```text
-locallife-os
-```
-
-Tagline:
-
-> Plan your time, money, and commitments—privately, on your own device.
+MIT License. See [LICENSE](LICENSE).

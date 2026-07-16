@@ -53,6 +53,11 @@ try {
       requireState(await page.getByText("Couldn't load this view").count() === 0, `${viewport.name} ${route} rendered a query error state`);
       const overflow = await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth);
       requireState(overflow <= 1, `${viewport.name} ${route} has ${overflow}px horizontal page overflow`);
+      if (viewport.name === "desktop" && route === "/") {
+        const firstContentfulPaint = await page.evaluate(() => performance.getEntriesByName("first-contentful-paint")[0]?.startTime ?? 0);
+        requireState(firstContentfulPaint > 0 && firstContentfulPaint < 4_000, `Dashboard first-contentful paint was ${firstContentfulPaint.toFixed(0)}ms`);
+        report.push(`desktop dashboard first-contentful paint: ${firstContentfulPaint.toFixed(0)}ms`);
+      }
       report.push(`${viewport.name} ${route}: ok`);
     }
 
@@ -64,8 +69,15 @@ try {
     await page.waitForURL("**/tasks");
 
     if (viewport.name === "desktop") {
-      await page.getByRole("button", { name: "Task", exact: true }).click();
+      const taskTrigger = page.getByRole("button", { name: "Task", exact: true });
+      await taskTrigger.focus();
+      await page.keyboard.press("Enter");
       const taskDialog = page.getByRole("dialog", { name: "Create task" });
+      await taskDialog.waitFor();
+      requireState(await taskDialog.evaluate((dialog) => dialog.contains(document.activeElement)), "Create task dialog did not receive focus");
+      await page.keyboard.press("Escape");
+      requireState(await taskTrigger.evaluate((trigger) => trigger === document.activeElement), "Focus did not return to the task trigger");
+      await taskTrigger.click();
       await taskDialog.getByLabel(/Title/).fill(taskName);
       await taskDialog.getByLabel("Estimate").fill("30");
       await taskDialog.getByRole("button", { name: "Create task", exact: true }).click();
@@ -102,28 +114,34 @@ try {
       requireState(await page.getByText(/Accessible event list/).count() === 1, "Calendar text alternative is missing");
 
       await page.goto(`${baseUrl}/scenarios`, { waitUntil: "networkidle" });
+      let demoLoadRequests = 0;
+      const countDemoLoad = (request) => { if (request.url().endsWith("/api/v1/demo/load")) demoLoadRequests += 1; };
+      page.on("request", countDemoLoad);
       await page.getByRole("button", { name: "Prepare signature demo" }).click();
-      await page.getByText("Signature demo prepared locally").waitFor({ timeout: 30_000 });
-      await page.getByText("Physical vs remote conference").waitFor();
+      await page.getByText("Deterministic demo loaded locally").waitFor({ timeout: 30_000 });
+      await page.getByText("Berlin attendance comparison").waitFor();
+      page.off("request", countDemoLoad);
+      requireState(demoLoadRequests === 1, `Demo preparation made ${demoLoadRequests} loader requests`);
       requireState(await page.getByText("Berlin · physical attendance").count() >= 1, "Physical conference option is missing");
       requireState(await page.getByText("Berlin · remote attendance").count() >= 1, "Remote conference option is missing");
-      requireState(await page.getByText("Cash flow", { exact: true }).count() >= 2, "Scenario financial comparison is missing");
+      requireState(await page.getByText("Berlin · skip conference").count() >= 1, "Skip conference option is missing");
+      requireState(await page.getByText("Cash flow", { exact: true }).count() >= 3, "Scenario financial comparison is missing");
       await page.screenshot({ fullPage: true, path: path.join(outputDirectory, "scenario-comparison-desktop.png") });
 
       await page.goto(`${baseUrl}/commitments`, { waitUntil: "networkidle" });
-      for (const title of ["OpenAI Build Week project", "Berlin tech conference decision", "Laptop purchase"]) {
+      for (const title of ["OpenAI Build Week", "Berlin conference", "Laptop purchase"]) {
         await page.getByRole("heading", { name: title }).waitFor();
       }
-      const berlinCard = page.getByRole("heading", { name: "Berlin tech conference decision" }).locator("xpath=ancestor::div[contains(@class,'group')]");
+      const berlinCard = page.getByRole("heading", { name: "Berlin conference" }).locator("xpath=ancestor::div[contains(@class,'group')]");
       await berlinCard.getByRole("link", { name: "Review impact" }).click();
       await page.getByRole("tab", { name: "graph", exact: true }).click();
-      await page.getByLabel(/Relationship graph for Berlin tech conference decision/).waitFor();
+      await page.getByLabel(/Relationship graph for Berlin conference/).waitFor();
       await page.screenshot({ fullPage: true, path: path.join(outputDirectory, "commitment-graph-desktop.png") });
       await page.getByRole("tab", { name: "time", exact: true }).click();
       await page.getByRole("button", { name: "Calculate preview" }).waitFor();
 
       await page.goto(`${baseUrl}/timeline`, { waitUntil: "networkidle" });
-      await page.getByLabel("Commitment").selectOption({ label: "Berlin tech conference decision" });
+      await page.getByLabel("Commitment").selectOption({ label: "Berlin conference" });
       await page.waitForURL("**/timeline?*commitment=*");
       await page.getByRole("heading", { name: "Timeline" }).waitFor();
       requireState(await page.getByLabel("Commitment").inputValue() !== "", "Timeline commitment filter did not remain usable");

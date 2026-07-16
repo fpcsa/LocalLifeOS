@@ -13,6 +13,7 @@
     "typecheck:web": "npm run typecheck --workspace @locallife/web",
     "test:web": "npm run test --workspace @locallife/web",
     "test:e2e:web": "node tests/e2e/frontend-smoke.mjs",
+    "test:performance": "python scripts/performance-smoke-test.py",
     "generate:api-types": "openapi-typescript packages/shared-types/src/openapi.json -o packages/shared-types/src/openapi.ts"
   },
   "devDependencies": {

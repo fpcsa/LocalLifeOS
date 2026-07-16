@@ -69,6 +69,8 @@ The API is mounted under `/api/v1`.
 | `GET /api/v1/privacy/status` | Resolved paths, network/privacy controls, limits, timeout, and last backup |
 | `POST /api/v1/privacy/backups` | Create and verify a complete optionally encrypted local backup |
 | `POST /api/v1/privacy/delete-all` | Exact-confirmation workspace reset with staged file rollback |
+| `POST /api/v1/demo/load` | Deterministically replace reserved synthetic demo records and files |
+| `POST /api/v1/demo/reset` | Remove only records/files with reserved demo identity |
 
 Every response receives an `X-Request-ID`. HTTP, validation, and unexpected errors use one
 structured `error` envelope. Settings reject remote database URLs, non-loopback CORS origins,
@@ -163,3 +165,28 @@ and rollback. It does not implement multi-user authentication, live-database enc
 scanning, parser sandboxing, OS keychain integration, forensic erase, or protection from same-user
 malware. Exact claims and recovery behavior are in [privacy.md](privacy.md),
 [threat-model.md](threat-model.md), and [backup-format.md](backup-format.md).
+
+## Submission-readiness data flow
+
+```mermaid
+flowchart TD
+    F[Bundled synthetic fixtures] --> L[Canonical demo service]
+    L -->|reserved UUID replacement| D[(SQLite)]
+    L -->|confined copies| A[Attachment directory]
+    UI[Scenarios one-click action] -->|one POST /demo/load| L
+    CLI[load/reset scripts] --> L
+    D --> C[Conflict and budget services]
+    D --> S[Scenario and scheduling previews]
+    D --> T[Bounded timeline source queries]
+    T --> P[Globally ordered page]
+    P --> R[Page-only relationship hydration]
+```
+
+The timeline service counts and fetches each eligible source with database filters and a
+`page * page_size` limit, then merges only those bounded candidates. It does not load all notes,
+transactions, tasks, events, goals, or commitment links to return one page. Delete-all derives a
+child-before-parent ordering from SQLite foreign-key metadata before clearing workspace tables;
+this avoids restrictive cross-link failures while preserving the transactional reset boundary.
+Scenario baselines aggregate posted transaction totals by currency and type in SQLite instead of
+materializing the complete ledger; transaction records are not scenario-editable, so this preserves
+the existing metric semantics while bounding memory.

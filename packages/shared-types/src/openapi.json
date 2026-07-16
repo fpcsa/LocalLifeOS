@@ -4607,6 +4607,32 @@
         "title": "DataEnvelope[DeletedResource]",
         "type": "object"
       },
+      "DataEnvelope_DemoDataResetSummary_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DemoDataResetSummary"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[DemoDataResetSummary]",
+        "type": "object"
+      },
+      "DataEnvelope_DemoDataSummary_": {
+        "additionalProperties": false,
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/DemoDataSummary"
+          }
+        },
+        "required": [
+          "data"
+        ],
+        "title": "DataEnvelope[DemoDataSummary]",
+        "type": "object"
+      },
       "DataEnvelope_FinancialAccountResponse_": {
         "additionalProperties": false,
         "properties": {
@@ -5407,6 +5433,95 @@
           "id"
         ],
         "title": "DeletedResource",
+        "type": "object"
+      },
+      "DemoDataResetSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "attachment_files_removed": {
+            "minimum": 0.0,
+            "title": "Attachment Files Removed",
+            "type": "integer"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "records_removed": {
+            "minimum": 0.0,
+            "title": "Records Removed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "dataset_version",
+          "records_removed",
+          "attachment_files_removed"
+        ],
+        "title": "DemoDataResetSummary",
+        "type": "object"
+      },
+      "DemoDataSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "anchor_date": {
+            "title": "Anchor Date",
+            "type": "string"
+          },
+          "attachment_labels": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 2,
+            "title": "Attachment Labels",
+            "type": "array"
+          },
+          "budget_shortfall_count": {
+            "minimum": 1.0,
+            "title": "Budget Shortfall Count",
+            "type": "integer"
+          },
+          "conflict_count": {
+            "minimum": 2.0,
+            "title": "Conflict Count",
+            "type": "integer"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "records_created": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "minProperties": 1,
+            "title": "Records Created",
+            "type": "object"
+          },
+          "scenario_labels": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 5,
+            "title": "Scenario Labels",
+            "type": "array"
+          },
+          "synthetic": {
+            "default": true,
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "dataset_version",
+          "anchor_date",
+          "records_created",
+          "scenario_labels",
+          "attachment_labels",
+          "conflict_count",
+          "budget_shortfall_count"
+        ],
+        "title": "DemoDataSummary",
         "type": "object"
       },
       "DependencyImpact": {
@@ -15028,6 +15143,50 @@
         "summary": "Read Commitment Warnings",
         "tags": [
           "commitments"
+        ]
+      }
+    },
+    "/api/v1/demo/load": {
+      "post": {
+        "description": "Load or deterministically refresh the reserved synthetic judge dataset.",
+        "operationId": "post_demo_load_api_v1_demo_load_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_DemoDataSummary_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Post Demo Load",
+        "tags": [
+          "demo data"
+        ]
+      }
+    },
+    "/api/v1/demo/reset": {
+      "post": {
+        "description": "Remove only records and files that use LocalLife's reserved demo identifiers.",
+        "operationId": "post_demo_reset_api_v1_demo_reset_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataEnvelope_DemoDataResetSummary_"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Post Demo Reset",
+        "tags": [
+          "demo data"
         ]
       }
     },

@@ -1,31 +1,31 @@
 # Signature demo flow
 
 This walkthrough uses only the local browser application and public loopback APIs. Start LocalLife
-OS, open `http://127.0.0.1:3000`, and confirm the top-bar status reads **Local API online**.
+OS, open `http://127.0.0.1:3000`, and confirm the top-bar status reads **Local service online**.
 
 ## Prepare the deterministic demo
 
 1. Choose **Scenarios** in the left navigation.
-2. Choose **Prepare signature demo** in the sample-data hint.
-3. Wait for the success toast. The action creates, or reuses, the OpenAI Build Week, Berlin
-   conference, and Laptop purchase records plus physical and remote Berlin scenario branches.
-4. Select **Berlin · Physical** and **Berlin · Remote** in the comparison picker.
-5. Choose **Compare selected**.
+2. Choose **Prepare signature demo**.
+3. Wait for **Deterministic demo loaded locally**. The one local API call refreshes only records
+   with reserved demo UUIDs and never deletes unrelated records.
+4. The physical, remote, and skip Berlin options are selected automatically. If needed, select all
+   three in the comparison picker and choose **Compare selected**.
 
-Expected result: two calm side-by-side columns show projected cash flow, lowest balance, buffer
+Expected result: three calm side-by-side columns show projected cash flow, lowest balance, buffer
 violations, required time, schedule conflicts, goal impact, unscheduled tasks, and commitment state.
 The difference rows make the physical travel/cost trade-off visible without an aggregate score or
-advisory claim. Repeating **Prepare signature demo** reuses the named scenario pair.
+advisory claim. Repeating **Prepare signature demo** restores the canonical `2026.07` dataset.
 
 ## Inspect and safely accept a scenario
 
-1. Keep **Berlin · Physical** selected and inspect **Typed changes**.
+1. Select **Berlin · remote attendance** and inspect **Typed changes**.
 2. Open its preview and review **Before / after** metrics.
-3. Expand **Exact change plan** and read every create, update, or delete operation.
-4. Observe that **Accept scenario** remains disabled until **I reviewed every exact change** is
+3. Read **Exact acceptance plan** and every before/after field.
+4. Observe that acceptance remains disabled until **I reviewed the exact before-and-after plan** is
    checked.
 5. For a non-destructive judge demo, leave the review box unchecked. To demonstrate acceptance,
-   check it and choose **Accept scenario**; acceptance revalidates the displayed fingerprint and all
+   check it and choose **Accept and apply exact plan**; acceptance revalidates the displayed fingerprint and all
    captured source revisions atomically.
 
 Expected result: a changed source marks the branch **Stale** and blocks acceptance. A current branch

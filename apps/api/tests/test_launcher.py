@@ -74,6 +74,8 @@ def test_launcher_stop_preserves_state_when_process_termination_fails(
         lambda settings: {"api_pid": 101, "web_pid": 202, "api_port": 8000, "web_port": 3000},
     )
     monkeypatch.setattr(launcher, "_terminate_pid", lambda pid: False)
+    monkeypatch.setattr(launcher, "_pid_alive", lambda pid: True)
+    monkeypatch.setattr(launcher, "_port_open", lambda port: True)
 
     result = runner.invoke(launcher.app, ["stop"])
 

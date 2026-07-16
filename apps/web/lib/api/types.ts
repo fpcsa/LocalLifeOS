@@ -11,6 +11,7 @@ export type BudgetCreate = Schemas["BudgetCreateRequest"];
 export type CalendarConflict = Schemas["CalendarConflictResponse"];
 export type CalendarEvent = Schemas["CalendarEventResponse"];
 export type CalendarEventCreate = Schemas["CalendarEventCreateRequest"];
+export type DemoDataSummary = Schemas["DemoDataSummary"];
 export type CalendarMove = Schemas["CalendarMoveRequest"];
 export type CalendarResize = Schemas["CalendarResizeRequest"];
 export type CapacityReport = Schemas["CapacityReport"];

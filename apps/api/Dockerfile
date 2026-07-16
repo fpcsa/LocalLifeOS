@@ -10,6 +10,7 @@ COPY apps/api/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY apps/api/ ./
+COPY data/demo/attachments/ ./demo-assets/
 COPY apps/api/docker-entrypoint.sh /usr/local/bin/locallife-api-entrypoint
 
 RUN addgroup --system locallife \

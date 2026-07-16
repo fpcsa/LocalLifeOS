@@ -477,6 +477,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/demo/load": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Demo Load
+         * @description Load or deterministically refresh the reserved synthetic judge dataset.
+         */
+        post: operations["post_demo_load_api_v1_demo_load_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/demo/reset": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Demo Reset
+         * @description Remove only records and files that use LocalLife's reserved demo identifiers.
+         */
+        post: operations["post_demo_reset_api_v1_demo_reset_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/finance/accounts": {
         parameters: {
             query?: never;
@@ -3448,6 +3488,14 @@ export interface components {
         DataEnvelope_DeletedResource_: {
             data: components["schemas"]["DeletedResource"];
         };
+        /** DataEnvelope[DemoDataResetSummary] */
+        DataEnvelope_DemoDataResetSummary_: {
+            data: components["schemas"]["DemoDataResetSummary"];
+        };
+        /** DataEnvelope[DemoDataSummary] */
+        DataEnvelope_DemoDataSummary_: {
+            data: components["schemas"]["DemoDataSummary"];
+        };
         /** DataEnvelope[FinancialAccountResponse] */
         DataEnvelope_FinancialAccountResponse_: {
             data: components["schemas"]["FinancialAccountResponse"];
@@ -3701,6 +3749,39 @@ export interface components {
              * Format: uuid
              */
             id: string;
+        };
+        /** DemoDataResetSummary */
+        DemoDataResetSummary: {
+            /** Attachment Files Removed */
+            attachment_files_removed: number;
+            /** Dataset Version */
+            dataset_version: string;
+            /** Records Removed */
+            records_removed: number;
+        };
+        /** DemoDataSummary */
+        DemoDataSummary: {
+            /** Anchor Date */
+            anchor_date: string;
+            /** Attachment Labels */
+            attachment_labels: string[];
+            /** Budget Shortfall Count */
+            budget_shortfall_count: number;
+            /** Conflict Count */
+            conflict_count: number;
+            /** Dataset Version */
+            dataset_version: string;
+            /** Records Created */
+            records_created: {
+                [key: string]: number;
+            };
+            /** Scenario Labels */
+            scenario_labels: string[];
+            /**
+             * Synthetic
+             * @default true
+             */
+            synthetic: boolean;
         };
         /** DependencyImpact */
         DependencyImpact: {
@@ -7552,6 +7633,46 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_demo_load_api_v1_demo_load_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_DemoDataSummary_"];
+                };
+            };
+        };
+    };
+    post_demo_reset_api_v1_demo_reset_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DataEnvelope_DemoDataResetSummary_"];
                 };
             };
         };

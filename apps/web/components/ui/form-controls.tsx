@@ -39,9 +39,13 @@ export function Field({
   children: ReactNode;
 }) {
   const descriptionId = error ? `${id}-error` : hint ? `${id}-hint` : undefined;
-  const control = isValidElement<{ "aria-describedby"?: string }>(children)
+  const control = isValidElement<{
+    "aria-describedby"?: string;
+    "aria-invalid"?: boolean;
+  }>(children)
     ? cloneElement(children, {
         "aria-describedby": children.props["aria-describedby"] || descriptionId,
+        "aria-invalid": children.props["aria-invalid"] || Boolean(error),
       })
     : children;
   return (
@@ -51,7 +55,7 @@ export function Field({
       </label>
       {control}
       {error ? (
-        <p className="text-xs font-medium text-destructive" id={`${id}-error`}>
+        <p className="text-xs font-medium text-destructive" id={`${id}-error`} role="alert">
           {error}
         </p>
       ) : hint ? (

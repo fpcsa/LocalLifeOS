@@ -11,6 +11,7 @@ import type {
   CommitmentUpdate,
   CommitmentWarnings,
   DataEnvelope,
+  DemoDataSummary,
   Goal,
   GoalCreate,
   ListEnvelope,
@@ -30,6 +31,12 @@ import type {
 } from "./types";
 
 type Schemas = components["schemas"];
+
+export async function loadDemoData(): Promise<DemoDataSummary> {
+  return (
+    await apiRequest<DataEnvelope<DemoDataSummary>>("/demo/load", { method: "POST" })
+  ).data;
+}
 
 export async function getPreferences(): Promise<Preferences> {
   return (await apiRequest<DataEnvelope<Preferences>>("/preferences")).data;
@@ -130,14 +137,16 @@ export async function getCapacity(
 export async function previewCommitmentSchedule(
   commitmentId: string,
   payload: Schemas["SchedulingScopeInput"],
+  signal?: AbortSignal,
 ): Promise<SchedulingPreview> {
-  return (await apiRequest<DataEnvelope<SchedulingPreview>>(`/commitments/${commitmentId}/schedule-preview`, { method: "POST", ...jsonBody(payload) })).data;
+  return (await apiRequest<DataEnvelope<SchedulingPreview>>(`/commitments/${commitmentId}/schedule-preview`, { method: "POST", signal, ...jsonBody(payload) })).data;
 }
 
 export async function previewSchedule(
   payload: Schemas["SchedulingPreviewRequest"],
+  signal?: AbortSignal,
 ): Promise<SchedulingPreview> {
-  return (await apiRequest<DataEnvelope<SchedulingPreview>>("/scheduling/preview", { method: "POST", ...jsonBody(payload) })).data;
+  return (await apiRequest<DataEnvelope<SchedulingPreview>>("/scheduling/preview", { method: "POST", signal, ...jsonBody(payload) })).data;
 }
 
 export async function applySchedule(
