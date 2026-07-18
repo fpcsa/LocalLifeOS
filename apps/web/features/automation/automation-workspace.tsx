@@ -11,6 +11,7 @@ import { Field, Input, Select, Textarea } from "@/components/ui/form-controls";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelHeader } from "@/components/ui/panel";
 import { EmptyState, ErrorState, SkeletonList } from "@/components/ui/states";
+import { getPreferences } from "@/lib/api/connected";
 import { listAccounts, listCategories } from "@/lib/api/finance";
 import {
   createAutomationRule,
@@ -25,6 +26,7 @@ import {
 import { listTags } from "@/lib/api/productivity";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { AutomationRule, AutomationRuleCreate } from "@/lib/api/types";
+import { formatDateTime } from "@/lib/format";
 import { useUiStore } from "@/stores/ui-store";
 
 type TriggerType = components["schemas"]["AutomationTriggerType"];
@@ -80,6 +82,7 @@ export function AutomationWorkspace() {
   const executions = useQuery({ queryKey: queryKeys.automation.executions, queryFn: listAutomationExecutions });
   const notifications = useQuery({ queryKey: queryKeys.automation.notifications, queryFn: listLocalNotifications });
   const scheduler = useQuery({ queryKey: ["automation", "scheduler"], queryFn: getSchedulerStatus });
+  const preferences = useQuery({ queryKey: queryKeys.system.preferences, queryFn: getPreferences });
   const accounts = useQuery({ queryKey: queryKeys.finance.accounts, queryFn: listAccounts });
   const categories = useQuery({ queryKey: queryKeys.finance.categories, queryFn: listCategories });
   const tags = useQuery({ queryKey: queryKeys.notes.tags, queryFn: listTags });
@@ -112,6 +115,8 @@ export function AutomationWorkspace() {
   const [tagId, setTagId] = useState("");
   const [testContext, setTestContext] = useState('{"amount_minor": 2500, "currency_code": "EUR"}');
   const [testResult, setTestResult] = useState<string | null>(null);
+  const displayTimezone = preferences.data?.timezone || "UTC";
+  const locale = preferences.data?.locale || "en";
 
   function loadRule(rule: AutomationRule) {
     setSelectedId(rule.id);
@@ -263,8 +268,8 @@ export function AutomationWorkspace() {
     onSuccess: async (rule) => { loadRule(rule); await refresh(); },
   });
 
-  if (rules.isLoading) return <SkeletonList rows={8} />;
-  if (rules.isError) return <ErrorState retry={() => void rules.refetch()} />;
+  if (rules.isLoading || preferences.isLoading) return <SkeletonList rows={8} />;
+  if (rules.isError || preferences.isError) return <ErrorState retry={() => void Promise.all([rules.refetch(), preferences.refetch()])} />;
 
   return (
     <div className="space-y-6">
@@ -314,8 +319,8 @@ export function AutomationWorkspace() {
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[1fr_20rem]">
-        <Panel className="overflow-hidden"><PanelHeader description="Successes, skipped condition matches, and failures are kept locally with idempotency keys." title="Execution history" />{executions.isLoading ? <div className="p-5"><SkeletonList /></div> : !executions.data?.data.length ? <EmptyState description="Rule executions will appear here." title="No executions yet" /> : <div className="overflow-x-auto"><table className="w-full min-w-[40rem] text-left text-sm"><thead className="border-b border-border bg-muted/40 text-xs text-muted-foreground"><tr><th className="px-5 py-3">Status</th><th className="px-5 py-3">Trigger</th><th className="px-5 py-3">Action</th><th className="px-5 py-3">Completed</th></tr></thead><tbody className="divide-y divide-border">{executions.data.data.map((item) => <tr key={item.id}><td className="px-5 py-3"><Badge tone={executionTone(item.status)}>{item.status}</Badge></td><td className="px-5 py-3">{triggerLabels[item.trigger_type]}</td><td className="px-5 py-3 text-muted-foreground">{actionLabels[item.action_type]}</td><td className="px-5 py-3 text-xs text-muted-foreground">{item.completed_at ? new Date(item.completed_at).toLocaleString() : "—"}</td></tr>)}</tbody></table></div>}</Panel>
-        <div className="space-y-5"><Panel className="p-5"><p className="flex items-center gap-2 text-sm font-semibold"><Clock3 aria-hidden="true" className="h-4 w-4" />Scheduler</p><p className="mt-3 text-sm text-muted-foreground">{scheduler.data?.running ? `${scheduler.data.scheduled_rule_ids.length} recurring rules scheduled` : "Scheduler is stopped in this environment"}</p>{scheduler.data?.next_wakeup_at ? <p className="mt-2 text-xs text-muted-foreground">Next wakeup {new Date(scheduler.data.next_wakeup_at).toLocaleString()}</p> : null}</Panel><Panel className="p-5"><p className="flex items-center gap-2 text-sm font-semibold"><Bell aria-hidden="true" className="h-4 w-4" />Local notifications</p><p className="mt-3 text-2xl font-semibold tabular-nums">{notifications.data?.length ?? 0}</p><p className="mt-1 text-xs text-muted-foreground">Unread on this device</p></Panel></div>
+        <Panel className="overflow-hidden"><PanelHeader description="Successes, skipped condition matches, and failures are kept locally with idempotency keys." title="Execution history" />{executions.isLoading ? <div className="p-5"><SkeletonList /></div> : executions.isError ? <div className="p-5"><ErrorState retry={() => void executions.refetch()} /></div> : !executions.data?.data.length ? <EmptyState description="Rule executions will appear here." title="No executions yet" /> : <div className="overflow-x-auto"><table className="w-full min-w-[40rem] text-left text-sm"><thead className="border-b border-border bg-muted/40 text-xs text-muted-foreground"><tr><th className="px-5 py-3">Status</th><th className="px-5 py-3">Trigger</th><th className="px-5 py-3">Action</th><th className="px-5 py-3">Completed</th></tr></thead><tbody className="divide-y divide-border">{executions.data.data.map((item) => <tr key={item.id}><td className="px-5 py-3"><Badge tone={executionTone(item.status)}>{item.status}</Badge></td><td className="px-5 py-3">{triggerLabels[item.trigger_type]}</td><td className="px-5 py-3 text-muted-foreground">{actionLabels[item.action_type]}</td><td className="px-5 py-3 text-xs text-muted-foreground">{item.completed_at ? formatDateTime(item.completed_at, displayTimezone, {}, locale) : "—"}</td></tr>)}</tbody></table></div>}</Panel>
+        <div className="space-y-5"><Panel className="p-5"><p className="flex items-center gap-2 text-sm font-semibold"><Clock3 aria-hidden="true" className="h-4 w-4" />Scheduler</p>{scheduler.isLoading ? <div className="mt-3"><SkeletonList rows={2} /></div> : scheduler.isError ? <div className="mt-3"><ErrorState retry={() => void scheduler.refetch()} /></div> : <><p className="mt-3 text-sm text-muted-foreground">{scheduler.data?.running ? `${scheduler.data.scheduled_rule_ids.length} recurring rules scheduled` : "Scheduler is stopped in this environment"}</p>{scheduler.data?.next_wakeup_at ? <p className="mt-2 text-xs text-muted-foreground">Next wakeup {formatDateTime(scheduler.data.next_wakeup_at, displayTimezone, {}, locale)}</p> : null}</>}</Panel><Panel className="p-5"><p className="flex items-center gap-2 text-sm font-semibold"><Bell aria-hidden="true" className="h-4 w-4" />Local notifications</p>{notifications.isLoading ? <div className="mt-3"><SkeletonList rows={2} /></div> : notifications.isError ? <div className="mt-3"><ErrorState retry={() => void notifications.refetch()} /></div> : <><p className="mt-3 text-2xl font-semibold tabular-nums">{notifications.data?.length ?? 0}</p><p className="mt-1 text-xs text-muted-foreground">Unread on this device</p></>}</Panel></div>
       </div>
     </div>
   );

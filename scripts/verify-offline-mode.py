@@ -52,6 +52,25 @@ def main() -> int:
             print("Offline verification failed: native frontend command is not loopback-only.")
             return 1
 
+    next_config = (REPOSITORY_ROOT / "apps" / "web" / "next.config.ts").read_text(encoding="utf-8")
+    if 'allowedDevOrigins: ["127.0.0.1", "localhost"]' not in next_config:
+        print(
+            "Offline verification failed: the container dev server does not allow both "
+            "loopback origins."
+        )
+        return 1
+
+    web_dockerfile = (REPOSITORY_ROOT / "apps" / "web" / "Dockerfile").read_text(encoding="utf-8")
+    if (
+        "RUN npm run build --workspace @locallife/web" not in web_dockerfile
+        or 'CMD ["npm", "run", "start:container"]' not in web_dockerfile
+    ):
+        print(
+            "Offline verification failed: the web container is not using an optimized "
+            "Next.js build."
+        )
+        return 1
+
     service_worker = REPOSITORY_ROOT / "apps" / "web" / "public" / "sw.js"
     if not service_worker.is_file():
         print("Offline verification failed: service worker is missing.")

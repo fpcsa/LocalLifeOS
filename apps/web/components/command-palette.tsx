@@ -8,12 +8,15 @@ import {
   FileText,
   FlaskConical,
   FolderKanban,
+  Gauge,
   Goal,
   Layers3,
   Search,
   Settings,
   SunMedium,
   Clock3,
+  Upload,
+  Workflow,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type ReactNode } from "react";
@@ -33,8 +36,11 @@ const destinations = [
   { label: "Finance", href: "/finance", icon: CircleDollarSign },
   { label: "Goals", href: "/goals", icon: Goal },
   { label: "Commitments", href: "/commitments", icon: Layers3 },
+  { label: "Capacity", href: "/capacity", icon: Gauge },
   { label: "Scenarios", href: "/scenarios", icon: FlaskConical },
   { label: "Timeline", href: "/timeline", icon: Clock3 },
+  { label: "Imports", href: "/imports", icon: Upload },
+  { label: "Automation", href: "/automation", icon: Workflow },
   { label: "Settings", href: "/settings", icon: Settings },
 ] as const;
 
@@ -111,8 +117,8 @@ export function CommandPalette() {
               {search.data.tasks.length ? <ResultGroup title="Tasks">{search.data.tasks.map((item) => <button className="flex min-h-10 w-full items-center rounded-md px-3 text-left text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" key={item.id} onClick={() => go(`/tasks?task=${item.id}`)} type="button">{item.title}</button>)}</ResultGroup> : null}
               {search.data.projects.length ? <ResultGroup title="Projects">{search.data.projects.map((item) => <button className="flex min-h-10 w-full items-center gap-2 rounded-md px-3 text-left text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" key={item.id} onClick={() => go(`/tasks?project=${item.id}`)} type="button"><FolderKanban aria-hidden="true" className="h-4 w-4" />{item.name}</button>)}</ResultGroup> : null}
               {search.data.notes.length ? <ResultGroup title="Notes">{search.data.notes.map((item) => <button className="flex min-h-10 w-full items-center rounded-md px-3 text-left text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" key={item.id} onClick={() => go(`/notes?note=${item.id}`)} type="button">{item.title}</button>)}</ResultGroup> : null}
-              {search.data.commitments.length ? <ResultGroup title="Commitments">{search.data.commitments.map((item) => <button className="flex min-h-10 w-full items-center rounded-md px-3 text-left text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" key={item.id} onClick={() => go(`/commitments?commitment=${item.id}`)} type="button">{item.title}</button>)}</ResultGroup> : null}
-              {search.data.transactions.length ? <ResultGroup title="Transactions">{search.data.transactions.map((item) => <button className="flex min-h-10 w-full items-center rounded-md px-3 text-left text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" key={item.id} onClick={() => go(`/finance?transaction=${item.id}`)} type="button">{item.payee || item.note || "Transaction"}</button>)}</ResultGroup> : null}
+              {search.data.commitments.length ? <ResultGroup title="Commitments">{search.data.commitments.map((item) => <button className="flex min-h-10 w-full items-center rounded-md px-3 text-left text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" key={item.id} onClick={() => go(`/commitments/${item.id}`)} type="button">{item.title}</button>)}</ResultGroup> : null}
+              {search.data.transactions.length ? <ResultGroup title="Transactions">{search.data.transactions.map((item) => <button className="flex min-h-10 w-full items-center rounded-md px-3 text-left text-sm hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" key={item.id} onClick={() => go(`/finance#record-${item.id}`)} type="button">{item.payee || item.note || "Transaction"}</button>)}</ResultGroup> : null}
             </>
           ) : null}
           {query.length >= 2 && search.data && Object.values(search.data).every((items) => items.length === 0) ? (

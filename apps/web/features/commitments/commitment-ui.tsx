@@ -28,11 +28,12 @@ export function entityHref(type: string, id: string): string {
   if (type === "task") return `/tasks?task=${id}`;
   if (type === "calendar_event") return `/calendar?event=${id}`;
   if (type === "note") return `/notes?note=${id}`;
-  if (type === "transaction" || type === "planned_transaction") return `/finance?record=${id}`;
-  if (type === "goal" || type === "savings_goal") return `/goals?goal=${id}`;
+  if (type === "transaction") return `/finance#record-${id}`;
+  if (type === "planned_transaction") return "/finance#reports";
+  if (type === "goal" || type === "savings_goal") return `/goals#goal-${id}`;
   if (type === "project") return `/tasks?project=${id}`;
   if (type === "commitment") return `/commitments/${id}`;
-  return `/timeline?entity=${id}`;
+  return "/timeline";
 }
 
 export function EntityLink({ type, id, label }: { type: string; id: string; label?: string }) {

@@ -155,6 +155,8 @@ fallback, and loading/success/error health states. No asset refers to a remote h
 The API and web images install from pinned Python requirements and `package-lock.json`. Compose waits for the API health check before starting the web service. A named volume, `locallife-os-data`, persists `/workspace/data` across container restarts.
 
 Source bind mounts are intentionally omitted from the default Compose file to make the judging path reproducible across host operating systems. Native development commands provide hot reload.
+The web image creates an optimized Next.js build during `docker compose up --build` and runs it with
+`next start`; hot reload remains available through the native development command only.
 
 ## Security boundary
 

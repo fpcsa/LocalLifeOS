@@ -27,7 +27,7 @@ interface Values {
   rrule: string;
 }
 
-export function TaskForm({ open, onClose, projects, tasks }: { open: boolean; onClose: () => void; projects: Project[]; tasks: Task[] }) {
+export function TaskForm({ open, onClose, projects, tasks, timezone }: { open: boolean; onClose: () => void; projects: Project[]; tasks: Task[]; timezone: string }) {
   const queryClient = useQueryClient();
   const pushToast = useUiStore((state) => state.pushToast);
   const { register, handleSubmit, reset, formState: { errors } } = useForm<Values>({ defaultValues: { title: "", description: "", projectId: "", parentTaskId: "", priority: "medium", duration: "30", earliest: "", due: "", preferred: "any", scheduledStart: "", scheduledEnd: "", rrule: "" } });
@@ -40,11 +40,11 @@ export function TaskForm({ open, onClose, projects, tasks }: { open: boolean; on
       status: "todo",
       priority: values.priority,
       estimated_duration_minutes: values.duration ? Number(values.duration) : null,
-      earliest_start_at: fromDateTimeLocal(values.earliest) || null,
-      due_at: fromDateTimeLocal(values.due) || null,
+      earliest_start_at: fromDateTimeLocal(values.earliest, timezone) || null,
+      due_at: fromDateTimeLocal(values.due, timezone) || null,
       preferred_time_of_day: values.preferred,
-      scheduled_start_at: fromDateTimeLocal(values.scheduledStart) || null,
-      scheduled_end_at: fromDateTimeLocal(values.scheduledEnd) || null,
+      scheduled_start_at: fromDateTimeLocal(values.scheduledStart, timezone) || null,
+      scheduled_end_at: fromDateTimeLocal(values.scheduledEnd, timezone) || null,
       recurrence: values.rrule ? { interval: 1, rrule: values.rrule } : null,
     }),
     onSuccess: async () => { await queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all }); pushToast({ title: "Task created", tone: "success" }); reset(); onClose(); },

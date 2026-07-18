@@ -54,7 +54,7 @@ export function QuickCreate() {
     mutationFn: async (values: QuickCreateValues) => {
       if (values.kind === "task") return createTask({ title: values.title, description_markdown: values.details || null, priority: values.priority, estimated_duration_minutes: Number(values.duration) || null, status: "todo", preferred_time_of_day: "any" });
       if (values.kind === "note") return createNote({ title: values.title, markdown: values.details });
-      if (values.kind === "event") return createCalendarEvent({ title: values.title, description_markdown: values.details || null, starts_at: fromDateTimeLocal(values.startsAt), ends_at: fromDateTimeLocal(values.endsAt), timezone: preferences.data?.timezone || "UTC", all_day: false, status: "confirmed", preparation_buffer_minutes: 0, travel_buffer_minutes: 0, recovery_buffer_minutes: 0 });
+      if (values.kind === "event") return createCalendarEvent({ title: values.title, description_markdown: values.details || null, starts_at: fromDateTimeLocal(values.startsAt, preferences.data?.timezone || "UTC"), ends_at: fromDateTimeLocal(values.endsAt, preferences.data?.timezone || "UTC"), timezone: preferences.data?.timezone || "UTC", all_day: false, status: "confirmed", preparation_buffer_minutes: 0, travel_buffer_minutes: 0, recovery_buffer_minutes: 0 });
       return createTransaction({ account_id: values.accountId, transaction_type: values.transactionType, amount_minor: majorToMinor(values.amount, values.currency), currency_code: values.currency.toUpperCase(), occurred_at: new Date().toISOString(), payee: values.title, note: values.details || null });
     },
     onSuccess: async (_, values) => {

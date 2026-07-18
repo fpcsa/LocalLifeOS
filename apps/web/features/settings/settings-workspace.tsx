@@ -31,6 +31,7 @@ import {
 import { queryKeys } from "@/lib/api/query-keys";
 import { getSystemInfo } from "@/lib/api/system";
 import type { Preferences } from "@/lib/api/types";
+import { formatDateTime } from "@/lib/format";
 import { useUiStore } from "@/stores/ui-store";
 
 interface PreferenceValues {
@@ -192,7 +193,7 @@ export function SettingsWorkspace() {
   if (preferences.isLoading || system.isLoading || privacy.isLoading) {
     return <SkeletonList rows={9} />;
   }
-  if (preferences.isError || system.isError || privacy.isError) {
+  if (preferences.isError || system.isError || privacy.isError || !preferences.data) {
     return (
       <ErrorState
         retry={() => {
@@ -474,7 +475,7 @@ export function SettingsWorkspace() {
                 <>
                   <p className="break-all font-medium">{lastBackup.filename}</p>
                   <p className="text-muted-foreground">
-                    {new Date(lastBackup.created_at).toLocaleString()} · {formatBytes(lastBackup.size_bytes)}
+                    {formatDateTime(lastBackup.created_at, preferences.data.timezone, {}, preferences.data.locale)} · {formatBytes(lastBackup.size_bytes)}
                   </p>
                   <div className="flex flex-wrap gap-2">
                     <Badge tone={lastBackup.encrypted ? "success" : "warning"}>

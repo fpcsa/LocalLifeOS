@@ -8,7 +8,8 @@ import FullCalendar from "@fullcalendar/react";
 import type { EventResizeDoneArg } from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { AlertTriangle, CalendarPlus, Clock3, MapPin, Sparkles } from "lucide-react";
+import { AlertTriangle, CalendarPlus, CheckCircle2, Clock3, MapPin, Sparkles } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +24,7 @@ import {
   moveCalendarEvent,
   resizeCalendarEvent,
 } from "@/lib/api/calendar";
-import { getPreferences } from "@/lib/api/connected";
+import { applySchedule, getPreferences } from "@/lib/api/connected";
 import { listTasks, suggestTaskSchedule } from "@/lib/api/productivity";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { CalendarEvent, ListEnvelope } from "@/lib/api/types";
@@ -77,9 +78,13 @@ function EventDetails({ event, timezone, onClose }: { event: CalendarEvent | nul
 }
 
 export function CalendarWorkspace() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const requestedEventId = searchParams.get("event");
   const [range, setRange] = useState<CalendarRangeState>(defaultRange);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [suggestionTaskId, setSuggestionTaskId] = useState("");
+  const [scheduleReviewed, setScheduleReviewed] = useState(false);
   const queryClient = useQueryClient();
   const pushToast = useUiStore((state) => state.pushToast);
   const openQuickCreate = useUiStore((state) => state.openQuickCreate);
@@ -92,6 +97,7 @@ export function CalendarWorkspace() {
 
   const conflictIds = useMemo(() => new Set((conflicts.data || []).flatMap((conflict) => [conflict.first.event_id, conflict.second.event_id])), [conflicts.data]);
   const calendarEvents = useMemo(() => (events.data?.data || []).map((event) => ({ id: event.id, title: event.title, start: eventStart(event), end: eventEnd(event), allDay: event.all_day, classNames: conflictIds.has(event.id) ? ["ll-calendar-conflict"] : [], extendedProps: { record: event } })), [conflictIds, events.data]);
+  const routedEvent = events.data?.data.find((event) => event.id === requestedEventId) || null;
 
   const takeSnapshots = async (): Promise<CalendarSnapshot> => {
     await queryClient.cancelQueries({ queryKey: queryKeys.calendar.eventsRoot });
@@ -122,7 +128,26 @@ export function CalendarWorkspace() {
     onSuccess: () => pushToast({ title: "Event resized", tone: "success" }),
     onSettled: settleCalendar,
   });
-  const suggest = useMutation({ mutationFn: () => suggestTaskSchedule(suggestionTaskId, defaultSchedulingScope(range.start, range.end)), onError: (error) => pushToast({ title: "Couldn't calculate a suggestion", description: error instanceof Error ? error.message : "Try a different range.", tone: "error" }) });
+  const suggest = useMutation({ mutationFn: () => suggestTaskSchedule(suggestionTaskId, defaultSchedulingScope(range.start, range.end)), onSuccess: () => setScheduleReviewed(false), onError: (error) => pushToast({ title: "Couldn't calculate a suggestion", description: error instanceof Error ? error.message : "Try a different range.", tone: "error" }) });
+  const applySuggestion = useMutation({
+    mutationFn: () => {
+      if (!suggest.data) throw new Error("Calculate a schedule suggestion first.");
+      return applySchedule({ preview_id: suggest.data.preview_id });
+    },
+    onSuccess: async (result) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.calendar.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.scheduling.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.commitments.all }),
+        queryClient.invalidateQueries({ queryKey: queryKeys.timeline.all }),
+      ]);
+      setScheduleReviewed(false);
+      suggest.reset();
+      pushToast({ title: `${result.placements.length} task placement${result.placements.length === 1 ? "" : "s"} applied`, tone: "success" });
+    },
+    onError: (error) => pushToast({ title: "Schedule wasn't applied", description: error instanceof Error ? error.message : "The task changed. Calculate a fresh suggestion.", tone: "error" }),
+  });
 
   const onDatesSet = (value: DatesSetArg) => setRange((current) => current.start === value.startStr && current.end === value.endStr ? current : { start: value.startStr, end: value.endStr });
   const onEventClick = (value: EventClickArg) => setSelectedEvent(value.event.extendedProps.record as CalendarEvent);
@@ -148,9 +173,9 @@ export function CalendarWorkspace() {
           <PanelHeader title="Task schedule suggestion" description="Ask the local constraint solver for a placement in the visible range." />
           <div className="space-y-4 p-4">
             <label className="block text-sm font-medium" htmlFor="suggestion-task">Unscheduled task</label>
-            <select className="min-h-10 w-full rounded-md border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" id="suggestion-task" onChange={(event) => { setSuggestionTaskId(event.target.value); suggest.reset(); }} value={suggestionTaskId}><option value="">Choose a task</option>{tasks.data?.data.map((task) => <option key={task.id} value={task.id}>{task.title}</option>)}</select>
-            <Button disabled={!suggestionTaskId} loading={suggest.isPending} onClick={() => suggest.mutate()} type="button" variant="secondary"><Sparkles aria-hidden="true" className="h-4 w-4" />Suggest a time</Button>
-            {suggest.data ? suggest.data.placements.length ? <div className="rounded-lg bg-muted p-4"><Badge tone="success">{suggest.data.solver_status}</Badge><p className="mt-3 text-sm font-semibold">{formatDateTime(suggest.data.placements[0].starts_at, timezone)}</p><p className="mt-1 text-xs text-muted-foreground">{formatDuration(suggest.data.placements[0].duration_minutes)} · preview only</p></div> : <p className="text-sm text-muted-foreground">No placement was found. {suggest.data.unscheduled_tasks[0]?.reasons[0]?.message}</p> : null}
+            {tasks.isLoading ? <SkeletonList rows={2} /> : tasks.isError ? <ErrorState retry={() => void tasks.refetch()} /> : !tasks.data?.data.length ? <EmptyState title="No schedulable tasks" description="Create an unscheduled task with an estimate before requesting a placement." /> : <><select className="min-h-10 w-full rounded-md border border-border bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" id="suggestion-task" onChange={(event) => { setSuggestionTaskId(event.target.value); setScheduleReviewed(false); suggest.reset(); applySuggestion.reset(); }} value={suggestionTaskId}><option value="">Choose a task</option>{tasks.data.data.map((task) => <option key={task.id} value={task.id}>{task.title}</option>)}</select>
+            <Button disabled={!suggestionTaskId} loading={suggest.isPending} onClick={() => suggest.mutate()} type="button" variant="secondary"><Sparkles aria-hidden="true" className="h-4 w-4" />Suggest a time</Button></>}
+            {suggest.data ? suggest.data.placements.length ? <div className="space-y-4 rounded-lg bg-muted p-4"><div><Badge tone="success">{suggest.data.solver_status}</Badge><p className="mt-3 text-sm font-semibold">{formatDateTime(suggest.data.placements[0].starts_at, timezone)}</p><p className="mt-1 text-xs text-muted-foreground">{formatDuration(suggest.data.placements[0].duration_minutes)} · proposed placement</p></div><label className="flex cursor-pointer items-start gap-3 rounded-md border border-border bg-background p-3 text-sm"><input checked={scheduleReviewed} className="mt-0.5 h-4 w-4 accent-foreground" onChange={(event) => setScheduleReviewed(event.target.checked)} type="checkbox" /><span><span className="font-medium">I reviewed this proposed placement</span><span className="mt-1 block text-xs text-muted-foreground">Apply stops if the task changed after this preview.</span></span></label><Button disabled={!scheduleReviewed} loading={applySuggestion.isPending} onClick={() => applySuggestion.mutate()} type="button"><CheckCircle2 aria-hidden="true" className="h-4 w-4" />Apply reviewed schedule</Button></div> : <p className="text-sm text-muted-foreground">No placement was found. {suggest.data.unscheduled_tasks[0]?.reasons[0]?.message}</p> : null}
           </div>
         </Panel>
       </div>
@@ -160,7 +185,7 @@ export function CalendarWorkspace() {
           {!events.data?.data.length ? <EmptyState title="No events in view" description="Create an event or navigate to a different range." /> : <ol className="divide-y divide-border">{events.data.data.map((event) => <li className="p-4" key={event.id}><button className="w-full rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" onClick={() => setSelectedEvent(event)} type="button"><span className="text-sm font-medium">{event.title}</span><span className="mt-1 block text-xs text-muted-foreground">{event.all_day ? `${event.all_day_start} – ${event.all_day_end}` : `${formatDateTime(event.starts_at, timezone)} – ${formatDateTime(event.ends_at, timezone)}`}</span></button></li>)}</ol>}
         </details>
       </Panel>
-      <EventDetails event={selectedEvent} onClose={() => setSelectedEvent(null)} timezone={timezone} />
+      <EventDetails event={selectedEvent || routedEvent} onClose={() => { setSelectedEvent(null); if (requestedEventId) router.replace("/calendar"); }} timezone={timezone} />
     </div>
   );
 }

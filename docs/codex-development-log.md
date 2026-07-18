@@ -1489,7 +1489,128 @@ submission fields synchronized.
 After the implementation session is complete, the user should run the product’s `/feedback` action
 for this Codex session and replace the placeholder with the returned session ID.
 
+## 2026-07-18 — Prompt 13: final bug-fix and review pass
+
+### Verified defects and fixes
+
+1. **Calendar schedule preview could not be accepted.** The calendar used the scheduling preview API
+   but stopped at “preview only.” It now requires an explicit review checkbox and applies the exact
+   preview through the existing revision-checked endpoint. Task loading/error/empty states are also
+   visible.
+2. **Cross-domain caches stayed stale.** Commitment schedule apply, task schedule apply, scenario
+   acceptance, and demo loading refreshed only a subset of the domains they mutate. Shared targeted
+   invalidation now covers tasks, calendar, scheduling, commitments, finance, goals, projects, and
+   timeline as appropriate; whole-demo replacement invalidates the whole query cache.
+3. **Workspace timezone was not consistently authoritative.** Several `datetime-local` forms and
+   finance date ranges used the browser/UTC calendar. A shared IANA wall-time converter now drives
+   tasks, finance, goals, commitments, quick create, scenarios, and scheduling. Nonexistent DST wall
+   times are rejected rather than silently shifted.
+4. **Money and timestamps were inconsistently formatted.** Import preview rendered minor units as
+   whole currency values, and import/settings/automation timestamps used the browser locale/timezone.
+   These now use the shared currency and configured workspace date formatters.
+5. **Navigation targets were incomplete or misleading.** Capacity, Imports, and Automation were
+   absent from the command palette; commitment search used a query parameter the list ignored; and
+   several entity links pointed to unconsumed parameters. Destinations now resolve to real detail
+   routes, event dialogs, or anchored records/reports.
+6. **Docker returned an inert HTTP-200 shell.** Next 16 rejected loopback dev resources because the
+   Compose-served dev origin was not allowed. Adding loopback-only `allowedDevOrigins` restored the
+   online dev runtime, but offline reload still could not hydrate without HMR. The durable fix builds
+   the optimized frontend in the image and runs `next start`; native development remains `next dev`.
+7. **Offline state disappeared across reload.** Chromium emits the offline event before reload but
+   can report `navigator.onLine` as true in the service-worker response. The event state is now kept
+   in tab-scoped session storage, cleared by an online event or successful health recovery, and read
+   through `useSyncExternalStore`. API responses remain network-only and uncached.
+8. **The browser smoke accepted an empty main region.** Every route now must render non-empty main
+   content, so a server-200/unhydrated shell fails immediately.
+
+### Bounded review outcomes
+
+- Navigation, loading/error/empty states, money formatting, timezone conversion, TanStack Query
+  invalidation, scenario isolation, scheduling preview/apply, confined file paths, local-only assets,
+  Docker startup, dialogs/forms, and deterministic demo behavior were inspected.
+- Existing path-confinement/import/backup and scenario-isolation tests remained green; no backend
+  domain change was required.
+- Stable product areas were left unchanged. No runtime AI, cloud service, telemetry, remote font, or
+  external asset was introduced.
+
+### Regression coverage added or expanded
+
+- Calendar reviewed schedule apply and task-query states.
+- Cross-domain scenario/demo cache invalidation.
+- Commitment scheduling cache invalidation.
+- IANA wall-time conversion and daylight-saving gap rejection.
+- Imported minor-unit currency formatting.
+- Complete command-palette navigation and commitment detail routing.
+- Entity-link destination mapping.
+- Offline-state survival across cached-shell reload.
+- E2E rejection of empty application shells.
+
 ### Verification record
+
+Final commands were run from the repository root:
+
+```text
+.\apps\api\.venv\Scripts\python.exe -m pytest apps\api\tests -q
+.\apps\api\.venv\Scripts\python.exe -m pytest apps\api\tests\test_migrations.py -q
+.\apps\api\.venv\Scripts\python.exe -m pytest apps\api\tests\test_judge_workflow.py -q
+.\apps\api\.venv\Scripts\python.exe -m ruff format --config apps\api\pyproject.toml --check apps\api scripts
+.\apps\api\.venv\Scripts\python.exe -m ruff check --config apps\api\pyproject.toml apps\api scripts
+.\apps\api\.venv\Scripts\python.exe -m mypy --config-file apps\api\pyproject.toml apps\api\app
+.\apps\api\.venv\Scripts\python.exe scripts\export-openapi.py
+npm run generate:api-types
+npm run typecheck:web
+npm run lint:web
+npm run test:web
+npm run build:web
+.\apps\api\.venv\Scripts\python.exe scripts\performance-smoke-test.py
+.\apps\api\.venv\Scripts\python.exe scripts\backup-smoke-test.py
+.\apps\api\.venv\Scripts\python.exe scripts\restore-smoke-test.py
+.\apps\api\.venv\Scripts\python.exe scripts\check-external-assets.py
+.\apps\api\.venv\Scripts\python.exe scripts\verify-offline-mode.py
+.\apps\api\.venv\Scripts\python.exe -m pip check
+node --check tests\e2e\frontend-smoke.mjs
+docker compose -f docker-compose.yml -f docker-compose.final-review.yml config --quiet
+docker compose -f docker-compose.yml -f docker-compose.final-review.yml up --build --detach
+docker compose -f docker-compose.yml -f docker-compose.final-review.yml ps
+docker compose -f docker-compose.yml -f docker-compose.final-review.yml top
+.\apps\api\.venv\Scripts\python.exe scripts\check-external-assets.py --runtime-url http://127.0.0.1:3000
+npm run test:e2e:web
+docker compose -f docker-compose.yml -f docker-compose.final-review.yml down --volumes
+git -c safe.directory=C:/Python/fpcsa/LocalLifeOS diff --check
+```
+
+- Backend: 82 tests passed; the clean migration and complete judge workflow passed. Ruff format/lint
+  passed across 184 files and strict mypy passed across 136 source files. The sole warning is the
+  documented historical Alembic/SQLite implicit-constraint warning.
+- Frontend: 17 Vitest files and 31 tests passed; strict TypeScript and zero-warning ESLint passed.
+  Native and containerized optimized builds emitted 18 route entries.
+- Contracts/performance: OpenAPI remained 111 paths/311 schemas. Health was 10.5 ms, conflicts
+  480.3 ms, paged timeline 167.3 ms, and three-way scenario comparison 307.8 ms; all were within
+  their 250/1,000/1,000/2,000 ms limits.
+- Safety: encrypted backup and restore, dependency integrity, source/live asset checks, offline
+  boundaries, Compose configuration, JavaScript syntax, and Git whitespace passed.
+- Docker/browser: isolated API/web images built and became healthy on loopback-only ports; API health
+  was `ok`, web returned 200, and actual runtime processes were unprivileged. Chrome passed all 39
+  route checks plus the full desktop critical/a11y/offline flow; final dashboard FCP was 856 ms. The
+  isolated containers, network, and volume were removed after verification.
+- Honest intermediate failures: the first live asset scan timed out during the cold Next compile and
+  passed after warm-up. The first E2E run exposed the unhydrated dev shell at the command palette; the
+  second exposed offline non-hydration. Both were fixed at their root causes. The third full E2E run
+  passed without relaxed assertions.
+
+### Remaining risks
+
+- Live SQLite and ordinary local files remain plaintext; only password-protected backups are
+  encrypted, and the privacy screen is not authentication.
+- Automated Axe, full screen-reader, Firefox/WebKit/mobile, and native Linux/macOS release matrices
+  remain unverified.
+- Planned-transaction relationship links open the finance reports because there is no dedicated
+  planned-transaction detail surface in this MVP.
+
+## Prompt 12 historical verification record
+
+The following record is retained as historical evidence. Its Docker/browser gaps were superseded
+and closed by the Prompt 13 verification above.
 
 Final commands were run from the repository root unless a working directory is noted:
 

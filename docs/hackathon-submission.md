@@ -168,12 +168,9 @@ Screenshot placeholders before form submission:
 - Automated Axe scanning could not be installed because the development environment blocked the
   dependency download; semantic/label/focus browser checks and manual review remain, but a full
   assistive-technology pass is still required.
-- The final submission pass validated Compose configuration but could not freshly build/start the
-  Prompt 12 images because the development environment blocked Docker-engine access. Prompt 11 had
-  verified healthy unprivileged containers; rerun `docker compose up --build` on the judge host.
-- The extended Chrome smoke completed its desktop critical workflow, but the environment blocked a
-  retry after the runner output was truncated. The earlier 1280/768/375 baseline passed; capture a
-  fresh extended all-viewport marker before release sign-off.
+- Fresh optimized Next.js and API images built and ran healthy with loopback-only ports during the
+  2026-07-18 final review. The full Chrome smoke passed all 39 desktop/tablet/compact route checks,
+  the critical mutation/demo flow, and an interactive service-worker offline reload.
 
 ## Future roadmap
 

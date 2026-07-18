@@ -17,6 +17,7 @@ const contentSecurityPolicy = `
 `.replace(/\s{2,}/g, " ").trim();
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   poweredByHeader: false,
   reactStrictMode: true,
   transpilePackages: ["@locallife/shared-types", "@locallife/ui"],

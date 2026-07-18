@@ -16,7 +16,7 @@ import {
 } from "@/lib/api/finance";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { Account, TransactionCategory } from "@/lib/api/types";
-import { fromDateTimeLocal, majorToMinor } from "@/lib/format";
+import { fromDateTimeLocal, majorToMinor, toDateTimeLocal } from "@/lib/format";
 import { useUiStore } from "@/stores/ui-store";
 
 export type FinanceFormKind = "account" | "budget" | "category" | "savings" | "transaction";
@@ -26,16 +26,15 @@ interface TransactionValues { type: "income" | "expense" | "transfer"; accountId
 interface BudgetValues { name: string; currency: string; period: "weekly" | "monthly" | "quarterly" | "yearly" | "custom"; start: string; end: string; categoryId: string; limit: string }
 interface SavingsValues { name: string; accountId: string; currency: string; current: string; target: string; targetDate: string }
 
-function localNow(): string {
-  const now = new Date();
-  return new Date(now.getTime() - now.getTimezoneOffset() * 60_000).toISOString().slice(0, 16);
+function localNow(timezone: string): string {
+  return toDateTimeLocal(new Date().toISOString(), timezone);
 }
 
 function FormActions({ close, pending, label }: { close: () => void; pending: boolean; label: string }) {
   return <div className="flex justify-end gap-2"><Button onClick={close} type="button" variant="ghost">Cancel</Button><Button loading={pending} type="submit">{label}</Button></div>;
 }
 
-export function FinanceForms({ form, close, accounts, categories }: { form: FinanceFormKind | null; close: () => void; accounts: Account[]; categories: TransactionCategory[] }) {
+export function FinanceForms({ form, close, accounts, categories, timezone }: { form: FinanceFormKind | null; close: () => void; accounts: Account[]; categories: TransactionCategory[]; timezone: string }) {
   const queryClient = useQueryClient();
   const pushToast = useUiStore((state) => state.pushToast);
   const refresh = async () => queryClient.invalidateQueries({ queryKey: queryKeys.finance.all });
@@ -45,9 +44,9 @@ export function FinanceForms({ form, close, accounts, categories }: { form: Fina
   const accountForm = useForm<AccountValues>({ defaultValues: { name: "", type: "checking", currency: "EUR", opening: "0", buffer: "0" } });
   const account = useMutation({ mutationFn: (values: AccountValues) => createAccount({ name: values.name, account_type: values.type, currency_code: values.currency.toUpperCase(), opening_balance_minor: majorToMinor(values.opening, values.currency), financial_buffer_minor: majorToMinor(values.buffer, values.currency) }), onSuccess: () => succeeded("Account created"), onError: failed("Couldn't create account") });
 
-  const transactionForm = useForm<TransactionValues>({ defaultValues: { type: "expense", accountId: "", destinationId: "", amount: "", currency: "EUR", occurredAt: localNow(), categoryId: "", payee: "", note: "" } });
+  const transactionForm = useForm<TransactionValues>({ defaultValues: { type: "expense", accountId: "", destinationId: "", amount: "", currency: "EUR", occurredAt: localNow(timezone), categoryId: "", payee: "", note: "" } });
   const transactionType = useWatch({ control: transactionForm.control, name: "type" });
-  const transaction = useMutation({ mutationFn: async (values: TransactionValues) => { const common = { amount_minor: majorToMinor(values.amount, values.currency), currency_code: values.currency.toUpperCase(), occurred_at: fromDateTimeLocal(values.occurredAt)!, payee: values.payee || null, note: values.note || null }; return values.type === "transfer" ? createTransfer({ ...common, source_account_id: values.accountId, destination_account_id: values.destinationId }) : createTransaction({ ...common, account_id: values.accountId, transaction_type: values.type, category_id: values.categoryId || null }); }, onSuccess: () => succeeded(transactionType === "transfer" ? "Transfer recorded" : "Transaction recorded"), onError: failed("Couldn't record transaction") });
+  const transaction = useMutation({ mutationFn: async (values: TransactionValues) => { const common = { amount_minor: majorToMinor(values.amount, values.currency), currency_code: values.currency.toUpperCase(), occurred_at: fromDateTimeLocal(values.occurredAt, timezone)!, payee: values.payee || null, note: values.note || null }; return values.type === "transfer" ? createTransfer({ ...common, source_account_id: values.accountId, destination_account_id: values.destinationId }) : createTransaction({ ...common, account_id: values.accountId, transaction_type: values.type, category_id: values.categoryId || null }); }, onSuccess: () => succeeded(transactionType === "transfer" ? "Transfer recorded" : "Transaction recorded"), onError: failed("Couldn't record transaction") });
 
   const categoryForm = useForm<{ name: string; kind: "income" | "expense" }>({ defaultValues: { name: "", kind: "expense" } });
   const category = useMutation({ mutationFn: createCategory, onSuccess: () => succeeded("Category created"), onError: failed("Couldn't create category") });

@@ -10,6 +10,7 @@ import { Field, Input, Select } from "@/components/ui/form-controls";
 import { PageHeader } from "@/components/ui/page-header";
 import { Panel, PanelHeader } from "@/components/ui/panel";
 import { EmptyState, ErrorState, SkeletonList } from "@/components/ui/states";
+import { getPreferences } from "@/lib/api/connected";
 import { listAccounts, listCategories } from "@/lib/api/finance";
 import {
   applyImport,
@@ -22,6 +23,7 @@ import {
 } from "@/lib/api/imports-automation";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { CsvMapping, ImportPreview, ImportRow } from "@/lib/api/types";
+import { formatDateTime, formatMoney } from "@/lib/format";
 import { useUiStore } from "@/stores/ui-store";
 
 type CsvField =
@@ -56,6 +58,18 @@ function statusTone(status: string): "danger" | "neutral" | "success" | "warning
 
 function selectedRows(preview: ImportPreview): Set<string> {
   return new Set(preview.rows.filter((row) => row.included).map((row) => row.id));
+}
+
+export function formatImportedAmount(amountMinor: unknown, currencyCode: unknown, locale = "en"): string {
+  if (amountMinor === undefined || amountMinor === null) return "—";
+  const amount = Number(amountMinor);
+  const currency = typeof currencyCode === "string" ? currencyCode.trim().toUpperCase() : "";
+  if (!Number.isFinite(amount) || !currency) return `${String(amountMinor)} minor units`;
+  try {
+    return formatMoney(amount, currency, locale);
+  } catch {
+    return `${String(amountMinor)} ${currency}`;
+  }
 }
 
 function FilePicker({
@@ -99,10 +113,14 @@ function PreviewTable({
   preview,
   selection,
   onSelection,
+  timezone,
+  locale,
 }: {
   preview: ImportPreview;
   selection: Set<string>;
   onSelection: (next: Set<string>) => void;
+  timezone: string;
+  locale: string;
 }) {
   function toggle(row: ImportRow) {
     const next = new Set(selection);
@@ -127,6 +145,7 @@ function PreviewTable({
         <tbody className="divide-y divide-border">
           {preview.rows.map((row) => {
             const normalized = row.normalized_data;
+            const dateValue = normalized.occurred_at ?? normalized.starts_at ?? normalized.all_day_start;
             const disabled = row.status === "invalid" || row.duplicate_kind === "exact";
             return (
               <tr key={row.id}>
@@ -144,12 +163,9 @@ function PreviewTable({
                   <Badge tone={statusTone(row.status)}>{row.status}</Badge>
                 </td>
                 <td className="px-4 py-3 text-xs text-muted-foreground">
-                  {String(
-                    normalized.occurred_at ??
-                      normalized.starts_at ??
-                      normalized.all_day_start ??
-                      "—",
-                  )}
+                  {typeof dateValue === "string" && dateValue.includes("T")
+                    ? formatDateTime(dateValue, timezone, {}, locale)
+                    : String(dateValue ?? "—")}
                 </td>
                 <td className="max-w-xs px-4 py-3">
                   <span className="block truncate">
@@ -157,9 +173,7 @@ function PreviewTable({
                   </span>
                 </td>
                 <td className="px-4 py-3 text-right font-medium tabular-nums">
-                  {normalized.amount_minor === undefined
-                    ? "—"
-                    : `${Number(normalized.amount_minor).toLocaleString()} ${String(normalized.currency_code ?? "")}`}
+                  {formatImportedAmount(normalized.amount_minor, normalized.currency_code, locale)}
                 </td>
                 <td className="max-w-xs px-4 py-3 text-xs text-muted-foreground">
                   {row.issues.map((issue) => issue.message).join(" · ") ||
@@ -211,6 +225,7 @@ export function ImportsWorkspace() {
   const queryClient = useQueryClient();
   const pushToast = useUiStore((state) => state.pushToast);
   const history = useQuery({ queryKey: queryKeys.imports.history, queryFn: listImportHistory });
+  const preferences = useQuery({ queryKey: queryKeys.system.preferences, queryFn: getPreferences });
   const profiles = useQuery({ queryKey: queryKeys.imports.profiles, queryFn: listMappingProfiles });
   const accounts = useQuery({ queryKey: queryKeys.finance.accounts, queryFn: listAccounts });
   const categories = useQuery({ queryKey: queryKeys.finance.categories, queryFn: listCategories });
@@ -224,6 +239,8 @@ export function ImportsWorkspace() {
   const [dateFormat, setDateFormat] = useState("%d/%m/%Y");
   const [decimalSeparator, setDecimalSeparator] = useState<"." | ",">(".");
   const [profileName, setProfileName] = useState("");
+  const timezone = preferences.data?.timezone || "UTC";
+  const locale = preferences.data?.locale || "en";
 
   const refreshHistory = async () => {
     await Promise.all([
@@ -383,7 +400,7 @@ export function ImportsWorkspace() {
               </div>
             ) : null}
           </div>
-          {calendarPreview ? <PreviewTable onSelection={setCalendarSelection} preview={calendarPreview} selection={calendarSelection} /> : null}
+          {calendarPreview ? <PreviewTable locale={locale} onSelection={setCalendarSelection} preview={calendarPreview} selection={calendarSelection} timezone={timezone} /> : null}
         </Panel>
 
         <Panel className="overflow-hidden">
@@ -428,13 +445,13 @@ export function ImportsWorkspace() {
             <p className="text-xs text-muted-foreground">Saved profiles: {profiles.data?.map((profile) => profile.name).join(", ") || "none"}</p>
             <div className="flex gap-2"><Button disabled={!mappingPayload} loading={mapMutation.isPending} onClick={() => mapMutation.mutate()} type="button" variant="secondary"><FileSpreadsheet aria-hidden="true" className="h-4 w-4" />Normalize preview</Button><Button disabled={!csvSelection.size || !csvPreview.rows.some((row) => Object.keys(row.normalized_data).length)} loading={csvApply.isPending} onClick={() => csvApply.mutate()} type="button">Import {csvSelection.size}</Button></div>
           </div>
-          <PreviewTable onSelection={setCsvSelection} preview={csvPreview} selection={csvSelection} />
+          <PreviewTable locale={locale} onSelection={setCsvSelection} preview={csvPreview} selection={csvSelection} timezone={timezone} />
         </Panel>
       ) : null}
 
       <Panel>
         <PanelHeader description="Each source fingerprint, preview result, and apply outcome remains available locally." title="Import history" />
-        {history.isLoading ? <div className="p-5"><SkeletonList rows={4} /></div> : history.isError ? <div className="p-5"><ErrorState retry={() => void history.refetch()} /></div> : !history.data?.data.length ? <EmptyState description="Calendar and bank previews will appear here before anything is applied." title="No imports yet" /> : <div className="overflow-x-auto"><table className="w-full min-w-[44rem] text-left text-sm"><thead className="border-b border-border bg-muted/40 text-xs text-muted-foreground"><tr><th className="px-5 py-3">File</th><th className="px-5 py-3">Kind</th><th className="px-5 py-3">Status</th><th className="px-5 py-3">Rows</th><th className="px-5 py-3">Created</th></tr></thead><tbody className="divide-y divide-border">{history.data.data.map((batch) => <tr key={batch.id}><td className="px-5 py-3 font-medium">{batch.original_filename}</td><td className="px-5 py-3 text-muted-foreground">{batch.kind.replaceAll("_", " ")}</td><td className="px-5 py-3"><Badge tone={batch.status === "applied" ? "success" : "neutral"}>{batch.status}</Badge></td><td className="px-5 py-3 tabular-nums">{batch.imported_count}/{batch.total_rows}</td><td className="px-5 py-3 text-xs text-muted-foreground">{new Date(batch.created_at).toLocaleString()}</td></tr>)}</tbody></table></div>}
+        {history.isLoading || preferences.isLoading ? <div className="p-5"><SkeletonList rows={4} /></div> : history.isError || preferences.isError ? <div className="p-5"><ErrorState retry={() => void Promise.all([history.refetch(), preferences.refetch()])} /></div> : !history.data?.data.length ? <EmptyState description="Calendar and bank previews will appear here before anything is applied." title="No imports yet" /> : <div className="overflow-x-auto"><table className="w-full min-w-[44rem] text-left text-sm"><thead className="border-b border-border bg-muted/40 text-xs text-muted-foreground"><tr><th className="px-5 py-3">File</th><th className="px-5 py-3">Kind</th><th className="px-5 py-3">Status</th><th className="px-5 py-3">Rows</th><th className="px-5 py-3">Created</th></tr></thead><tbody className="divide-y divide-border">{history.data.data.map((batch) => <tr key={batch.id}><td className="px-5 py-3 font-medium">{batch.original_filename}</td><td className="px-5 py-3 text-muted-foreground">{batch.kind.replaceAll("_", " ")}</td><td className="px-5 py-3"><Badge tone={batch.status === "applied" ? "success" : "neutral"}>{batch.status}</Badge></td><td className="px-5 py-3 tabular-nums">{batch.imported_count}/{batch.total_rows}</td><td className="px-5 py-3 text-xs text-muted-foreground">{formatDateTime(batch.created_at, timezone, {}, locale)}</td></tr>)}</tbody></table></div>}
       </Panel>
     </div>
   );

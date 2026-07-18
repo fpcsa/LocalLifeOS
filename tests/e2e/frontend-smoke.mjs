@@ -49,6 +49,7 @@ try {
       const response = await page.goto(`${baseUrl}${route}`, { waitUntil: "networkidle" });
       requireState(response?.ok(), `${viewport.name} ${route} returned ${response?.status()}`);
       await page.locator("main").waitFor();
+      requireState((await page.locator("main").innerText()).trim().length > 0, `${viewport.name} ${route} rendered an empty application shell`);
       requireState(await page.getByText("This route failed to render").count() === 0, `${viewport.name} ${route} hit the route error boundary`);
       requireState(await page.getByText("Couldn't load this view").count() === 0, `${viewport.name} ${route} rendered a query error state`);
       const overflow = await page.evaluate(() => Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth);

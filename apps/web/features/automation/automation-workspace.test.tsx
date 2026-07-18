@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { getPreferences } from "@/lib/api/connected";
 import { listAccounts, listCategories } from "@/lib/api/finance";
 import {
   listAutomationExecutions,
@@ -14,6 +15,7 @@ import { listTags } from "@/lib/api/productivity";
 
 import { AutomationWorkspace } from "./automation-workspace";
 
+vi.mock("@/lib/api/connected", () => ({ getPreferences: vi.fn() }));
 vi.mock("@/lib/api/finance", () => ({ listAccounts: vi.fn(), listCategories: vi.fn() }));
 vi.mock("@/lib/api/productivity", () => ({ listTags: vi.fn() }));
 vi.mock("@/lib/api/imports-automation", () => ({
@@ -36,6 +38,7 @@ function Wrapper({ children }: { children: ReactNode }) {
 
 describe("AutomationWorkspace", () => {
   beforeEach(() => {
+    vi.mocked(getPreferences).mockResolvedValue({ timezone: "Europe/Rome", locale: "en-IE" } as Awaited<ReturnType<typeof getPreferences>>);
     vi.mocked(listAutomationRules).mockResolvedValue([{
       id: "rule-1",
       workspace_id: "workspace-1",

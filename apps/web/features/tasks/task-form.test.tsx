@@ -22,7 +22,7 @@ describe("TaskForm", () => {
   it("announces required-field errors and submits recurrence/timing fields", async () => {
     mockedCreateTask.mockResolvedValue({} as Awaited<ReturnType<typeof createTask>>);
     const close = vi.fn();
-    render(<TaskForm onClose={close} open projects={[]} tasks={[]} />, { wrapper: Wrapper });
+    render(<TaskForm onClose={close} open projects={[]} tasks={[]} timezone="Europe/Rome" />, { wrapper: Wrapper });
 
     fireEvent.click(screen.getByRole("button", { name: "Create task" }));
     expect(await screen.findByText("Enter a task title.")).toBeInTheDocument();

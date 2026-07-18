@@ -40,6 +40,9 @@ Wait until both health checks are healthy, then open
 [http://127.0.0.1:3000](http://127.0.0.1:3000). Load the canonical demo from the **Scenarios** page
 with **Prepare signature demo**, or call the local endpoint:
 
+The web image creates an optimized Next.js build and runs `next start`; native `npm run dev:web`
+remains the hot-reload development path.
+
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/demo/load
 ```
@@ -339,12 +342,8 @@ change, copy, or delete local data. Keep the device account and disk protected. 
 - The scheduler is bounded optimization, not a promise that every task can or should be scheduled.
 - Import support is intentionally conservative and does not cover every bank export or ICS extension.
 - Automated Axe scanning and a broad non-Chromium/browser assistive-technology matrix remain open.
-- The final Prompt 12 environment blocked a fresh Docker build/up before engine access. Compose
-  configuration passes and the Prompt 11 images were verified healthy, but the new bundled-demo
-  asset layer still needs one fresh Docker-capable-host run.
-- The extended Prompt 12 Chrome run completed the desktop critical flow, but its final output was
-  truncated and the environment blocked the retry. The earlier three-viewport baseline passed; rerun
-  `npm run test:e2e:web` to capture the extended desktop/tablet/compact marker.
+- Fresh production-image Compose build/health and the extended desktop/tablet/compact Chrome flow
+  were verified in the final review on 2026-07-18.
 
 No unresolved critical `TODO` marker is present in a user-facing runtime path at submission time.
 

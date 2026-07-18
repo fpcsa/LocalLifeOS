@@ -1,6 +1,6 @@
 # Implementation status
 
-Last updated: 2026-07-16
+Last updated: 2026-07-18
 
 ## Prompt 1 — Repository foundation
 
@@ -325,12 +325,42 @@ Native Linux/macOS and full Firefox/WebKit/screen-reader matrices remain honest 
 - [x] Isolated native startup returned API health `ok`, web HTTP 200, and loopback-only status. The
   managed shell did not permit its stop command to confirm process-tree termination; no listeners
   remained after the verification shell exited.
-- [ ] Fresh Prompt 12 `docker compose up --build`: the environment rejected required Docker-engine
-  access at its usage-limit/approval gate before execution. `docker compose config --quiet` passed,
-  and the Prompt 11 container baseline was previously healthy; the new demo-asset image layer still
-  needs one fresh build/up on a Docker-capable host.
-- [ ] Final extended three-viewport Chrome marker: the isolated run completed all 13 desktop route
-  navigations and the mutation, calendar, scenario, commitment, timeline, accessibility, offline,
-  and screenshot actions. Its final console result was truncated, and the environment rejected the
-  bounded rerun before execution. The previous baseline passed desktop/tablet/compact; the extended
-  Prompt 12 script should be rerun once on a host without that gate.
+- [x] Fresh `docker compose up --build`: closed during the Prompt 13 review with healthy isolated
+  API/web containers, loopback-only ports, bundled demo assets, unprivileged runtime processes, and
+  an optimized `next start` web image.
+- [x] Final extended three-viewport Chrome marker: closed during the Prompt 13 review with all 39
+  route checks plus mutation, calendar, scenario, commitment, timeline, accessibility, offline,
+  external-request, and screenshot actions passing.
+
+## Prompt 13 — Final bug-fix and review pass
+
+- [x] Calendar task schedule suggestions now support explicit review and revision-checked apply
+- [x] Schedule apply and scenario/demo mutations invalidate every affected TanStack Query domain
+- [x] Configured IANA timezone drives date ranges and `datetime-local` input conversion, including
+  daylight-saving gap rejection
+- [x] Imported minor-unit money and workspace timestamps use shared locale/timezone formatters
+- [x] Automation scheduler, notification, and execution sections expose loading and error states
+- [x] Command palette covers every workspace and entity links use destinations the target resolves
+- [x] Docker web runtime uses an optimized Next.js build; loopback dev origins are explicitly scoped
+- [x] Offline event state survives a cached-shell reload and the production shell remains interactive
+- [x] E2E rejects an HTTP-200 route whose application shell has no rendered main content
+- [x] Regression coverage expanded to 17 frontend files and 31 tests
+
+### Prompt 13 final verification evidence
+
+- [x] Backend: 82 tests passed; Ruff format/lint passed across 184 files; strict mypy passed across
+  136 source files; clean migration reached `20260716_0011` with only the documented historical
+  SQLite implicit-constraint warning.
+- [x] Frontend: 17 Vitest files and 31 tests passed; strict TypeScript and zero-warning ESLint
+  passed; optimized Next.js build emitted 18 route entries.
+- [x] Contracts/performance: OpenAPI remained 111 paths/311 schemas; health 10.5 ms, conflicts
+  480.3 ms, paged timeline 167.3 ms, and scenario comparison 307.8 ms all met their bounds.
+- [x] Safety: judge workflow, encrypted backup, restore with safety backup, `pip check`, source/live
+  external-asset scan, offline verification, E2E syntax, Compose config, and Git whitespace passed.
+- [x] Containers/browser: isolated images built, both services were healthy, API returned `ok`, web
+  returned 200, and Chrome passed 39 route checks plus the complete desktop critical/offline flow
+  with 856 ms dashboard first-contentful paint.
+
+Remaining release risks are the existing plaintext live data boundary, missing automated Axe and
+full screen-reader/non-Chromium coverage, and unverified native Linux/macOS launchers. Planned
+transaction links currently open the finance reports rather than a dedicated transaction detail.

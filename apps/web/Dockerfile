@@ -14,6 +14,8 @@ COPY apps/web/ ./apps/web/
 COPY packages/shared-types/ ./packages/shared-types/
 COPY packages/ui/ ./packages/ui/
 
+RUN npm run build --workspace @locallife/web
+
 RUN chown -R node:node /workspace/apps/web
 
 USER node
@@ -22,4 +24,4 @@ WORKDIR /workspace/apps/web
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev:container"]
+CMD ["npm", "run", "start:container"]

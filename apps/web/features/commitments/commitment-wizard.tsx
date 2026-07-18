@@ -23,7 +23,7 @@ import { createPlannedTransaction, listAccounts, listPlannedTransactions, listTr
 import { createNote, createTask, listNotes, listTasks } from "@/lib/api/productivity";
 import { queryKeys } from "@/lib/api/query-keys";
 import type { CommitmentAssessment } from "@/lib/api/types";
-import { fromDateTimeLocal, majorToMinor } from "@/lib/format";
+import { formatMoney, fromDateTimeLocal, majorToMinor } from "@/lib/format";
 import { useUiStore } from "@/stores/ui-store";
 
 import { AssessmentStatus } from "./commitment-ui";
@@ -74,6 +74,8 @@ export function CommitmentWizard({ open, onClose, onComplete }: { open: boolean;
     };
   });
   const preferences = useQuery({ queryKey: queryKeys.system.preferences, queryFn: getPreferences, enabled: open });
+  const timezone = preferences.data?.timezone || "UTC";
+  const locale = preferences.data?.locale;
   const tasks = useQuery({ queryKey: queryKeys.tasks.list({ wizard: true }), queryFn: () => listTasks({ page_size: 100 }), enabled: open });
   const notes = useQuery({ queryKey: queryKeys.notes.list({ wizard: true }), queryFn: () => listNotes({ page_size: 100 }), enabled: open });
   const events = useQuery({ queryKey: queryKeys.calendar.events({ wizard: true }), queryFn: () => listCalendarEvents({ start: calendarRange.start, end: calendarRange.end }), enabled: open });
@@ -86,10 +88,10 @@ export function CommitmentWizard({ open, onClose, onComplete }: { open: boolean;
     ...(tasks.data?.data || []).map((item) => ({ id: item.id, type: "task" as const, label: item.title })),
     ...(events.data?.data || []).map((item) => ({ id: item.id, type: "calendar_event" as const, label: item.title })),
     ...(notes.data?.data || []).map((item) => ({ id: item.id, type: "note" as const, label: item.title })),
-    ...(transactions.data?.data || []).map((item) => ({ id: item.id, type: "transaction" as const, label: item.payee || `${item.transaction_type} · ${item.amount_minor}` })),
+    ...(transactions.data?.data || []).map((item) => ({ id: item.id, type: "transaction" as const, label: item.payee || `${item.transaction_type} · ${formatMoney(item.amount_minor, item.currency_code, locale)}` })),
     ...(planned.data || []).map((item) => ({ id: item.id, type: "planned_transaction" as const, label: item.payee || `Planned ${item.transaction_type}` })),
     ...(goals.data?.data || []).map((item) => ({ id: item.id, type: "goal" as const, label: item.title })),
-  ], [events.data, goals.data, notes.data, planned.data, tasks.data, transactions.data]);
+  ], [events.data, goals.data, locale, notes.data, planned.data, tasks.data, transactions.data]);
   const visibleCandidates = candidates.filter((candidate) => candidate.type === linkType);
 
   const createLinked = useMutation({
@@ -108,14 +110,14 @@ export function CommitmentWizard({ open, onClose, onComplete }: { open: boolean;
         return { id: item.id, type: "goal" as const, label: item.title };
       }
       if (newType === "calendar_event") {
-        const startsAt = fromDateTimeLocal(newStart); const endsAt = fromDateTimeLocal(newEnd);
+        const startsAt = fromDateTimeLocal(newStart, timezone); const endsAt = fromDateTimeLocal(newEnd, timezone);
         if (!startsAt || !endsAt || new Date(endsAt) <= new Date(startsAt)) throw new Error("The event end must be after its start.");
         const item = await createCalendarEvent({ title: newTitle, status: "confirmed", all_day: false, starts_at: startsAt, ends_at: endsAt, timezone: preferences.data?.timezone || "UTC", preparation_buffer_minutes: 0, travel_buffer_minutes: 0, recovery_buffer_minutes: 0, commitment_ids: [], linked_entities: [] });
         return { id: item.id, type: "calendar_event" as const, label: item.title };
       }
       const account = accounts.data?.data.find((item) => item.id === newAccountId) || accounts.data?.data[0];
       if (!account) throw new Error("Create a financial account before adding a planned cost.");
-      const plannedFor = fromDateTimeLocal(newStart);
+      const plannedFor = fromDateTimeLocal(newStart, timezone);
       if (!plannedFor) throw new Error("Choose when the planned cost is expected.");
       const item = await createPlannedTransaction({ account_id: account.id, transaction_type: "expense", amount_minor: majorToMinor(newAmount, account.currency_code), currency_code: account.currency_code, planned_for: plannedFor, payee: newTitle, is_committed: true });
       return { id: item.id, type: "planned_transaction" as const, label: newTitle };
@@ -128,7 +130,7 @@ export function CommitmentWizard({ open, onClose, onComplete }: { open: boolean;
     mutationFn: async () => {
       if (!title.trim()) throw new Error("Add a commitment title first.");
       const hasMoney = Boolean(plannedCost.trim() || financialBuffer.trim());
-      const values = { title, description_markdown: description || null, status, category: category || null, target_end_at: fromDateTimeLocal(targetEnd) || null, decision_deadline_at: fromDateTimeLocal(decisionDeadline) || null, time_capacity_requirement_minutes: Number(requiredMinutes) || null, planned_cost_minor: plannedCost.trim() ? majorToMinor(plannedCost, currency) : null, financial_buffer_requirement_minor: financialBuffer.trim() ? majorToMinor(financialBuffer, currency) : null, currency_code: hasMoney ? currency.toUpperCase() : null };
+      const values = { title, description_markdown: description || null, status, category: category || null, target_end_at: fromDateTimeLocal(targetEnd, timezone) || null, decision_deadline_at: fromDateTimeLocal(decisionDeadline, timezone) || null, time_capacity_requirement_minutes: Number(requiredMinutes) || null, planned_cost_minor: plannedCost.trim() ? majorToMinor(plannedCost, currency) : null, financial_buffer_requirement_minor: financialBuffer.trim() ? majorToMinor(financialBuffer, currency) : null, currency_code: hasMoney ? currency.toUpperCase() : null };
       const commitment = draftId
         ? await getCommitment(draftId).then((current) => updateCommitment(draftId, { revision: current.revision, ...values }))
         : await createCommitment(values);

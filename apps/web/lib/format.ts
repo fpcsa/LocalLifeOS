@@ -1,3 +1,5 @@
+import { dateTimeLocalValue, zonedDateTimeToUtc } from "./date-range";
+
 export function currencyDigits(currencyCode: string, locale = "en"): number {
   return new Intl.NumberFormat(locale, {
     style: "currency",
@@ -61,13 +63,28 @@ export function formatDuration(minutes: number | null | undefined): string {
   return remainder ? `${hours}h ${remainder}m` : `${hours}h`;
 }
 
-export function toDateTimeLocal(value: string | null | undefined): string {
+export function toDateTimeLocal(
+  value: string | null | undefined,
+  timezone?: string,
+): string {
   if (!value) return "";
   const date = new Date(value);
+  if (timezone) return dateTimeLocalValue(date, timezone);
   const offset = date.getTimezoneOffset() * 60_000;
   return new Date(date.getTime() - offset).toISOString().slice(0, 16);
 }
 
-export function fromDateTimeLocal(value: string): string | undefined {
-  return value ? new Date(value).toISOString() : undefined;
+export function fromDateTimeLocal(value: string, timezone?: string): string | undefined {
+  if (!value) return undefined;
+  if (!timezone) return new Date(value).toISOString();
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(value);
+  if (!match) throw new Error("Enter a valid local date and time.");
+  return zonedDateTimeToUtc({
+    year: Number(match[1]),
+    month: Number(match[2]),
+    day: Number(match[3]),
+    hour: Number(match[4]),
+    minute: Number(match[5]),
+    second: Number(match[6] ?? 0),
+  }, timezone).toISOString();
 }

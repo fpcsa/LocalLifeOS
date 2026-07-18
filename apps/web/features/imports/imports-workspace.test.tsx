@@ -3,6 +3,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import type { ReactNode } from "react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import { getPreferences } from "@/lib/api/connected";
 import { listAccounts, listCategories } from "@/lib/api/finance";
 import {
   applyImport,
@@ -11,8 +12,9 @@ import {
   previewCalendarImport,
 } from "@/lib/api/imports-automation";
 
-import { ImportsWorkspace } from "./imports-workspace";
+import { formatImportedAmount, ImportsWorkspace } from "./imports-workspace";
 
+vi.mock("@/lib/api/connected", () => ({ getPreferences: vi.fn() }));
 vi.mock("@/lib/api/finance", () => ({ listAccounts: vi.fn(), listCategories: vi.fn() }));
 vi.mock("@/lib/api/imports-automation", () => ({
   applyImport: vi.fn(),
@@ -33,6 +35,7 @@ function Wrapper({ children }: { children: ReactNode }) {
 
 describe("ImportsWorkspace", () => {
   beforeEach(() => {
+    vi.mocked(getPreferences).mockResolvedValue({ timezone: "Europe/Rome", locale: "en-IE" } as Awaited<ReturnType<typeof getPreferences>>);
     vi.mocked(listImportHistory).mockResolvedValue({ data: [], meta: { page: 1, page_size: 100, total_items: 0, total_pages: 0 } });
     vi.mocked(listMappingProfiles).mockResolvedValue([]);
     vi.mocked(listAccounts).mockResolvedValue({ data: [], meta: { page: 1, page_size: 100, total_items: 0, total_pages: 0 } });
@@ -58,5 +61,9 @@ describe("ImportsWorkspace", () => {
     fireEvent.click(screen.getByRole("button", { name: "Import 1" }));
 
     await waitFor(() => expect(applyImport).toHaveBeenCalledWith("calendar", "batch-1", ["row-1"]));
+  });
+
+  it("formats imported minor units as currency rather than whole units", () => {
+    expect(formatImportedAmount(320000, "EUR", "en-IE")).toBe("€3,200.00");
   });
 });
