@@ -77,6 +77,13 @@ export async function updateTask(taskId: string, payload: TaskUpdate): Promise<T
   ).data;
 }
 
+export async function deleteTask(taskId: string, revision: number): Promise<void> {
+  await apiRequest<DataEnvelope<Schemas["DeletedResource"]>>(
+    withQuery(`/tasks/${taskId}`, { revision }),
+    { method: "DELETE" },
+  );
+}
+
 export async function bulkCompleteTasks(
   items: Schemas["BulkCompleteItem"][],
 ): Promise<Task[]> {

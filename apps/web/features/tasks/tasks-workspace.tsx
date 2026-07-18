@@ -29,10 +29,19 @@ const boardColumns: Array<{ status: Task["status"]; label: string }> = [
   { status: "completed", label: "Completed" },
 ];
 
-function TaskRow({ task, selected, onSelect, onOpen, timezone }: { task: Task; selected: boolean; onSelect: () => void; onOpen: () => void; timezone: string }) {
+export function canBulkSelectTask(task: Pick<Task, "status">) {
+  return task.status === "todo" || task.status === "in_progress";
+}
+
+export function TaskRow({ task, selected, onSelect, onOpen, timezone }: { task: Task; selected: boolean; onSelect: () => void; onOpen: () => void; timezone: string }) {
+  const bulkSelectable = canBulkSelectTask(task);
+  const selectionLabel = bulkSelectable
+    ? `Select ${task.title}`
+    : `${task.title} is ${task.status} and unavailable for bulk actions`;
+
   return (
     <div className="flex min-h-16 items-center gap-3 border-b border-border px-4 py-3 last:border-0">
-      <input aria-label={`Select ${task.title}`} checked={selected} className="h-5 w-5 rounded border-border accent-current focus-visible:ring-2 focus-visible:ring-ring" onChange={onSelect} type="checkbox" />
+      <input aria-label={selectionLabel} checked={bulkSelectable && selected} className="h-5 w-5 rounded border-border accent-current focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-40" disabled={!bulkSelectable} onChange={bulkSelectable ? onSelect : undefined} title={bulkSelectable ? undefined : "Completed and cancelled tasks cannot receive bulk actions."} type="checkbox" />
       <button className="min-w-0 flex-1 rounded-md text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" onClick={onOpen} type="button"><span className="block truncate text-sm font-medium">{task.title}</span><span className="mt-1 block text-xs text-muted-foreground">{task.due_at ? formatDateTime(task.due_at, timezone) : "No deadline"} · {formatDuration(task.estimated_duration_minutes)}</span></button>
       {task.blocked ? <Badge tone="warning">Blocked</Badge> : null}{task.overdue ? <Badge tone="danger">Overdue</Badge> : null}<Badge>{task.priority}</Badge>
     </div>
@@ -73,7 +82,7 @@ export function TasksWorkspace() {
   const filters = { q: query || undefined, status: (status || undefined) as Task["status"] | undefined, project_id: projectId || undefined, page_size: 100, sort: "due_at" as const, order: "asc" as const };
   const tasks = useQuery({ queryKey: queryKeys.tasks.list(filters), queryFn: () => listTasks(filters) });
   const projects = useQuery({ queryKey: queryKeys.projects.list(), queryFn: () => listProjects({ page_size: 100, status: "active", sort: "name", order: "asc" }) });
-  const complete = useMutation({ mutationFn: () => bulkCompleteTasks((tasks.data?.data || []).filter((task) => selected.has(task.id)).map((task) => ({ id: task.id, revision: task.revision }))), onSuccess: async () => { setSelected(new Set()); await queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all }); pushToast({ title: "Tasks completed", tone: "success" }); }, onError: (error) => pushToast({ title: "Couldn't complete tasks", description: error instanceof Error ? error.message : "Reload and try again.", tone: "error" }) });
+  const complete = useMutation({ mutationFn: () => bulkCompleteTasks((tasks.data?.data || []).filter((task) => selected.has(task.id) && canBulkSelectTask(task)).map((task) => ({ id: task.id, revision: task.revision }))), onSuccess: async () => { setSelected(new Set()); await queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all }); pushToast({ title: "Tasks completed", tone: "success" }); }, onError: (error) => pushToast({ title: "Couldn't complete tasks", description: error instanceof Error ? error.message : "Reload and try again.", tone: "error" }) });
   const updateParams = (changes: Record<string, string | null>) => { const next = new URLSearchParams(searchParams.toString()); for (const [key, value] of Object.entries(changes)) { if (value) next.set(key, value); else next.delete(key); } router.replace(`/tasks?${next.toString()}`); };
   const projectById = useMemo(() => new Map((projects.data?.data || []).map((project) => [project.id, project])), [projects.data]);
   const selectedTask = (tasks.data?.data || []).find((task) => task.id === selectedTaskId) || null;

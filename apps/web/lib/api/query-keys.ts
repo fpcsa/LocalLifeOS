@@ -58,6 +58,7 @@ export const queryKeys = {
     warnings: (id: string) => ["commitments", id, "warnings"] as const,
   },
   scheduling: {
+    all: ["scheduling"] as const,
     capacity: (range: object) => ["scheduling", "capacity", range] as const,
     preview: (id: string) => ["scheduling", "preview", id] as const,
   },
