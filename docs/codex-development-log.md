@@ -1484,10 +1484,7 @@ submission fields synchronized.
 
 ### Final `/feedback` session ID
 
-`<PENDING — obtain from the final Codex /feedback action for this session; do not invent a value>`
-
-After the implementation session is complete, the user should run the product’s `/feedback` action
-for this Codex session and replace the placeholder with the returned session ID.
+`019f64d6-7741-7f80-8759-57f6ca8a11b8`
 
 ## 2026-07-18 — Prompt 13: final bug-fix and review pass
 
